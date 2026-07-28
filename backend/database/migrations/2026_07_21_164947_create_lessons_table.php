@@ -13,12 +13,9 @@ return new class extends Migration
     {
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('cours_id')->constrained('cours')->onDelete('cascade');
+            $table->foreignId('cour_id')->constrained('cours')->onDelete('cascade');
             $table->string('titre');
             $table->longText('description');
-            $table->string('video_url');
-            $table->string('audio_url');
-            $table->string('pdf_url');
             $table->string('duree');
             $table->timestamps();
         });

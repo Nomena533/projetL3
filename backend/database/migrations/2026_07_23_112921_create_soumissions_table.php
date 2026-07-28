@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('soumissions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("exo_id")->constrained("exercices")->onDelete("cascade");
+            $table->foreignId("exercice_id")->constrained("exercices")->onDelete("cascade");
             $table->foreignId("user_id")->constrained("users")->onDelete("cascade");
             $table->string("fichier");
-            $table->integer("note");
-            $table->longText("commentaire");
+            $table->unsignedTinyInteger("note")->default(0);
+            $table->longText("commentaire")->nullable();
             $table->timestamps();
         });
     }

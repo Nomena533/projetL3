@@ -2,48 +2,94 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+// Authenticatable est la classe de base permettant
+// à un utilisateur de se connecter.
 use Illuminate\Foundation\Auth\User as Authenticatable;
+
+// Notifiable permet d'envoyer des notifications
+// (emails, SMS, etc.).
 use Illuminate\Notifications\Notifiable;
+
+// HasApiTokens est indispensable pour Laravel Sanctum.
+// C'est ce trait qui ajoute les méthodes :
+// createToken()
+// currentAccessToken()
+// tokens()
+use Laravel\Sanctum\HasApiTokens;
+
+// HasFactory permet d'utiliser les Factories
+// pour générer des données de test.
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    /*
+    |--------------------------------------------------------------------------
+    | Traits utilisés
+    |--------------------------------------------------------------------------
+    */
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    use HasApiTokens, HasFactory, Notifiable;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Les colonnes autorisées lors d'un create()
+    |--------------------------------------------------------------------------
+    |
+    | Si un champ n'est pas ici,
+    | User::create() ne pourra pas l'insérer.
+    |
+    */
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role_id'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Colonnes cachées
+    |--------------------------------------------------------------------------
+    |
+    | Ces colonnes ne seront jamais retournées
+    | lorsqu'on convertit le modèle en JSON.
+    |
+    */
+
     protected $hidden = [
         'password',
-        'remember_token',
+        'remember_token'
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Casts
+    |--------------------------------------------------------------------------
+    |
+    | Laravel convertit automatiquement
+    | certaines colonnes.
+    |
+    */
+
     protected function casts(): array
     {
         return [
+
+            // Convertit automatiquement en objet Date
             'email_verified_at' => 'datetime',
+
+            // Permet à Laravel de hasher automatiquement
+            // le mot de passe lorsqu'il est affecté
             'password' => 'hashed',
+
         ];
     }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
 }

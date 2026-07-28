@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId("cour_id")->constrained("cours")->onDelete("cascade");
             $table->foreignId("user_id")->constrained("users")->cascadeOnDelete();
-            $table->string("progression");
+            $table->unsignedTinyInteger("progression")->default(0);
             $table->enum("statut",["pending","confirmed","canceled"])->default("pending");
             $table->timestamps();
         });

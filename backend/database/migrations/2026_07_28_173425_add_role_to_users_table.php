@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('cours', function (Blueprint $table) {
-            $table->enum("statut",["brouillon","publié"])->default("brouillon");
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId("role_id")->constrained("roles")->cascadeOnDelete();
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('cours', function (Blueprint $table) {
-            $table->dropColumn("statut");
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn("role_id");
         });
     }
 };
