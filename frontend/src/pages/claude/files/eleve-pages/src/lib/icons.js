@@ -1,0 +1,71 @@
+/**
+ * Point d'entrée unique pour toutes les icônes de l'application.
+ * Toutes les pages/composants importent leurs icônes depuis ce fichier
+ * plutôt que directement depuis "react-icons" : pour changer de
+ * bibliothèque d'icônes plus tard, il suffit de modifier ce seul fichier.
+ *
+ * On utilise ici le set "Feather" (react-icons/fi), le plus proche en style
+ * (traits fins) de la maquette d'origine. Quelques icônes absentes de
+ * Feather sont complétées par le set "Heroicons 2" (react-icons/hi2).
+ */
+import {
+  FiLogIn as LogIn,
+  FiUserPlus as UserPlus,
+  FiMail as Mail,
+  FiLock as Lock,
+  FiGrid as LayoutDashboard,
+  FiBookOpen as BookOpen,
+  FiAward as Award,
+  FiHeart as Heart,
+  FiMessageCircle as MessageCircle,
+  FiUser as User,
+  FiMenu as Menu,
+  FiX as X,
+  FiSearch as Search,
+  FiChevronRight as ChevronRight,
+  FiChevronLeft as ChevronLeft,
+  FiClock as Clock,
+  FiTrendingUp as TrendingUp,
+  FiCheckCircle as CheckCircle2,
+  FiPlayCircle as PlayCircle,
+  FiStar as Star,
+  FiVideo as Video,
+  FiFileText as FileText,
+  FiHeadphones as Headphones,
+  FiDownload as Download,
+  FiFilter as Filter,
+  FiSend as Send,
+  FiMusic as Music,
+} from "react-icons/fi";
+import { HiOutlineAcademicCap as GraduationCap } from "react-icons/hi2";
+
+export {
+  LogIn,
+  UserPlus,
+  Mail,
+  Lock,
+  LayoutDashboard,
+  BookOpen,
+  Award,
+  Heart,
+  MessageCircle,
+  User,
+  Menu,
+  X,
+  Search,
+  ChevronRight,
+  ChevronLeft,
+  Clock,
+  TrendingUp,
+  CheckCircle2,
+  PlayCircle,
+  Star,
+  Video,
+  FileText,
+  Headphones,
+  Download,
+  Filter,
+  Send,
+  Music,
+  GraduationCap,
+};

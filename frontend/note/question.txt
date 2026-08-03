@@ -1,0 +1,2 @@
+* remplacement des liens CDN par des fichiers locaux => OK
+* Les shell(layout) pour profAdmin et eleve sont-ils les mêmes ? => Différent

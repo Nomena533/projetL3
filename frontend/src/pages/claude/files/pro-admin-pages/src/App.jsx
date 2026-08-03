@@ -1,17 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Shell from "./components/Shell";
-import ShellProfAdmin from "./components/ShellProfAdmin";
-
-import AuthPage from "./pages/auth/AuthPage";
-import Dashboard from "./pages/eleve/Dashboard";
-import Catalogue from "./pages/eleve/Catalogue";
-import CourseDetail from "./pages/eleve/CourseDetail";
-import LessonPlayer from "./pages/eleve/LessonPlayer";
-import Progression from "./pages/eleve/Progression";
-import Favoris from "./pages/eleve/Favoris";
-import Messages from "./pages/eleve/Messages";
-import Profil from "./pages/eleve/Profil";
 
 import ProfDashboard from "./pages/professeur/Dashboard";
 import ProfMesCours from "./pages/professeur/MesCours";
@@ -30,23 +19,12 @@ import AdminAvis from "./pages/admin/Avis";
 export default function App() {
   return (
     <Routes>
-      <Route path="/connexion" element={<AuthPage />} />
-      <Route path="/profPage" element={<Navigate to="/professeur" replace />} />
+      {/* Entrée par défaut : redirige vers l'espace professeur.
+          En production, redirige plutôt vers /professeur ou /administrateur
+          selon le rôle de l'utilisateur connecté. */}
+      <Route path="/" element={<Navigate to="/professeur" replace />} />
 
-      {/* Shell = mise en page commune (sidebar + topbar) rendue autour de
-          chaque page via <Outlet /> (voir components/Shell.jsx) */}
-      <Route path="/eleve" element={<Shell role="eleve" />}>
-        <Route index element={<Dashboard />} />
-        <Route path="catalogue" element={<Catalogue />} />
-        <Route path="cours/:id" element={<CourseDetail />} />
-        <Route path="lecon" element={<LessonPlayer />} />
-        <Route path="progression" element={<Progression />} />
-        <Route path="favoris" element={<Favoris />} />
-        <Route path="messages" element={<Messages />} />
-        <Route path="profil" element={<Profil />} />
-      </Route>
-
-      <Route path="/professeur" element={<ShellProfAdmin role="prof" />}>
+      <Route path="/professeur" element={<Shell role="prof" />}>
         <Route index element={<ProfDashboard />} />
         <Route path="mescours" element={<ProfMesCours />} />
         <Route path="cours/nouveau" element={<ProfEditeur />} />
@@ -56,7 +34,7 @@ export default function App() {
         <Route path="messages" element={<ProfMessages />} />
       </Route>
 
-      <Route path="/administrateur" element={<ShellProfAdmin role="admin" />}>
+      <Route path="/administrateur" element={<Shell role="admin" />}>
         <Route index element={<AdminDashboard />} />
         <Route path="utilisateurs" element={<AdminUtilisateurs />} />
         <Route path="validation" element={<AdminValidation />} />

@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Les fichiers de police eux-mêmes sont chargés en tant que fichiers locaux
    (npm @fontsource, importés dans main.jsx) — aucune requête réseau vers
