@@ -1,7 +1,16 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import Shell from "./components/Shell";
-import ShellProfAdmin from "./components/ShellProfAdmin";
+import { Routes, Route, Navigate, BrowserRouter, Outlet, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+
+import Home from "./pages/home/Home";
+import About from "./pages/home/About";
+import Contact from "./pages/home/Contact";
+import Courses from "./pages/home/Courses";
+import HomeCourseDetail from "./pages/home/HomeCourseDetail";
+import Instructors from "./pages/home/Instructors";
+import Pricing from "./pages/home/Pricing";
+import FAQ from "./pages/home/FAQ";
+import NotFound from "./pages/home/NotFound";
 
 import AuthPage from "./pages/auth/AuthPage";
 import Dashboard from "./pages/eleve/Dashboard";
@@ -27,43 +36,89 @@ import AdminReferentiels from "./pages/admin/Referentiels";
 import AdminPaiements from "./pages/admin/Paiements";
 import AdminAvis from "./pages/admin/Avis";
 
+import LayoutStudent from "./components/LayoutStudent";
+import LayoutProf from "./components/LayoutProf";
+import LayoutAdmin from "./components/LayoutAdmin";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+
+/** Remonte en haut de page à chaque changement de route */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
+/** Ossature commune à toutes les pages publiques : Navbar + contenu + Footer */
+function HomeLayout() {
+  return (
+    <div className="flex min-h-screen flex-col bg-ivory">
+      <ScrollToTop />
+      <Navbar />
+      <main className="flex-1">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
 export default function App() {
   return (
-    <Routes>
-      <Route path="/connexion" element={<AuthPage />} />
-      <Route path="/profPage" element={<Navigate to="/professeur" replace />} />
+  
+      <Routes>
+        <Route path="/connexion" element={<AuthPage />} />
+        <Route path="/inscription" element={<AuthPage />} />
+        <Route
+          path="/profPage"
+          element={<Navigate to="/professeur" replace />}
+        />
 
-      {/* Shell = mise en page commune (sidebar + topbar) rendue autour de
-          chaque page via <Outlet /> (voir components/Shell.jsx) */}
-      <Route path="/eleve" element={<Shell role="eleve" />}>
-        <Route index element={<Dashboard />} />
-        <Route path="catalogue" element={<Catalogue />} />
-        <Route path="cours/:id" element={<CourseDetail />} />
-        <Route path="lecon" element={<LessonPlayer />} />
-        <Route path="progression" element={<Progression />} />
-        <Route path="favoris" element={<Favoris />} />
-        <Route path="messages" element={<Messages />} />
-        <Route path="profil" element={<Profil />} />
-      </Route>
+        <Route element={<HomeLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/a-propos" element={<About />} />
+          <Route path="/cours" element={<Courses />} />
+          <Route path="/cours/:id" element={<HomeCourseDetail />} />
+          <Route path="/professeurs" element={<Instructors />} />
+          <Route path="/tarifs" element={<Pricing />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/contact" element={<Contact />} />
 
-      <Route path="/professeur" element={<ShellProfAdmin role="prof" />}>
-        <Route index element={<ProfDashboard />} />
-        <Route path="mescours" element={<ProfMesCours />} />
-        <Route path="cours/nouveau" element={<ProfEditeur />} />
-        <Route path="cours/:id" element={<ProfEditeur />} />
-        <Route path="corrections" element={<ProfCorrections />} />
-        <Route path="eleves" element={<ProfEleves />} />
-        <Route path="messages" element={<ProfMessages />} />
-      </Route>
+          <Route path="*" element={<NotFound />} />
+        </Route>
 
-      <Route path="/administrateur" element={<ShellProfAdmin role="admin" />}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="utilisateurs" element={<AdminUtilisateurs />} />
-        <Route path="validation" element={<AdminValidation />} />
-        <Route path="referentiels" element={<AdminReferentiels />} />
-        <Route path="paiements" element={<AdminPaiements />} />
-        <Route path="avis" element={<AdminAvis />} />
-      </Route>
-    </Routes>
+        <Route path="/eleve" element={<LayoutStudent />}>
+          <Route index element={<Dashboard />} />
+          <Route path="catalogue" element={<Catalogue />} />
+          <Route path="cours/:id" element={<CourseDetail />} />
+          <Route path="lecon" element={<LessonPlayer />} />
+          <Route path="progression" element={<Progression />} />
+          <Route path="favoris" element={<Favoris />} />
+          <Route path="messages" element={<Messages />} />
+          <Route path="profil" element={<Profil />} />
+        </Route>
+
+        <Route path="/professeur" element={<LayoutProf />}>
+          <Route index element={<ProfDashboard />} />
+          <Route path="mescours" element={<ProfMesCours />} />
+          <Route path="cours/nouveau" element={<ProfEditeur />} />
+          <Route path="cours/:id" element={<ProfEditeur />} />
+          <Route path="corrections" element={<ProfCorrections />} />
+          <Route path="eleves" element={<ProfEleves />} />
+          <Route path="messages" element={<ProfMessages />} />
+        </Route>
+
+        <Route path="/administrateur" element={<LayoutAdmin />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="utilisateurs" element={<AdminUtilisateurs />} />
+          <Route path="validation" element={<AdminValidation />} />
+          <Route path="referentiels" element={<AdminReferentiels />} />
+          <Route path="paiements" element={<AdminPaiements />} />
+          <Route path="avis" element={<AdminAvis />} />
+        </Route>
+      </Routes>
+    
   );
 }

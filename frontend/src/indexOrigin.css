@@ -19,33 +19,22 @@
    Typo     : Fraunces (display) · Plus Jakarta Sans (texte) · IBM Plex Mono (chiffres)
    ============================================================ */
 @theme {
-  /* Polices */
   --font-display: "Fraunces", ui-serif, Georgia, serif;
   --font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
-  /* Fonds */
-  --color-ivory: #f8faf8;
-  --color-ivory-dark: #e8f1ed;
+  --color-ivory: #fbf5ea;
+  --color-ivory-dark: #f1e6d2;
+  --color-coral: #e8664a;
+  --color-coral-dark: #c94f35;
+  --color-coral-light: #f4917a;
+  --color-brick: #7a2e22;
+  --color-brick-light: #9a4633;
+  --color-amber: #dda23b;
+  --color-amber-light: #f0c878;
+  --color-ink: #2b211a;
+  --color-ink-soft: #6b584a;
 
-  /* Couleur principale (CTA, boutons, liens) */
-  --color-coral: #0f766e;
-  --color-coral-dark: #115e59;
-  --color-coral-light: #5eead4;
-
-  /* Couleur secondaire (titres, sections sombres) */
-  --color-brick: #134e4a;
-  --color-brick-light: #16615b;
-
-  /* Accent */
-  --color-amber: #fbbf24;
-  --color-amber-light: #fde68a;
-
-  /* Texte */
-  --color-ink: #1f2937;
-  --color-ink-soft: #6b7280;
-
-  /* Animations */
   --animate-fade-up: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-fade-in: fade-in 0.6s ease-out forwards;
   --animate-string: string-pluck 2.4s ease-in-out infinite;
