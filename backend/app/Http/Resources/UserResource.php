@@ -30,12 +30,15 @@ class UserResource extends JsonResource
             // Nom
             'name' => $this->name,
 
+            // Prénom
+            'firstname' => $this->firstname,
+            
             // Email
             'email' => $this->email,
 
             // Role_id
             // 'role_id' => $this->role_id, 
-            'role' => $this->roles->nom, // Relation avec le model Role mise dans le model User
+            'role' => $this->role->name, // Relation avec le model Role mise dans le model User
 
             // Date de création
             'created_at' => $this->created_at,

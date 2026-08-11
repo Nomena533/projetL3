@@ -1,7 +1,11 @@
 * remplacement des liens CDN par des fichiers locaux => OK
 * Les shell(layout) pour profAdmin et eleve sont-ils les mêmes ? => Différent
-* Explications du fonctionnement de la navigation pour admin et prof 
+* Explications du fonctionnement de la navigation pour admin et prof => OK
     -> route dans App.jsx
     -> navigation dans lib/mockProfAdminData.js
     -> navigation dans components/shellProfAdmin.jsx
-* De même pour eleve
+* De même pour eleve => OK
+
+
+* affichage des donnés fake dans les page eleve
+* Explications des hooks dans les pages eleves

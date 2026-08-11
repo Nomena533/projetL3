@@ -6,7 +6,7 @@ import { useId } from "react";
  * "eyebrows" du Home. `rightElement` permet d'ajouter un bouton (ex. afficher
  * le mot de passe) sans complexifier l'API du composant.
  */
-export default function FormField({ label, icon: Icon, type = "text", rightElement, error, className = "", ...props }) {
+export default function FormField({ label, icon: Icon, type = "text", value, rightElement, error, className = "", ...props }) {
   const id = useId();
   return (
     <div className={className}>
@@ -22,6 +22,7 @@ export default function FormField({ label, icon: Icon, type = "text", rightEleme
         <input
           id={id}
           type={type}
+          value={value}
           className="w-full bg-transparent font-body text-sm text-ink placeholder:text-ink-soft/60 outline-none"
           {...props}
         />

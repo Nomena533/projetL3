@@ -1,33 +1,35 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * AnimatedSection — révèle son contenu (fondu + léger décalage vers le haut)
- * quand il entre dans le viewport. Basé sur IntersectionObserver natif :
- * aucune dépendance d'animation supplémentaire (pas de framer-motion).
+ * AnimatedSection — révèle son contenu (fade + translate) quand il entre dans
+ * le viewport, via IntersectionObserver. S'appuie sur les classes `.reveal` /
+ * `.is-visible` définies dans index.css.
  *
- * Props :
- *  - as        : balise HTML du conteneur (par défaut "div")
- *  - delay     : délai d'apparition en ms (pour orchestrer des cascades)
- *  - className : classes additionnelles
+ * Polymorphe : `as={Link}` (ou toute autre balise/composant) permet de
+ * réutiliser l'animation sur un lien, un bouton, une "aside", etc., comme sur
+ * les cartes de cours et d'instruments du Home.
+ *
+ * NOTE : si ce composant existe déjà dans votre projet (utilisé par Home.jsx
+ * et les autres pages publiques), NE L'ÉCRASEZ PAS — ignorez ce fichier et
+ * réutilisez le vôtre. Il est fourni ici pour rendre ce livrable autonome.
  */
-export default function AnimatedSection({ as: Tag = "div", delay = 0, className = "", children, ...rest }) {
+export default function AnimatedSection({ as: Tag = "div", delay = 0, className = "", children, ...props }) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
+    const node = ref.current;
+    if (!node) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisible(true);
-          observer.unobserve(el);
+          observer.disconnect();
         }
       },
-      { threshold: 0.15, rootMargin: "0px 0px -60px 0px" }
+      { threshold: 0.15 }
     );
-    observer.observe(el);
+    observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
@@ -36,7 +38,7 @@ export default function AnimatedSection({ as: Tag = "div", delay = 0, className 
       ref={ref}
       className={`reveal ${visible ? "is-visible" : ""} ${className}`}
       style={{ transitionDelay: visible ? `${delay}ms` : "0ms" }}
-      {...rest}
+      {...props}
     >
       {children}
     </Tag>

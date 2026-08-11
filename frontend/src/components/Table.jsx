@@ -1,5 +1,16 @@
-import React from "react";
+/**
+ * Table primitives — en-têtes et cellules réutilisées par les tableaux de
+ * l'espace Professeur (Mes cours, Élèves…). Même typographie que le reste du
+ * design system : eyebrow mono pour les en-têtes, texte body pour les cellules.
+ */
+export function Th({ children }) {
+  return (
+    <th className="px-5 py-3.5 text-left font-mono text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
+      {children}
+    </th>
+  );
+}
 
-export const Th = ({ children }) => <th className="text-left text-xs font-mono text-stone-400 font-normal px-4 py-3">{children}</th>;
-
-export const Td = ({ children, className = "" }) => <td className={`px-4 py-3 text-sm text-teal-950 ${className}`}>{children}</td>;
+export function Td({ children, className = "" }) {
+  return <td className={`px-5 py-4 font-body text-sm text-ink ${className}`}>{children}</td>;
+}

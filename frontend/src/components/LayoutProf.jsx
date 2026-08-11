@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { NavLink, Link, useLocation, Outlet } from "react-router-dom";
 import { Music, Menu, X, ShieldCheck } from "../lib/icons";
 import ValihaStrings from "./ValihaStrings";
-import { NAV_PROF} from "../lib/mockProfAdminData";
+import { NAV_PROF} from "../lib/mockProfAdminDataOriginal";
 
 export default function LayoutProf({ role }) {
   const [mobileOpen, setMobileOpen] = useState(false);

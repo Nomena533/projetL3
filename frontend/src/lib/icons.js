@@ -45,6 +45,7 @@ import {
   FiUserX as UserX,
   FiUserCheck as UserCheck,
   FiBarChart2 as BarChart3,
+  FiSettings as Settings,
 } from "react-icons/fi";
 import { 
   HiOutlineAcademicCap as GraduationCap,
@@ -94,4 +95,5 @@ export {
   ClipboardCheck,
   Wallet,
   ShieldCheck,
+  Settings,
 };

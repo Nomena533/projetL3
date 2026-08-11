@@ -42,8 +42,9 @@ class AuthController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed', // confirmed : dois avoir un deuxième champ pour la confirmation du mot de passe dans l'interface user
+            'password' => 'required|min:8', // confirmed : dois avoir un deuxième champ pour la confirmation du mot de passe dans l'interface user
             'role_id' => 'required|exists:roles,id' // role_id doit obligatoirement correspondre à un id existant dans la table roles
         ]);
 
@@ -59,6 +60,7 @@ class AuthController extends Controller
 
         $user = User::create([
             'name' => $request->name,
+            'firstname' => $request->firstname,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role_id' => $request->role_id,
@@ -101,6 +103,53 @@ class AuthController extends Controller
      * ============================================================
      */
     public function login(Request $request)
+    {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Validation
+        |--------------------------------------------------------------------------
+        */
+
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        // Recherche de l'user et chargement de son role 
+        $user = User::with('role')->where('email', $validated['email'])->first();
+
+        // Vérification des identifiants
+        if (!$user || !Hash::check($validated['password'], $user->password)) {
+            return response()->json([
+                'message' => 'Identifiant incorrect'
+            ], 401);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Création d'un nouveau token
+        |--------------------------------------------------------------------------
+        */
+
+        $token = $user
+                    ->createToken('react-app')
+                    ->plainTextToken;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Retour vers React
+        |--------------------------------------------------------------------------
+        */
+
+        return response()->json([
+            'message' => 'Connexion réussie.',
+            'user' => new UserResource($user),
+            'token' => $token
+        ]);
+    }
+
+    public function loginOriginal(Request $request)
     {
 
         /*
@@ -195,6 +244,13 @@ class AuthController extends Controller
             'user' => new UserResource($request->user())
         ]);
 
+    }
+
+    public function user(Request $request)
+    {
+        return response()->json([
+            'user' => $request->user()
+        ]);
     }
 
     /**

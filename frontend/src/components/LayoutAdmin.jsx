@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, Link, useLocation, Outlet } from "react-router-dom";
 import { Music, Menu, X, ShieldCheck } from "../lib/icons";
 import ValihaStrings from "./ValihaStrings";
-import { NAV_ADMIN } from "../lib/mockProfAdminData";
+import { NAV_ADMIN } from "../lib/mockAdminData";
 
 export default function LayoutAdmin() {
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -47,7 +47,7 @@ export default function LayoutAdmin() {
               <ValihaStrings className="h-10 mb-4" count={18} tone="teal" />
               <div className="flex items-center gap-2 text-xs text-stone-400">
                 <ShieldCheck size={14} className="text-emerald-500" />
-                {role === "prof" ? "Compte professeur vérifié" : "Accès administrateur"}
+                {/* {role === "prof" ? "Compte professeur vérifié" : "Accès administrateur"} */}
               </div>
             </div>
           </aside>
@@ -61,7 +61,7 @@ export default function LayoutAdmin() {
               </button>
               <h1 className="font-display text-xl text-teal-950">{current?.label || "Kalon'ny"}</h1>
               <div className="ml-auto w-9 h-9 rounded-full bg-amber-200 flex items-center justify-center font-display text-teal-950 text-sm">
-                {role === "prof" ? "RA" : "AD"}
+                {/* {role === "prof" ? "RA" : "AD"} */}
               </div>
             </header>
             <main className="flex-1 p-4 md:p-8">

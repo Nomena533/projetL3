@@ -35,12 +35,16 @@ import AdminValidation from "./pages/admin/Validation";
 import AdminReferentiels from "./pages/admin/Referentiels";
 import AdminPaiements from "./pages/admin/Paiements";
 import AdminAvis from "./pages/admin/Avis";
+import AdminParametres from "./pages/admin/Parametres";
 
 import LayoutStudent from "./components/LayoutStudent";
 import LayoutProf from "./components/LayoutProf";
 import LayoutAdmin from "./components/LayoutAdmin";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
 
 /** Remonte en haut de page à chaque changement de route */
 function ScrollToTop() {
@@ -69,8 +73,8 @@ export default function App() {
   return (
   
       <Routes>
-        <Route path="/connexion" element={<AuthPage />} />
-        <Route path="/inscription" element={<AuthPage />} />
+        <Route path="/connexion" element={<Login />} />
+        <Route path="/inscription" element={<Register />} />
         <Route
           path="/profPage"
           element={<Navigate to="/professeur" replace />}
@@ -117,6 +121,7 @@ export default function App() {
           <Route path="referentiels" element={<AdminReferentiels />} />
           <Route path="paiements" element={<AdminPaiements />} />
           <Route path="avis" element={<AdminAvis />} />
+          <Route path="parametres" element={<AdminParametres />} />
         </Route>
       </Routes>
     
