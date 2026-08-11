@@ -15,10 +15,12 @@ import { HiStar } from "react-icons/hi";
 import AnimatedSection from "../../components/AnimatedSection";
 import ValihaMotif from "../../components/ValihaMotif";
 import FormField from "../../components/FormField";
-import { login } from "../../api/authApi";
+import { login } from "../../app/api/authApi";
+import { useAuth } from "../../app/hooks/useAuth";
 
 
 export default function Login() {
+  const {setUser} = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -43,16 +45,25 @@ export default function Login() {
       console.log("Réponse.data : ", response.data);
 
       // Laravel renvoie le token Sanctum
-      const token = response.data.token;
+      // const token = response.data.token;
+      const {token,user} = response.data;
 
       // Sauvegarde le token pour les prochaines requêtes API
       localStorage.setItem("token", token);
 
-      const user = response.data.user;
+      // const user = response.data.user;
 
+      // Sauvegarde les information de l'user, JSON.stringify transforme l'objet user en text pour pouvoir le stocker
+      localStorage.setItem("user", JSON.stringify(user))
+
+      console.log("Connexion réussi : ", response.data);
+      
+      setUser(user);
+      
       // Récupération du rôle
       const role = user.role;
 
+      console.log(role);
       // Redirection selon role
       if (role === "eleve") {
         navigate("/eleve")
@@ -61,6 +72,16 @@ export default function Login() {
       } else {
         navigate("/administrateur")
       }
+
+      // const roleRoutes = {
+      //   eleve:"/eleve",
+      //   prefesseur:"/professeur",
+      //   admin:"/administrateur"
+      // }
+
+      // const route = roleRoutes[role];
+
+      // navigate(route || "/unauthorized");
     } catch (error) {
       console.error("Erreur lors de la connexion : ", error.response?.data);
     }

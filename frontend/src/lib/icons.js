@@ -10,6 +10,7 @@
  */
 import {
   FiLogIn as LogIn,
+  FiLogOut as LogOut,
   FiUserPlus as UserPlus,
   FiMail as Mail,
   FiLock as Lock,
@@ -56,6 +57,7 @@ import {
 
 export {
   LogIn,
+  LogOut,
   UserPlus,
   Mail,
   Lock,

@@ -1,14 +1,28 @@
 import React, { useState } from "react";
-import { NavLink, Link, useLocation, Outlet } from "react-router-dom";
-import { Music, Menu, X, ShieldCheck } from "../lib/icons";
-import ValihaStrings from "./ValihaStrings";
-import { NAV_PROF} from "../lib/mockProfAdminDataOriginal";
+import { NavLink, Link, useLocation, useNavigate, Outlet } from "react-router-dom";
+import { Music, Menu, X, ShieldCheck, LogOut } from "../lib/icons";
+import ValihaStrings from "../components/ValihaStrings";
+import { NAV_PROF } from "../lib/mockProfData";
+import { useAuth } from "../app/hooks/useAuth";
 
 export default function LayoutProf({ role }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const nav = NAV_PROF;
   const current = nav.find((n) => (n.end ? location.pathname === n.path : location.pathname.startsWith(n.path)));
+
+  // Récupération de l'user + fonction de déconnexion depuis le context global
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/connexion");
+  };
+
+  const initials = user
+    ? `${user.firstname?.[0] || ""}${user.name?.[0] || ""}`.toUpperCase()
+    : role === "prof" ? "RA" : "AD";
 
   return (
     <div className="min-h-screen bg-stone-100 font-body flex">
@@ -44,12 +58,35 @@ export default function LayoutProf({ role }) {
           ))}
         </nav>
 
-        <div className="px-6 py-5 border-t border-teal-900">
-          <ValihaStrings className="h-10 mb-4" count={18} tone="teal" />
-          <div className="flex items-center gap-2 text-xs text-stone-400">
-            <ShieldCheck size={14} className="text-emerald-500" />
-            {role === "prof" ? "Compte professeur vérifié" : "Accès administrateur"}
+        <div className="px-6 py-5 border-t border-teal-900 space-y-4">
+          <ValihaStrings className="h-10" count={18} tone="teal" />
+
+          {/* Utilisateur connecté */}
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 shrink-0 rounded-full bg-amber-200 flex items-center justify-center font-display text-teal-950 text-sm">
+              {initials}
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm text-stone-100 truncate">
+                {user?.firstname} {user?.name}
+              </p>
+              <div className="flex items-center gap-1.5 text-xs text-stone-400">
+                <ShieldCheck size={12} className="text-emerald-500 shrink-0" />
+                <span className="truncate">
+                  {user?.email || (role === "prof" ? "Compte professeur vérifié" : "Accès administrateur")}
+                </span>
+              </div>
+            </div>
           </div>
+
+          {/* Déconnexion */}
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm text-stone-300 hover:bg-teal-900/60 hover:text-amber-400 transition-colors"
+          >
+            <LogOut size={17} />
+            Déconnexion
+          </button>
         </div>
       </aside>
 
@@ -62,7 +99,7 @@ export default function LayoutProf({ role }) {
           </button>
           <h1 className="font-display text-xl text-teal-950">{current?.label || "Kalon'ny"}</h1>
           <div className="ml-auto w-9 h-9 rounded-full bg-amber-200 flex items-center justify-center font-display text-teal-950 text-sm">
-            {role === "prof" ? "RA" : "AD"}
+            {initials}
           </div>
         </header>
         <main className="flex-1 p-4 md:p-8">

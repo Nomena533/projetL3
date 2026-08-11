@@ -1,13 +1,26 @@
 import React, { useState } from "react";
-import { NavLink, useLocation, Outlet } from "react-router-dom";
-import { Music, Menu, X, Search } from "../lib/icons";
-import ValihaStrings from "./ValihaStrings";
+import { NavLink, useLocation, useNavigate, Outlet } from "react-router-dom";
+import { Music, Menu, X, Search, LogOut } from "../lib/icons";
+import ValihaStrings from "../components/ValihaStrings";
 import { NAV } from "../lib/mockStudentData";
+import { useAuth } from "../app/hooks/useAuth";
 
 export default function LayoutStudent() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const current = NAV.find((n) => (n.end ? location.pathname === n.path : location.pathname.startsWith(n.path)));
+
+  // Récupération de l'user + fonction de déconnexion depuis le context global
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/connexion");
+  };
+
+
+  const initials = user ? `${user.firstname?.[0] || ""}${user.name?.[0] || ""}`.toUpperCase() : "?";
 
   return (
     <div className="min-h-screen bg-stone-100 font-body flex">
@@ -45,9 +58,30 @@ export default function LayoutStudent() {
           ))}
         </nav>
 
-        <div className="px-6 py-5 border-t border-teal-900">
-          <ValihaStrings className="h-10 mb-4" count={18} tone="teal" />
-          <div className="flex items-center gap-2 text-xs text-stone-400">Compte élève vérifié</div>
+        <div className="px-6 py-5 border-t border-teal-900 space-y-4">
+          <ValihaStrings className="h-10" count={18} tone="teal" />
+
+          {/* Utilisateur connecté */}
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 shrink-0 rounded-full bg-amber-200 flex items-center justify-center font-display text-teal-950 text-sm">
+              {initials}
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm text-stone-100 truncate">
+                {user?.firstname} {user?.name}
+              </p>
+              <p className="text-xs text-stone-400 truncate">{user?.email || "Compte élève vérifié"}</p>
+            </div>
+          </div>
+
+          {/* Déconnexion */}
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm text-stone-300 hover:bg-teal-900/60 hover:text-amber-400 transition-colors"
+          >
+            <LogOut size={17} />
+            Déconnexion
+          </button>
         </div>
       </aside>
 
@@ -64,7 +98,16 @@ export default function LayoutStudent() {
             <div className="hidden sm:flex items-center gap-2 bg-stone-100 rounded-sm px-3 py-1.5 text-sm text-stone-500">
               <Search size={14} /> Rechercher…
             </div>
-            <div className="w-9 h-9 rounded-full bg-amber-200 flex items-center justify-center font-display text-teal-950 text-sm">FR</div>
+            <div className="w-9 h-9 rounded-full bg-amber-200 flex items-center justify-center font-display text-teal-950 text-sm">
+              {initials}
+            </div>
+            <button
+              onClick={handleLogout}
+              title="Déconnexion"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-stone-500 hover:bg-stone-100 hover:text-teal-950 transition-colors"
+            >
+              <LogOut size={18} />
+            </button>
           </div>
         </header>
         <main className="flex-1 p-4 md:p-8">

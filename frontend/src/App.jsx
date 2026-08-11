@@ -1,5 +1,12 @@
 import React from "react";
-import { Routes, Route, Navigate, BrowserRouter, Outlet, useLocation } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  BrowserRouter,
+  Outlet,
+  useLocation,
+} from "react-router-dom";
 import { useEffect } from "react";
 
 import Home from "./pages/home/Home";
@@ -12,7 +19,6 @@ import Pricing from "./pages/home/Pricing";
 import FAQ from "./pages/home/FAQ";
 import NotFound from "./pages/home/NotFound";
 
-import AuthPage from "./pages/auth/AuthPage";
 import Dashboard from "./pages/eleve/Dashboard";
 import Catalogue from "./pages/eleve/Catalogue";
 import CourseDetail from "./pages/eleve/CourseDetail";
@@ -21,6 +27,7 @@ import Progression from "./pages/eleve/Progression";
 import Favoris from "./pages/eleve/Favoris";
 import Messages from "./pages/eleve/Messages";
 import Profil from "./pages/eleve/Profil";
+import Parametres from "./pages/eleve/Parametres";
 
 import ProfDashboard from "./pages/professeur/Dashboard";
 import ProfMesCours from "./pages/professeur/MesCours";
@@ -28,6 +35,8 @@ import ProfEditeur from "./pages/professeur/Editeur";
 import ProfCorrections from "./pages/professeur/Corrections";
 import ProfEleves from "./pages/professeur/Eleves";
 import ProfMessages from "./pages/professeur/Messages";
+// import ProfParametres from "./pages/professeur/Parametres";
+import ProfParametres from "./pages/professeur/Parametres";
 
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminUtilisateurs from "./pages/admin/Utilisateurs";
@@ -37,14 +46,17 @@ import AdminPaiements from "./pages/admin/Paiements";
 import AdminAvis from "./pages/admin/Avis";
 import AdminParametres from "./pages/admin/Parametres";
 
-import LayoutStudent from "./components/LayoutStudent";
-import LayoutProf from "./components/LayoutProf";
-import LayoutAdmin from "./components/LayoutAdmin";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import LayoutStudent from "./layouts/LayoutStudent";
+import LayoutProf from "./layouts/LayoutProf";
+import LayoutAdmin from "./layouts/LayoutAdmin";
+import Navbar from "./layouts/Navbar";
+import Footer from "./layouts/Footer";
 
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import RoleRoute from "./components/RoleRoute";
 
 /** Remonte en haut de page à chaque changement de route */
 function ScrollToTop() {
@@ -71,7 +83,7 @@ function HomeLayout() {
 
 export default function App() {
   return (
-  
+    // <BrowserRouter>
       <Routes>
         <Route path="/connexion" element={<Login />} />
         <Route path="/inscription" element={<Register />} />
@@ -93,7 +105,14 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Route>
 
-        <Route path="/eleve" element={<LayoutStudent />}>
+        <Route
+          path="/eleve"
+          element={
+            <RoleRoute allowedRole={"eleve"}>
+              <LayoutStudent />
+            </RoleRoute>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="catalogue" element={<Catalogue />} />
           <Route path="cours/:id" element={<CourseDetail />} />
@@ -102,9 +121,17 @@ export default function App() {
           <Route path="favoris" element={<Favoris />} />
           <Route path="messages" element={<Messages />} />
           <Route path="profil" element={<Profil />} />
+          <Route path="parametres" element={<Parametres />} />
         </Route>
 
-        <Route path="/professeur" element={<LayoutProf />}>
+        <Route
+          path="/professeur"
+          element={
+              <RoleRoute allowedRole={"professeur"}>
+                <LayoutProf />
+              </RoleRoute>
+          }
+        >
           <Route index element={<ProfDashboard />} />
           <Route path="mescours" element={<ProfMesCours />} />
           <Route path="cours/nouveau" element={<ProfEditeur />} />
@@ -112,9 +139,17 @@ export default function App() {
           <Route path="corrections" element={<ProfCorrections />} />
           <Route path="eleves" element={<ProfEleves />} />
           <Route path="messages" element={<ProfMessages />} />
+          <Route path="parametres" element={<ProfParametres />} />
         </Route>
 
-        <Route path="/administrateur" element={<LayoutAdmin />}>
+        <Route
+          path="/administrateur"
+          element={
+              <RoleRoute allowedRole={"admin"}>
+                <LayoutAdmin />
+              </RoleRoute>
+          }
+        >
           <Route index element={<AdminDashboard />} />
           <Route path="utilisateurs" element={<AdminUtilisateurs />} />
           <Route path="validation" element={<AdminValidation />} />
@@ -124,6 +159,6 @@ export default function App() {
           <Route path="parametres" element={<AdminParametres />} />
         </Route>
       </Routes>
-    
+    // {/* </BrowserRouter> */}
   );
 }

@@ -1,4 +1,4 @@
-import { LayoutDashboard, BookOpen, ClipboardCheck, Users, MessageCircle, Sliders, Wallet, Star } from "./icons";
+import { LayoutDashboard, BookOpen, ClipboardCheck, Users, MessageCircle, Sliders, Wallet, Star, Settings } from "./icons";
 
 // src/lib/mockProfData.js
 // Données factices pour l'espace Professeur — à remplacer par les appels à
@@ -108,4 +108,5 @@ export const NAV_PROF = [
   { path: "/professeur/corrections", label: "Corrections", icon: ClipboardCheck },
   { path: "/professeur/eleves", label: "Élèves & progression", icon: Users },
   { path: "/professeur/messages", label: "Messages", icon: MessageCircle },
+  { path: "/professeur/parametres", label: "Parametres", icon: Settings },
 ];

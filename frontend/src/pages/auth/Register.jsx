@@ -15,8 +15,8 @@ import { HiStar } from "react-icons/hi";
 import AnimatedSection from "../../components/AnimatedSection";
 import ValihaMotif from "../../components/ValihaMotif";
 import FormField from "../../components/FormField";
-import { register } from "../../api/authApi";
-import { getRoles } from "../../api/roleApi";
+import { register } from "../../app/api/authApi";
+import { getRoles } from "../../app/api/roleApi";
 
 
 const ROLES_ICONS = {

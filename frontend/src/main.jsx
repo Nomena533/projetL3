@@ -17,12 +17,16 @@ import "@fontsource/ibm-plex-mono/500.css";
 
 import "./index.css";
 import App from "./App";
+import AuthProvider from "./app/provider/AuthProvider";
 // import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+    {/* AuthProvider englobe toute l'application, tous les composants enfants peuvent accéder à user, logout, setUser */}
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

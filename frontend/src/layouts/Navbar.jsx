@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
-import Logo from "./Logo";
+import Logo from "../components/Logo";
 
 const LINKS = [
   { to: "/", label: "Accueil" },

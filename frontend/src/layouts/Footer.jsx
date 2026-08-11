@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from "react-icons/fa";
 import { HiOutlineMail, HiOutlinePhone, HiOutlineLocationMarker } from "react-icons/hi";
-import Logo from "./Logo";
-import ValihaMotif from "./ValihaMotif";
+import Logo from "../components/Logo";
+import ValihaMotif from "../components/ValihaMotif";
 
 const COLUMNS = [
   {
