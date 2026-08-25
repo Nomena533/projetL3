@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId("prof_id")->constrained("users")->cascadeOnDelete();
             $table->foreignId("instrument_id")->constrained("instruments")->cascadeOnDelete();
-            $table->foreignId("level_id")->constrained("levels")->cascadeOnDelete();
             $table->string("titre");
             $table->longText("description");
             $table->decimal("prix");
