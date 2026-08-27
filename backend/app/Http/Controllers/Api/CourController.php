@@ -33,14 +33,24 @@ class CourController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            "prof_id" => 'required',
-            "instrument_id" => 'required',
+            "instrument_id" => 'required|exists:instruments,id',
             "titre" => 'required|string',
             "description" => 'required|string',
             "prix" => 'required',
-            // "image" => 'required',
+
+            // mimes : extension autorisé pour l'insertion d'image
+            "image" => 'nullable|image|mimes:jpg,jpeg,png,webp',
             "duree" => 'required'
         ]);
+
+        // Récupère l'id de l'user connecté
+        $validated['prof_id'] = $request->user()->id;
+
+        // Vérifie si une image a été envoyé
+        if ($request->hasFile('image')) {
+            // Store le fichier dans Storage/app/public/cours
+            $validated['image'] = $request->file('image')->store('cours', 'public');
+        }
 
         $cour = Cour::create($validated);
 

@@ -33,12 +33,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     
+    Route::post('/storeCour', [CourController::class, 'store']);
 });
 
 Route::get('/getRole', [RoleController::class, 'index']);
 
 Route::get('/getCour', [CourController::class, 'index']);
-Route::post('/storeCour', [CourController::class, 'store']);
 
 Route::get('/getInstrument', [InstrumentController::class, 'index']);
 Route::post('/storeInstrument', [InstrumentController::class, 'store']);

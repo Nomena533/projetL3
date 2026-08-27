@@ -1,16 +1,79 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HiPlus } from "react-icons/hi";
-import { HiOutlinePencilSquare, HiOutlineTrash } from "react-icons/hi2";
+import {
+  HiOutlineEye,
+  HiOutlinePencilSquare,
+  HiOutlineTrash,
+  HiOutlineCheckCircle,
+  HiOutlineExclamationTriangle,
+  HiOutlineXMark,
+  HiOutlinePhoto,
+} from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import Modal from "../../components/Modal";
 import Pill from "../../components/Pill";
 import { Th, Td } from "../../components/Table";
 import { MES_COURS, formatAriary } from "../../lib/mockProfData";
 
+// Bandeau d'alerte succès/erreur affiché après une action (ex. création d'un
+// cours). Se ferme automatiquement après quelques secondes, ou manuellement.
+function Alert({ type = "success", message, onClose }) {
+  const isSuccess = type === "success";
+  return (
+    <div
+      className={`flex items-start gap-3 rounded-2xl border px-5 py-4 font-body text-sm ${
+        isSuccess
+          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+          : "border-brick/30 bg-brick/10 text-brick"
+      }`}
+    >
+      {isSuccess ? (
+        <HiOutlineCheckCircle size={18} className="mt-0.5 shrink-0" />
+      ) : (
+        <HiOutlineExclamationTriangle size={18} className="mt-0.5 shrink-0" />
+      )}
+      <p className="flex-1">{message}</p>
+      <button
+        onClick={onClose}
+        aria-label="Fermer"
+        className="shrink-0 opacity-70 transition-opacity hover:opacity-100"
+      >
+        <HiOutlineXMark size={16} />
+      </button>
+    </div>
+  );
+}
+
 export default function ProfMesCours() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [cours, setCours] = useState(MES_COURS);
   const [toDelete, setToDelete] = useState(null);
+  const [alert, setAlert] = useState(
+    location.state?.success
+      ? { type: "success", message: location.state.success }
+      : location.state?.error
+        ? { type: "error", message: location.state.error }
+        : null
+  );
+
+  // Nettoie le state de navigation pour ne pas réafficher l'alerte si
+  // l'utilisateur revient sur cette page (F5, retour navigateur…).
+  useEffect(() => {
+    if (location.state) {
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-fermeture de l'alerte après quelques secondes.
+  useEffect(() => {
+    if (!alert) return;
+    const timer = setTimeout(() => setAlert(null), 5000);
+    return () => clearTimeout(timer);
+  }, [alert]);
 
   return (
     <div className="space-y-6">
@@ -27,13 +90,17 @@ export default function ProfMesCours() {
         </Link>
       </AnimatedSection>
 
+      {alert && <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />}
+
       <AnimatedSection delay={80} className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/70">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="border-b border-ivory-dark">
               <tr>
                 <Th>Cours</Th>
+                <Th>Instrument</Th>
                 <Th>Niveau</Th>
+                <Th>Durée</Th>
                 <Th>Élèves</Th>
                 <Th>Statut</Th>
                 <Th>Prix</Th>
@@ -43,15 +110,37 @@ export default function ProfMesCours() {
             <tbody className="divide-y divide-ivory-dark">
               {cours.map((c) => (
                 <tr key={c.id} className="transition-colors duration-200 hover:bg-ivory-dark/30">
-                  <Td className="font-semibold text-ink">{c.titre}</Td>
-                  <Td>{c.niveau}</Td>
-                  <Td>{c.eleves}</Td>
+                  <Td>
+                    <Link to={`/professeur/cours/${c.id}/details`} className="flex items-center gap-3 group">
+                      <span className="flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-ivory-dark bg-ivory-dark/40">
+                        {c.image ? (
+                          <img src={c.image} alt={c.titre} className="h-full w-full object-cover" />
+                        ) : (
+                          <HiOutlinePhoto size={16} className="text-ink-soft" />
+                        )}
+                      </span>
+                      <span className="font-semibold text-ink transition-colors group-hover:text-coral-dark">
+                        {c.titre}
+                      </span>
+                    </Link>
+                  </Td>
+                  <Td>{c.instrument || "—"}</Td>
+                  <Td>{c.niveau || "—"}</Td>
+                  <Td>{c.duree || "—"}</Td>
+                  <Td>{c.eleves ?? 0}</Td>
                   <Td>
                     <Pill>{c.statut}</Pill>
                   </Td>
                   <Td className="font-mono">{formatAriary(c.prix)}</Td>
                   <Td>
                     <div className="flex items-center gap-3">
+                      <Link
+                        to={`/professeur/cours/${c.id}/details`}
+                        className="text-ink-soft transition-colors hover:text-coral-dark"
+                        aria-label="Voir le détail"
+                      >
+                        <HiOutlineEye size={17} />
+                      </Link>
                       <Link to={`/professeur/cours/${c.id}`} className="text-ink-soft transition-colors hover:text-coral-dark" aria-label="Modifier">
                         <HiOutlinePencilSquare size={17} />
                       </Link>

@@ -19,4 +19,8 @@ class Cour extends Model
     public function instrument() {
         return $this->belongsTo(Instrument::class);
     }
+
+    public function prof() {
+        return $this->belongsTo(User::class, 'prof_id');
+    }
 }

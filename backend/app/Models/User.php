@@ -93,4 +93,9 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    public function cour()
+    {
+        return $this->hasMany(Cour::class, 'prof_id');
+    }
+
 }

@@ -57,6 +57,8 @@ import Register from "./pages/auth/Register";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/RoleRoute";
+import ProfCoursDetail from "./pages/professeur/CoursDetail";
+import ProfLeconEditeur from "./pages/professeur/LeconEditeur";
 
 /** Remonte en haut de page à chaque changement de route */
 function ScrollToTop() {
@@ -140,6 +142,8 @@ export default function App() {
           <Route path="eleves" element={<ProfEleves />} />
           <Route path="messages" element={<ProfMessages />} />
           <Route path="parametres" element={<ProfParametres />} />
+          <Route path="cours/:id/details" element={<ProfCoursDetail />} />
+          <Route path="cours/:id/lecons/nouveau" element={<ProfLeconEditeur />} />
         </Route>
 
         <Route
