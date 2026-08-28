@@ -63,9 +63,11 @@ class CourController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Cour $cour)
+    public function show($id)
     {
-        //
+        $cour = Cour::with("instrument")->find($id);
+
+        return response()->json($cour);
     }
 
     /**
