@@ -10,11 +10,14 @@ import {
 import AnimatedSection from "../../components/AnimatedSection";
 import FormField from "../../components/FormField";
 import Modal from "../../components/Modal";
-import { storeCour } from "../../app/api/courApi";
+import { getCourById, storeCour } from "../../app/api/courApi";
 import { getInstrument } from "../../app/api/instrumentApi";
+import useGetCour from "../../app/hooks/useGetCour";
 
 // Champ select stylé
 function SelectField({ label, name, value, onChange, options }) {
+  const { id } = useParams();
+
   return (
     <label className="block">
       <span className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">
@@ -126,6 +129,14 @@ export default function ProfEditeur() {
   const navigate = useNavigate();
   const [instrumentList, setInstrumentList] = useState([]);
 
+  const { cour, fetchCourDetail} = useGetCour();
+
+  useEffect(() => {
+    fetchCourDetail(id);
+  }, [id]);
+
+  console.log("cour détail : ", cour);
+
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
 
@@ -142,18 +153,18 @@ export default function ProfEditeur() {
   // Récupération des instruments
   useEffect(() => {
     const fetchInstruments = async () => {
-        try {
-            const response = await getInstrument();
+      try {
+        const response = await getInstrument();
 
-            setInstrumentList(response.data);
-            console.log(instrumentList);
-        } catch (error) {
-            console.error("Erreur lors de la récupération des instruments", error);
-        }
+        setInstrumentList(response.data);
+        console.log(instrumentList);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des instruments", error);
+      }
     };
 
     fetchInstruments();
-}, []);
+  }, []);
 
   // Modification des champs texte/select
   const handleChange = (e) => {
@@ -197,9 +208,9 @@ export default function ProfEditeur() {
       // Après la création du cours,
       // retour vers la liste des cours
       navigate("/professeur/mescours", {
-        state : {
-          success:"Le cour a été crée avec succès !"
-        }
+        state: {
+          success: "Le cour a été crée avec succès !",
+        },
       });
     } catch (error) {
       console.error("Erreur lors de l'insertion", error.response?.data);
@@ -207,18 +218,18 @@ export default function ProfEditeur() {
   };
 
   const selectedInstrument = instrumentList.find(
-    (i) => String(i.id) === String(form.instrument_id)
+    (i) => String(i.id) === String(form.instrument_id),
   );
 
   return (
     <div className="w-full space-y-6">
-
       {/* Retour vers la liste des cours */}
       <button
         onClick={() => navigate("/professeur/mescours")}
         className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
       >
         <HiOutlineChevronLeft size={13} />
+        {/* Retour à mes cours { id ?  cour.titre : ""} */}
         Retour à mes cours
       </button>
 
@@ -242,7 +253,6 @@ export default function ProfEditeur() {
             className="w-full rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7"
           >
             <div className="grid w-full gap-6 lg:grid-cols-[320px_1fr]">
-
               {/* Image */}
               <ImageField
                 label="Image du cours"
@@ -251,8 +261,8 @@ export default function ProfEditeur() {
                 onPreviewChange={setImagePreview}
               />
 
+              {/* Ajout */}
               <div className="space-y-4">
-
                 {/* Titre */}
                 <FormField
                   label="Titre du cours"
@@ -260,7 +270,7 @@ export default function ProfEditeur() {
                   name="titre"
                   value={form.titre}
                   onChange={handleChange}
-                />
+                />               
 
                 {/* Description */}
                 <TextAreaField
@@ -272,7 +282,6 @@ export default function ProfEditeur() {
 
                 {/* Autres informations */}
                 <div className="grid gap-4 sm:grid-cols-3">
-
                   {/* Instrument */}
                   <SelectField
                     label="Instrument"
@@ -298,9 +307,57 @@ export default function ProfEditeur() {
                     value={form.duree}
                     onChange={handleChange}
                   />
-
                 </div>
               </div>
+
+              {/* Modification */}
+              {/* <div className="space-y-4">
+                Titre
+                <FormField
+                  label="Titre du cours"
+                  placeholder="Ex. Valiha — Les fondamentaux"
+                  name="titre"
+                  value={id ? cour.titre : form.titre}
+                  onChange={handleChange}
+                />               
+
+                Description
+                <TextAreaField
+                  label="Description"
+                  name="description"
+                  value={id ? cour.description : form.description}
+                  onChange={handleChange}
+                />
+
+                Autres informations 
+                <div className="grid gap-4 sm:grid-cols-3">
+                  Instrument
+                  <SelectField
+                    label="Instrument"
+                    options={instrumentList}
+                    name="instrument_id"
+                    value={id ? cour.instrument_id : form.instrument_id}
+                    onChange={handleChange}
+                  />
+
+                  Prix
+                  <FormField
+                    label="Prix (Ar)"
+                    name="prix"
+                    value={id ? cour.prix : form.prix}
+                    onChange={handleChange}
+                  />
+
+                  Durée
+                  <FormField
+                    label="Durée du cours"
+                    placeholder="Ex. 4h30"
+                    name="duree"
+                    value={id ? cour.duree : form.duree}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>*/}
             </div>
           </AnimatedSection>
 
@@ -309,10 +366,14 @@ export default function ProfEditeur() {
             delay={90}
             className="flex items-start gap-3 rounded-2xl border border-dashed border-coral/40 bg-coral/5 p-5"
           >
-            <HiOutlineInformationCircle size={20} className="mt-0.5 shrink-0 text-coral-dark" />
+            <HiOutlineInformationCircle
+              size={20}
+              className="mt-0.5 shrink-0 text-coral-dark"
+            />
             <p className="font-body text-sm leading-relaxed text-ink-soft">
-              Ce formulaire crée uniquement les informations générales du cours. Une fois enregistré, tu pourras
-              ajouter ses leçons (vidéo, PDF ou audio) depuis sa page de détail.
+              Ce formulaire crée uniquement les informations générales du cours.
+              Une fois enregistré, tu pourras ajouter ses leçons (vidéo, PDF ou
+              audio) depuis sa page de détail.
             </p>
           </AnimatedSection>
 
@@ -340,7 +401,11 @@ export default function ProfEditeur() {
             <div className="overflow-hidden rounded-xl border border-ivory-dark">
               <div className="flex aspect-video w-full items-center justify-center bg-ivory-dark/40">
                 {imagePreview ? (
-                  <img src={imagePreview} alt="Aperçu du cours" className="h-full w-full object-cover" />
+                  <img
+                    src={imagePreview}
+                    alt="Aperçu du cours"
+                    className="h-full w-full object-cover"
+                  />
                 ) : (
                   <HiOutlinePhoto size={24} className="text-ink-soft" />
                 )}
@@ -354,7 +419,9 @@ export default function ProfEditeur() {
                   {form.duree && ` · ${form.duree}`}
                 </p>
                 <p className="font-mono text-sm text-coral-dark">
-                  {form.prix ? `${Number(form.prix).toLocaleString("fr-FR")} Ar` : "Prix"}
+                  {form.prix
+                    ? `${Number(form.prix).toLocaleString("fr-FR")} Ar`
+                    : "Prix"}
                 </p>
               </div>
             </div>
@@ -364,7 +431,9 @@ export default function ProfEditeur() {
             delay={110}
             className="space-y-3 rounded-2xl border border-ivory-dark bg-white/70 p-6"
           >
-            <span className="font-mono text-xs uppercase tracking-wide text-ink-soft">Conseils</span>
+            <span className="font-mono text-xs uppercase tracking-wide text-ink-soft">
+              Conseils
+            </span>
             <ul className="space-y-2.5 font-body text-xs leading-relaxed text-ink-soft">
               <li className="flex gap-2">
                 <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-coral" />
@@ -372,11 +441,13 @@ export default function ProfEditeur() {
               </li>
               <li className="flex gap-2">
                 <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-coral" />
-                Une image lumineuse et nette donne davantage envie de s'inscrire.
+                Une image lumineuse et nette donne davantage envie de
+                s'inscrire.
               </li>
               <li className="flex gap-2">
                 <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-coral" />
-                Indique la durée totale réelle du cours, pas seulement d'une leçon.
+                Indique la durée totale réelle du cours, pas seulement d'une
+                leçon.
               </li>
               <li className="flex gap-2">
                 <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-coral" />
@@ -394,12 +465,11 @@ export default function ProfEditeur() {
         title="Enregistrer ce cours ?"
       >
         <p className="font-body text-sm leading-relaxed text-ink-soft">
-          Le cours sera créé avec les informations saisies. Tu pourras ensuite lui ajouter des leçons et le modifier
-          à tout moment.
+          Le cours sera créé avec les informations saisies. Tu pourras ensuite
+          lui ajouter des leçons et le modifier à tout moment.
         </p>
 
         <div className="mt-6 flex gap-3">
-
           <button
             onClick={() => setConfirmOpen(false)}
             className="flex-1 rounded-full border border-ivory-dark py-2.5 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:bg-ivory-dark/40"
@@ -414,11 +484,8 @@ export default function ProfEditeur() {
             <HiOutlineCheckCircle size={16} />
             Enregistrer
           </button>
-
         </div>
       </Modal>
-
     </div>
   );
 }
-

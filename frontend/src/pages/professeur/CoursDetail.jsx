@@ -18,6 +18,7 @@ import Modal from "../../components/Modal";
 // en bas de fichier si ces fonctions n'existent pas encore de ton côté.
 import { getCourById } from "../../app/api/courApi";
 import { deleteLecon } from "../../app/api/leconApi";
+import { BASE_URL } from "../../app/api/api";
 
 const RESOURCE_ICON = {
   video: HiOutlineVideoCamera,
@@ -170,7 +171,7 @@ export default function ProfCoursDetail() {
           <div className="flex aspect-video w-full items-center justify-center bg-ivory-dark/40 lg:aspect-auto lg:h-full">
             {cours.image ? (
               <img
-                src={cours.image}
+                src={`${BASE_URL}/storage/${cours.image}`}
                 alt={cours.titre}
                 className="h-full w-full object-cover"
               />

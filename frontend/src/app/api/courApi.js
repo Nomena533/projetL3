@@ -4,12 +4,12 @@ export const storeCour = (formData) => {
     return API.post("/storeCour", formData);
 } 
 
-export const updateCour = (formData) => {
-    return API.post("/updateCour", formData);
+export const updateCour = (id ,formData) => {
+    return API.put(`/updateCour/${id}`, formData);
 } 
 
-export const deleteCour = (formData) => {
-    return API.post("/deleteCour", formData);
+export const deleteCour = (id) => {
+    return API.delete(`/deleteCour/${id}`);
 } 
 
 export const getCour = () => {

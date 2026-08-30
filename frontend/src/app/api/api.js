@@ -1,8 +1,10 @@
 import axios from "axios";
 
+export const BASE_URL = "http://localhost:8000";
+
 const API = axios.create({
     // URL de base de ton API laravel
-    baseURL : "http://localhost:8000/api",
+    baseURL : `${BASE_URL}/api`,
 });
 
 // Intercepteur exécuté avant chaque requête
