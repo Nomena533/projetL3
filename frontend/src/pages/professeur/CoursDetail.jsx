@@ -43,25 +43,56 @@ export default function ProfCoursDetail() {
   const [alert, setAlert] = useState(location.state?.success || null);
 
   useEffect(() => {
-    let active = true;
-    setLoading(true);
-    getCourById(id)
-      .then((res) => {
-        if (active) setCours(res.data);
+    // let active = true;
+    // setLoading(true);
+    // getCourById(id)
+    //   .then((res) => {
+    //     if (active) setCours(res.data);
+    //   })
+    //   .catch(() => {
+    //     if (active) setError("Impossible de charger ce cours.");
+    //   })
+    //   .finally(() => {
+    //     if (active) setLoading(false);
+    //   });
+    // return () => {
+    //   active = false;
+    // };
+
+    // A expliquer
+    const fetchCourDetail = async () => {
+      let active = true;
+      setLoading(true);
+      await getCourById(id)
+      .then((response) => {
+        if (active) setCours(response.data);
+        console.log("Response.data :",response.data);
+
+        console.log("Détails du cour sélectionnés avec succès");
       })
-      .catch(() => {
+      .catch ((error) => {
         if (active) setError("Impossible de charger ce cours.");
+
+        console.error(
+          "Erreur lors de la récupération des détails cour :",
+          error.response?.data,
+        );
       })
       .finally(() => {
         if (active) setLoading(false);
       });
-    return () => {
-      active = false;
+
+      return () => {
+        active = false;
+      }
     };
+
+    fetchCourDetail();
   }, [id]);
 
   useEffect(() => {
-    if (location.state) navigate(location.pathname, { replace: true, state: {} });
+    if (location.state)
+      navigate(location.pathname, { replace: true, state: {} });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -74,23 +105,36 @@ export default function ProfCoursDetail() {
   async function handleDeleteLecon() {
     try {
       await deleteLecon(id, toDelete.id);
-      setCours((c) => ({ ...c, lecons: c.lecons.filter((l) => l.id !== toDelete.id) }));
+      setCours((c) => ({
+        ...c,
+        lecons: c.lecons.filter((l) => l.id !== toDelete.id),
+      }));
     } catch (err) {
-      console.error("Erreur lors de la suppression de la leçon", err.response?.data);
+      console.error(
+        "Erreur lors de la suppression de la leçon",
+        err.response?.data,
+      );
     } finally {
       setToDelete(null);
     }
   }
 
   if (loading) {
-    return <p className="font-body text-sm text-ink-soft">Chargement du cours…</p>;
+    return (
+      <p className="font-body text-sm text-ink-soft">Chargement du cours…</p>
+    );
   }
 
   if (error || !cours) {
     return (
       <div className="space-y-4">
-        <p className="font-body text-sm text-brick">{error || "Cours introuvable."}</p>
-        <Link to="/professeur/mescours" className="font-body text-sm font-semibold text-coral-dark hover:text-brick">
+        <p className="font-body text-sm text-brick">
+          {error || "Cours introuvable."}
+        </p>
+        <Link
+          to="/professeur/mescours"
+          className="font-body text-sm font-semibold text-coral-dark hover:text-brick"
+        >
           ← Retour à mes cours
         </Link>
       </div>
@@ -110,7 +154,11 @@ export default function ProfCoursDetail() {
         <div className="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 font-body text-sm text-emerald-700">
           <HiOutlineCheckCircle size={18} className="mt-0.5 shrink-0" />
           <p className="flex-1">{alert}</p>
-          <button onClick={() => setAlert(null)} aria-label="Fermer" className="shrink-0 opacity-70 hover:opacity-100">
+          <button
+            onClick={() => setAlert(null)}
+            aria-label="Fermer"
+            className="shrink-0 opacity-70 hover:opacity-100"
+          >
             <HiOutlineXMark size={16} />
           </button>
         </div>
@@ -121,7 +169,11 @@ export default function ProfCoursDetail() {
         <div className="grid gap-0 lg:grid-cols-[360px_1fr]">
           <div className="flex aspect-video w-full items-center justify-center bg-ivory-dark/40 lg:aspect-auto lg:h-full">
             {cours.image ? (
-              <img src={cours.image} alt={cours.titre} className="h-full w-full object-cover" />
+              <img
+                src={cours.image}
+                alt={cours.titre}
+                className="h-full w-full object-cover"
+              />
             ) : (
               <HiOutlinePhoto size={28} className="text-ink-soft" />
             )}
@@ -130,9 +182,11 @@ export default function ProfCoursDetail() {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-                  {cours.instrument?.name || cours.instrument || "Instrument"}
+                  {cours.instrument?.name}
                 </span>
-                <h2 className="mt-1 font-display text-2xl font-semibold text-ink sm:text-3xl">{cours.titre}</h2>
+                <h2 className="mt-1 font-display text-2xl font-semibold text-ink sm:text-3xl">
+                  {cours.titre}
+                </h2>
               </div>
               <Link
                 to={`/professeur/cours/${id}`}
@@ -143,7 +197,9 @@ export default function ProfCoursDetail() {
             </div>
 
             {cours.description && (
-              <p className="font-body text-sm leading-relaxed text-ink-soft">{cours.description}</p>
+              <p className="font-body text-sm leading-relaxed text-ink-soft">
+                {cours.description}
+              </p>
             )}
 
             <div className="flex flex-wrap gap-x-6 gap-y-2 font-body text-sm text-ink-soft">
@@ -153,7 +209,9 @@ export default function ProfCoursDetail() {
               </span>
               <span>
                 <strong className="text-ink">Prix : </strong>
-                {cours.prix ? `${Number(cours.prix).toLocaleString("fr-FR")} Ar` : "—"}
+                {cours.prix
+                  ? `${Number(cours.prix).toLocaleString("fr-FR")} Ar`
+                  : "—"}
               </span>
               <span>
                 <strong className="text-ink">Leçons : </strong>
@@ -165,9 +223,14 @@ export default function ProfCoursDetail() {
       </AnimatedSection>
 
       {/* Leçons */}
-      <AnimatedSection delay={80} className="rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7">
+      <AnimatedSection
+        delay={80}
+        className="rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7"
+      >
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <h3 className="font-display text-lg font-semibold text-ink">Leçons</h3>
+          <h3 className="font-display text-lg font-semibold text-ink">
+            Leçons
+          </h3>
           <Link
             to={`/professeur/cours/${id}/lecons/nouveau`}
             className="flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wide text-coral-dark transition-colors hover:text-brick"
@@ -179,7 +242,8 @@ export default function ProfCoursDetail() {
         {cours.lecons?.length ? (
           <div className="space-y-3">
             {cours.lecons.map((l, index) => {
-              const Icon = RESOURCE_ICON[l.type_ressource] || HiOutlineDocumentText;
+              const Icon =
+                RESOURCE_ICON[l.type_ressource] || HiOutlineDocumentText;
               return (
                 <div
                   key={l.id}
@@ -190,17 +254,26 @@ export default function ProfCoursDetail() {
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate font-body text-sm font-semibold text-ink">{l.titre}</p>
+                      <p className="truncate font-body text-sm font-semibold text-ink">
+                        {l.titre}
+                      </p>
                       {l.description && (
-                        <p className="truncate font-body text-xs text-ink-soft">{l.description}</p>
+                        <p className="truncate font-body text-xs text-ink-soft">
+                          {l.description}
+                        </p>
                       )}
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
                     <span className="flex items-center gap-1.5 rounded-full border border-ivory-dark px-3 py-1 font-body text-xs text-ink-soft">
-                      <Icon size={13} /> {RESOURCE_LABEL[l.type_ressource] || "Ressource"}
+                      <Icon size={13} />{" "}
+                      {RESOURCE_LABEL[l.type_ressource] || "Ressource"}
                     </span>
-                    {l.duree && <span className="font-mono text-xs text-ink-soft">{l.duree}</span>}
+                    {l.duree && (
+                      <span className="font-mono text-xs text-ink-soft">
+                        {l.duree}
+                      </span>
+                    )}
                     <button
                       onClick={() => setToDelete(l)}
                       className="text-ink-soft transition-colors hover:text-brick"
@@ -226,10 +299,14 @@ export default function ProfCoursDetail() {
         )}
       </AnimatedSection>
 
-      <Modal open={!!toDelete} onClose={() => setToDelete(null)} title="Supprimer cette leçon ?">
+      <Modal
+        open={!!toDelete}
+        onClose={() => setToDelete(null)}
+        title="Supprimer cette leçon ?"
+      >
         <p className="font-body text-sm leading-relaxed text-ink-soft">
-          <span className="font-semibold text-ink">« {toDelete?.titre} »</span> sera définitivement supprimée. Cette
-          action est irréversible.
+          <span className="font-semibold text-ink">« {toDelete?.titre} »</span>{" "}
+          sera définitivement supprimée. Cette action est irréversible.
         </p>
         <div className="mt-6 flex gap-3">
           <button

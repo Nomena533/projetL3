@@ -17,5 +17,5 @@ export const getCour = () => {
 } 
 
 export const getCourById = (id) => {
-    return API.get(`/getCour/${id}`);
+    return API.get(`/getCourDetail/${id}`);
 } 

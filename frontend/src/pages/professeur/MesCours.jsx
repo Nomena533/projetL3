@@ -15,6 +15,7 @@ import Modal from "../../components/Modal";
 import Pill from "../../components/Pill";
 import { Th, Td } from "../../components/Table";
 import { MES_COURS, formatAriary } from "../../lib/mockProfData";
+import useGetCour from "../../app/hooks/useGetCour";
 
 // Bandeau d'alerte succès/erreur affiché après une action (ex. création d'un
 // cours). Se ferme automatiquement après quelques secondes, ou manuellement.
@@ -49,7 +50,7 @@ export default function ProfMesCours() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [cours, setCours] = useState(MES_COURS);
+  // const [cours, setCours] = useState(MES_COURS);
   const [toDelete, setToDelete] = useState(null);
   const [alert, setAlert] = useState(
     location.state?.success
@@ -75,6 +76,10 @@ export default function ProfMesCours() {
     return () => clearTimeout(timer);
   }, [alert]);
 
+
+  const {cours, setCours} = useGetCour();
+  // console.log(cours);
+
   return (
     <div className="space-y-6">
       <AnimatedSection className="flex flex-wrap items-end justify-between gap-4">
@@ -99,7 +104,7 @@ export default function ProfMesCours() {
               <tr>
                 <Th>Cours</Th>
                 <Th>Instrument</Th>
-                <Th>Niveau</Th>
+                {/* <Th>Niveau</Th> */}
                 <Th>Durée</Th>
                 <Th>Élèves</Th>
                 <Th>Statut</Th>
@@ -124,8 +129,8 @@ export default function ProfMesCours() {
                       </span>
                     </Link>
                   </Td>
-                  <Td>{c.instrument || "—"}</Td>
-                  <Td>{c.niveau || "—"}</Td>
+                  <Td>{c.instrument.name || "—"}</Td>
+                  {/* <Td>{c.niveau || "—"}</Td> */}
                   <Td>{c.duree || "—"}</Td>
                   <Td>{c.eleves ?? 0}</Td>
                   <Td>
