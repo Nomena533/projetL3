@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CourResource;
 use App\Models\Cour;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CourController extends Controller
 {
@@ -81,16 +82,70 @@ class CourController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Cour $cour)
+    public function update(Request $request, $id)
     {
-        //
+        $cour = Cour::find($id);
+
+        if (!$cour) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cours introuvable'
+            ], 404);
+        }
+
+        $request->validate([
+            "instrument_id" => 'required|exists:instruments,id',
+            "titre" => 'required|string',
+            "description" => 'required|string',
+            "prix" => 'required',
+
+            // mimes : extension autorisé pour l'insertion d'image
+            "image" => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            "duree" => 'required'
+        ]);
+
+        $cour->instrument_id = $request->instrument_id;
+        $cour->titre = $request->titre;
+        $cour->description = $request->description;
+        $cour->prix = $request->prix;
+        $cour->duree = $request->duree;
+
+        // Vérifie si une image a été envoyé
+        if ($request->hasFile('image')) {
+            // supprime l'ancienne image 
+            if ($cour->image) {
+                Storage::disk("public")->delete($cour->image);
+            }
+
+            // Store le fichier dans Storage/app/public/cours
+            $path = $request->file('image')->store('cours', 'public');
+
+            $cour->image = $path;
+        }
+
+        $cour->save();
+
+        return response()->json([
+            'message' => 'Cour créé avec succès',
+            'cour' => new CourResource($cour)
+        ], 201);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Cour $cour)
+    public function destroy($id)
     {
-        //
+        $cour = Cour::find($id);
+
+        if ($cour->image) {
+            Storage::disk("public")->delete($cour->image);
+        }
+        $cour->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cours supprimé avec succès'
+        ]);
     }
 }

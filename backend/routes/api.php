@@ -40,6 +40,8 @@ Route::get('/getRole', [RoleController::class, 'index']);
 
 Route::get('/getCour', [CourController::class, 'index']);
 Route::get('/getCourDetail/{id}', [CourController::class, 'show']);
+Route::put('/updateCour/{id}', [CourController::class, 'update']);
+Route::delete('/deleteCour/{id}', [CourController::class, 'destroy']);
 
 Route::get('/getInstrument', [InstrumentController::class, 'index']);
 Route::post('/storeInstrument', [InstrumentController::class, 'store']);
