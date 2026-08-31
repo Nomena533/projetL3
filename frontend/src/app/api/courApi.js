@@ -5,7 +5,8 @@ export const storeCour = (formData) => {
 } 
 
 export const updateCour = (id ,formData) => {
-    return API.put(`/updateCour/${id}`, formData);
+    // Doit être post lorsqu'il ya envoie de fichier
+    return API.post(`/updateCour/${id}`, formData);
 } 
 
 export const deleteCour = (id) => {

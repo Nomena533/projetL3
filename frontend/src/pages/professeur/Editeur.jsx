@@ -10,9 +10,10 @@ import {
 import AnimatedSection from "../../components/AnimatedSection";
 import FormField from "../../components/FormField";
 import Modal from "../../components/Modal";
-import { getCourById, storeCour } from "../../app/api/courApi";
+import { getCourById, storeCour, updateCour } from "../../app/api/courApi";
 import { getInstrument } from "../../app/api/instrumentApi";
 import useGetCour from "../../app/hooks/useGetCour";
+import { BASE_URL } from "../../app/api/api";
 
 // Champ select stylé
 function SelectField({ label, name, value, onChange, options }) {
@@ -43,6 +44,11 @@ function SelectField({ label, name, value, onChange, options }) {
 // Champ d'import d'image avec aperçu
 function ImageField({ label, name, defaultValue, onChange, onPreviewChange }) {
   const [preview, setPreview] = useState(defaultValue || null);
+
+  useEffect(() => {
+    setPreview(defaultValue || null);
+  }, [defaultValue]);
+
   const inputRef = useRef(null);
 
   function handleFile(e) {
@@ -64,7 +70,7 @@ function ImageField({ label, name, defaultValue, onChange, onPreviewChange }) {
       </span>
 
       <div
-        onClick={() => inputRef.current?.click()}
+        // onClick={() => inputRef.current?.click()}
         className="group relative flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-ivory-dark bg-white/70 transition-colors duration-300 hover:border-coral/50 lg:h-[calc(100%-1.75rem)]"
       >
         {preview ? (
@@ -129,7 +135,7 @@ export default function ProfEditeur() {
   const navigate = useNavigate();
   const [instrumentList, setInstrumentList] = useState([]);
 
-  const { cour, fetchCourDetail} = useGetCour();
+  const { cour, fetchCours, fetchCourDetail } = useGetCour();
 
   useEffect(() => {
     fetchCourDetail(id);
@@ -140,6 +146,12 @@ export default function ProfEditeur() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
 
+  useEffect(() => {
+    if (cour?.image) {
+      setImagePreview(`${BASE_URL}/storage/${cour.image}`);
+    }
+  }, [cour]);
+
   // Données du formulaire du cours
   const [form, setForm] = useState({
     instrument_id: "",
@@ -149,6 +161,21 @@ export default function ProfEditeur() {
     image: null,
     duree: "",
   });
+
+  // insères les donnés récupérer par cour et les ajoutes dans le const form
+  // plus besoin de faire {id ? cour.nanana : form.nanana} dans le formulaire
+  useEffect(() => {
+    if (cour) {
+      setForm({
+        instrument_id: cour.instrument_id || "",
+        titre: cour.titre || "",
+        description: cour.description || "",
+        prix: cour.prix || "",
+        image: null,
+        duree: cour.duree || "",
+      });
+    }
+  }, [cour]);
 
   // Récupération des instruments
   useEffect(() => {
@@ -182,7 +209,7 @@ export default function ProfEditeur() {
     });
   };
 
-  // Envoi du cours à Laravel
+  // handleSubmit : gère à la fois la modification et la création du cour
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -198,28 +225,53 @@ export default function ProfEditeur() {
       formData.append("image", form.image);
     }
 
+    console.log("form : ", form);
+
     try {
-      console.log("Formulaire : ", form);
-      console.log("Instrument sélectionné : ", form.instrument_id);
-      const response = await storeCour(formData);
+      let response;
 
-      console.log("Insertion réussie", response.data);
+      if (id) {
+        // Modification
 
-      // Après la création du cours,
-      // retour vers la liste des cours
+        // convertit un method post en put
+        // nécessaire pour l'envoi de fichier avec multipart/formdata
+        formData.append("_method", "PUT"); // n'est pas nécessaire si il n'y a pas d'envoi de fichier car dans courApi.js c'est déjà put, on ne convertit donc pas un post en put
+
+        for (const [key, value] of formData.entries()) {
+          console.log(key, value);
+        }
+
+        response = await updateCour(id, formData);
+      } else {
+        // Ajout
+        response = await storeCour(formData);
+      }
+
+      await fetchCours();
+      console.log("Opération réussie", response.data);
+
+      // Après la création du cours, retour vers la liste des cours
       navigate("/professeur/mescours", {
         state: {
-          success: "Le cour a été crée avec succès !",
+          success: id
+            ? "Le cour a été modifié avec succès !"
+            : "Le cour a été crée avec succès !",
         },
       });
     } catch (error) {
-      console.error("Erreur lors de l'insertion", error.response?.data);
+      console.error("Erreur lors de l'opération", error.response?.data);
     }
   };
 
   const selectedInstrument = instrumentList.find(
     (i) => String(i.id) === String(form.instrument_id),
   );
+
+  if (id && !cour) {
+    return (
+      <p className="font-body text-sm text-ink-soft">Chargement du cours…</p>
+    );
+  }
 
   return (
     <div className="w-full space-y-6">
@@ -229,7 +281,6 @@ export default function ProfEditeur() {
         className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
       >
         <HiOutlineChevronLeft size={13} />
-        {/* Retour à mes cours { id ?  cour.titre : ""} */}
         Retour à mes cours
       </button>
 
@@ -257,11 +308,11 @@ export default function ProfEditeur() {
               <ImageField
                 label="Image du cours"
                 name="image"
+                defaultValue={imagePreview}
                 onChange={handleImageChange}
                 onPreviewChange={setImagePreview}
               />
 
-              {/* Ajout */}
               <div className="space-y-4">
                 {/* Titre */}
                 <FormField
@@ -270,8 +321,7 @@ export default function ProfEditeur() {
                   name="titre"
                   value={form.titre}
                   onChange={handleChange}
-                />               
-
+                />
                 {/* Description */}
                 <TextAreaField
                   label="Description"
@@ -279,7 +329,6 @@ export default function ProfEditeur() {
                   value={form.description}
                   onChange={handleChange}
                 />
-
                 {/* Autres informations */}
                 <div className="grid gap-4 sm:grid-cols-3">
                   {/* Instrument */}
@@ -290,7 +339,6 @@ export default function ProfEditeur() {
                     value={form.instrument_id}
                     onChange={handleChange}
                   />
-
                   {/* Prix */}
                   <FormField
                     label="Prix (Ar)"
@@ -298,7 +346,6 @@ export default function ProfEditeur() {
                     value={form.prix}
                     onChange={handleChange}
                   />
-
                   {/* Durée */}
                   <FormField
                     label="Durée du cours"
@@ -309,55 +356,6 @@ export default function ProfEditeur() {
                   />
                 </div>
               </div>
-
-              {/* Modification */}
-              {/* <div className="space-y-4">
-                Titre
-                <FormField
-                  label="Titre du cours"
-                  placeholder="Ex. Valiha — Les fondamentaux"
-                  name="titre"
-                  value={id ? cour.titre : form.titre}
-                  onChange={handleChange}
-                />               
-
-                Description
-                <TextAreaField
-                  label="Description"
-                  name="description"
-                  value={id ? cour.description : form.description}
-                  onChange={handleChange}
-                />
-
-                Autres informations 
-                <div className="grid gap-4 sm:grid-cols-3">
-                  Instrument
-                  <SelectField
-                    label="Instrument"
-                    options={instrumentList}
-                    name="instrument_id"
-                    value={id ? cour.instrument_id : form.instrument_id}
-                    onChange={handleChange}
-                  />
-
-                  Prix
-                  <FormField
-                    label="Prix (Ar)"
-                    name="prix"
-                    value={id ? cour.prix : form.prix}
-                    onChange={handleChange}
-                  />
-
-                  Durée
-                  <FormField
-                    label="Durée du cours"
-                    placeholder="Ex. 4h30"
-                    name="duree"
-                    value={id ? cour.duree : form.duree}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>*/}
             </div>
           </AnimatedSection>
 

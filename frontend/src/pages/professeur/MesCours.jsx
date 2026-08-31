@@ -61,16 +61,30 @@ export default function ProfMesCours() {
   const handleDelete = async (id) => {
     try {
       const response = await deleteCour(id);
-      // alert(response.data.message);
 
-      navigate("/professeur/mescours", {
-        state: {
-          success: "Le cour a été supprimé avec succès !",
-        },
+      // Met à jour immédiatement la liste React
+      await fetchCours();
+
+      // Ferme le modal après la suppression réussie
+      setToDelete(null);
+
+      // Affiche directement l'alerte
+      setAlert({
+        type: "success",
+        message: "Le cours a été supprimé avec succès !",
       });
-      fetchCours();
+
+      console.log(response.data);
     } catch (error) {
-      console.error("Erreur lors de la suppréssion du cour", error);
+      console.error(
+        "Erreur lors de la suppression du cours",
+        error.response?.data,
+      );
+
+      setAlert({
+        type: "error",
+        message: "Une erreur est survenue lors de la suppression du cours.",
+      });
     }
   };
 
@@ -243,14 +257,7 @@ export default function ProfMesCours() {
             Annuler
           </button>
           <button
-            onClick={() => {
-              handleDelete(toDelete?.id);
-              setToDelete(null);
-            }}
-            // onClick={() => {
-            //   setCours(cours.filter((x) => x.id !== toDelete.id));
-            //   setToDelete(null);
-            // }}
+            onClick={() => { handleDelete(toDelete?.id) }}
             className="flex-1 rounded-full bg-brick py-2.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-brick/25 transition-all duration-300 hover:bg-brick-light"
           >
             Supprimer
