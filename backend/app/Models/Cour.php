@@ -8,7 +8,7 @@ class Cour extends Model
     protected $fillable = [
         "prof_id",
         "instrument_id",
-        "level_id",
+        "niveau_id",
         "titre",
         "description",
         "prix",
@@ -22,5 +22,13 @@ class Cour extends Model
 
     public function prof() {
         return $this->belongsTo(User::class, 'prof_id');
+    }
+
+    public function level() {
+        return $this->belongsTo(Level::class, 'niveau_id');
+    }
+
+    public function lesson () {
+        return $this->hasMany(Lesson::class);
     }
 }

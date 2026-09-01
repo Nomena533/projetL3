@@ -49,38 +49,36 @@ export default function ProfParametres() {
   }
 
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="max-w-2xl space-y-8">
       <AnimatedSection>
         <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">Mon compte</span>
         <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">Paramètres</h2>
         <p className="mt-2 font-body text-sm text-ink-soft">Personnalise ton espace professeur sur Kalon'ny.</p>
       </AnimatedSection>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <AnimatedSection delay={60}>
-          <SettingsSection icon={HiOutlineMoon} title="Apparence" description="Choisis comment la plateforme s'affiche pour toi.">
-            <Toggle checked={darkMode} onChange={setDarkMode} label="Mode sombre" description="Bascule l'interface vers un thème sombre." />
-          </SettingsSection>
-        </AnimatedSection>
+      <AnimatedSection delay={60}>
+        <SettingsSection icon={HiOutlineMoon} title="Apparence" description="Choisis comment la plateforme s'affiche pour toi.">
+          <Toggle checked={darkMode} onChange={setDarkMode} label="Mode sombre" description="Bascule l'interface vers un thème sombre." />
+        </SettingsSection>
+      </AnimatedSection>
 
-        <AnimatedSection delay={100}>
-          <SettingsSection icon={HiOutlineLanguage} title="Langue" description="Langue utilisée dans ton espace professeur.">
-            <div className="flex gap-2 py-4">
-              {LANGUES.map((l) => (
-                <button
-                  key={l.id}
-                  onClick={() => setLangue(l.id)}
-                  className={`rounded-full px-4 py-2 font-body text-sm font-semibold transition-all duration-300 ${
-                    langue === l.id ? "bg-coral text-ivory shadow-md shadow-coral/25" : "border border-ivory-dark text-ink-soft hover:border-coral/40"
-                  }`}
-                >
-                  {l.label}
-                </button>
-              ))}
-            </div>
-          </SettingsSection>
-        </AnimatedSection>
-      </div>
+      <AnimatedSection delay={100}>
+        <SettingsSection icon={HiOutlineLanguage} title="Langue" description="Langue utilisée dans ton espace professeur.">
+          <div className="flex gap-2 py-4">
+            {LANGUES.map((l) => (
+              <button
+                key={l.id}
+                onClick={() => setLangue(l.id)}
+                className={`rounded-full px-4 py-2 font-body text-sm font-semibold transition-all duration-300 ${
+                  langue === l.id ? "bg-coral text-ivory shadow-md shadow-coral/25" : "border border-ivory-dark text-ink-soft hover:border-coral/40"
+                }`}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
+        </SettingsSection>
+      </AnimatedSection>
 
       <AnimatedSection delay={140}>
         <SettingsSection icon={HiOutlineBellAlert} title="Notifications" description="Choisis ce qui te tient informé.">
@@ -90,25 +88,23 @@ export default function ProfParametres() {
         </SettingsSection>
       </AnimatedSection>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <AnimatedSection delay={180}>
-          <SettingsSection icon={HiOutlineBanknotes} title="Coordonnées de paiement" description="Moyen utilisé pour recevoir tes revenus de cours.">
-            <div className="grid gap-4 py-5 sm:grid-cols-2">
-              <SelectField label="Moyen de réception" defaultValue={MODES_RECEPTION[0]} options={MODES_RECEPTION} />
-              <FormField label="Numéro / IBAN" placeholder="034 00 000 00" />
-            </div>
-          </SettingsSection>
-        </AnimatedSection>
+      <AnimatedSection delay={180}>
+        <SettingsSection icon={HiOutlineBanknotes} title="Coordonnées de paiement" description="Moyen utilisé pour recevoir tes revenus de cours.">
+          <div className="grid gap-4 py-5 sm:grid-cols-2">
+            <SelectField label="Moyen de réception" defaultValue={MODES_RECEPTION[0]} options={MODES_RECEPTION} />
+            <FormField label="Numéro / IBAN" placeholder="034 00 000 00" />
+          </div>
+        </SettingsSection>
+      </AnimatedSection>
 
-        <AnimatedSection delay={220}>
-          <SettingsSection icon={HiOutlineLockClosed} title="Sécurité" description="Modifie le mot de passe de ton compte.">
-            <div className="grid gap-4 py-5 sm:grid-cols-2">
-              <FormField label="Nouveau mot de passe" type="password" placeholder="••••••••" />
-              <FormField label="Confirmer le mot de passe" type="password" placeholder="••••••••" />
-            </div>
-          </SettingsSection>
-        </AnimatedSection>
-      </div>
+      <AnimatedSection delay={220}>
+        <SettingsSection icon={HiOutlineLockClosed} title="Sécurité" description="Modifie le mot de passe de ton compte.">
+          <div className="grid gap-4 py-5 sm:grid-cols-2">
+            <FormField label="Nouveau mot de passe" type="password" placeholder="••••••••" />
+            <FormField label="Confirmer le mot de passe" type="password" placeholder="••••••••" />
+          </div>
+        </SettingsSection>
+      </AnimatedSection>
 
       <AnimatedSection delay={260}>
         <button

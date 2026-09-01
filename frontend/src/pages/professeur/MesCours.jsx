@@ -152,7 +152,7 @@ export default function ProfMesCours() {
               <tr>
                 <Th>Cours</Th>
                 <Th>Instrument</Th>
-                {/* <Th>Niveau</Th> */}
+                <Th>Niveau</Th>
                 <Th>Durée</Th>
                 <Th>Élèves</Th>
                 <Th>Statut</Th>
@@ -188,7 +188,7 @@ export default function ProfMesCours() {
                     </Link>
                   </Td>
                   <Td>{c.instrument.name || "—"}</Td>
-                  {/* <Td>{c.niveau || "—"}</Td> */}
+                  <Td>{c.level.name || "—"}</Td>
                   <Td>{c.duree || "—"}</Td>
                   <Td>{c.eleves ?? 0}</Td>
                   <Td>
@@ -257,7 +257,9 @@ export default function ProfMesCours() {
             Annuler
           </button>
           <button
-            onClick={() => { handleDelete(toDelete?.id) }}
+            onClick={() => {
+              handleDelete(toDelete?.id);
+            }}
             className="flex-1 rounded-full bg-brick py-2.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-brick/25 transition-all duration-300 hover:bg-brick-light"
           >
             Supprimer

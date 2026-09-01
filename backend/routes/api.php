@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CourController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\InstrumentController;
+use App\Http\Controllers\Api\LessonController;
+use App\Http\Controllers\Api\LevelController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,3 +47,12 @@ Route::delete('/deleteCour/{id}', [CourController::class, 'destroy']);
 
 Route::get('/getInstrument', [InstrumentController::class, 'index']);
 Route::post('/storeInstrument', [InstrumentController::class, 'store']);
+
+Route::get('/getLevel', [LevelController::class, 'index']);
+Route::post('/storeLevel', [LevelController::class, 'store']);
+
+Route::post('/storeLesson', [LessonController::class, 'store']);
+Route::get('/getLesson', [LessonController::class, 'index']);
+Route::get('/getLessonById/{id}', [LessonController::class, 'show']);
+Route::put('/updateLesson/{id}', [LessonController::class, 'update']);
+Route::delete('/deleteLesson/{id}', [LessonController::class, 'destroy']);

@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('resources', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId("lesson_id")->constrained("lessons")->cascadeOnDelete();
-            $table->enum("type",["video","audio","pdf"]);
-            $table->string("file");
-            $table->timestamps();
+        Schema::table('levels', function (Blueprint $table) {
+            $table->string("duree")->after("description");
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('resources');
+        Schema::table('levels', function (Blueprint $table) {
+            $table->dropColumn("duree");
+        });
     }
 };

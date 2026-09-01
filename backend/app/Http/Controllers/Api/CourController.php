@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CourResource;
 use App\Models\Cour;
+use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,7 +16,7 @@ class CourController extends Controller
      */
     public function index()
     {
-        $cour = Cour::with('instrument')->get();
+        $cour = Cour::with('instrument')->with('level')->get();
 
         return response()->json($cour);
     }
@@ -35,6 +36,7 @@ class CourController extends Controller
     {
         $validated = $request->validate([
             "instrument_id" => 'required|exists:instruments,id',
+            "niveau_id" => 'required|exists:levels,id',
             "titre" => 'required|string',
             "description" => 'required|string',
             "prix" => 'required',
@@ -67,8 +69,12 @@ class CourController extends Controller
     public function show($id)
     {
         $cour = Cour::with("instrument")->find($id);
+        $lesson = Lesson::where("cour_id", $id)->get();
 
-        return response()->json($cour);
+        return response()->json([
+            "cour" => $cour, 
+            "lesson" => $lesson
+        ]);
     }
 
     /**
@@ -95,6 +101,7 @@ class CourController extends Controller
 
         $request->validate([
             "instrument_id" => 'required|exists:instruments,id',
+            "niveau_id" => 'required|exists:levels,id',
             "titre" => 'required|string',
             "description" => 'required|string',
             "prix" => 'required',
@@ -105,6 +112,7 @@ class CourController extends Controller
         ]);
 
         $cour->instrument_id = $request->instrument_id;
+        $cour->niveau_id = $request->niveau_id;
         $cour->titre = $request->titre;
         $cour->description = $request->description;
         $cour->prix = $request->prix;
@@ -126,7 +134,7 @@ class CourController extends Controller
         $cour->save();
 
         return response()->json([
-            'message' => 'Cour créé avec succès',
+            'message' => 'Cour modifié avec succès',
             'cour' => new CourResource($cour)
         ], 201);
     }

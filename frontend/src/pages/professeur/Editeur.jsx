@@ -14,6 +14,7 @@ import { getCourById, storeCour, updateCour } from "../../app/api/courApi";
 import { getInstrument } from "../../app/api/instrumentApi";
 import useGetCour from "../../app/hooks/useGetCour";
 import { BASE_URL } from "../../app/api/api";
+import { getLevel } from "../../app/api/levelApi";
 
 // Champ select stylé
 function SelectField({ label, name, value, onChange, options }) {
@@ -31,9 +32,9 @@ function SelectField({ label, name, value, onChange, options }) {
         onChange={onChange}
         className="w-full rounded-xl border border-ivory-dark bg-white/70 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
       >
-        {options.map((instrument) => (
-          <option key={instrument.id} value={instrument.id}>
-            {instrument.name}
+        {options.map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.name}
           </option>
         ))}
       </select>
@@ -134,6 +135,7 @@ export default function ProfEditeur() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [instrumentList, setInstrumentList] = useState([]);
+  const [levelList, setLevelList] = useState([]);
 
   const { cour, fetchCours, fetchCourDetail } = useGetCour();
 
@@ -147,14 +149,15 @@ export default function ProfEditeur() {
   const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
-    if (cour?.image) {
-      setImagePreview(`${BASE_URL}/storage/${cour.image}`);
+    if (cour?.cour.image) {
+      setImagePreview(`${BASE_URL}/storage/${cour.cour.image}`);
     }
   }, [cour]);
 
   // Données du formulaire du cours
   const [form, setForm] = useState({
     instrument_id: "",
+    niveau_id: "",
     titre: "",
     description: "",
     prix: "",
@@ -167,12 +170,13 @@ export default function ProfEditeur() {
   useEffect(() => {
     if (cour) {
       setForm({
-        instrument_id: cour.instrument_id || "",
-        titre: cour.titre || "",
-        description: cour.description || "",
-        prix: cour.prix || "",
+        instrument_id: cour.cour.instrument_id || "",
+        niveau_id: cour.cour.niveau_id || "",
+        titre: cour.cour.titre || "",
+        description: cour.cour.description || "",
+        prix: cour.cour.prix || "",
         image: null,
-        duree: cour.duree || "",
+        duree: cour.cour.duree || "",
       });
     }
   }, [cour]);
@@ -191,6 +195,22 @@ export default function ProfEditeur() {
     };
 
     fetchInstruments();
+  }, []);
+  
+  // Récupération des niveaux
+  useEffect(() => {
+    const fetchNiveaux = async () => {
+      try {
+        const response = await getLevel();
+
+        setLevelList(response.data);
+        console.log("level : ",levelList);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des Niveaux", error.response?.data);
+      }
+    };
+
+    fetchNiveaux();
   }, []);
 
   // Modification des champs texte/select
@@ -217,6 +237,7 @@ export default function ProfEditeur() {
 
     formData.append("titre", form.titre);
     formData.append("instrument_id", form.instrument_id);
+    formData.append("niveau_id", form.niveau_id);
     formData.append("description", form.description);
     formData.append("prix", form.prix);
     formData.append("duree", form.duree);
@@ -267,7 +288,11 @@ export default function ProfEditeur() {
     (i) => String(i.id) === String(form.instrument_id),
   );
 
-  if (id && !cour) {
+  const selectedNiveau= levelList.find(
+    (n) => String(n.id) === String(form.niveau_id),
+  );
+
+  if (id && cour == null) {
     return (
       <p className="font-body text-sm text-ink-soft">Chargement du cours…</p>
     );
@@ -330,13 +355,21 @@ export default function ProfEditeur() {
                   onChange={handleChange}
                 />
                 {/* Autres informations */}
-                <div className="grid gap-4 sm:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2">
                   {/* Instrument */}
                   <SelectField
                     label="Instrument"
                     options={instrumentList}
                     name="instrument_id"
                     value={form.instrument_id}
+                    onChange={handleChange}
+                  />
+                  {/* Niveau */}
+                  <SelectField
+                    label="Niveau"
+                    options={levelList}
+                    name="niveau_id"
+                    value={form.niveau_id}
                     onChange={handleChange}
                   />
                   {/* Prix */}
@@ -410,7 +443,7 @@ export default function ProfEditeur() {
               </div>
               <div className="space-y-1.5 p-4">
                 <p className="line-clamp-1 font-display text-sm font-semibold text-ink">
-                  {form.titre || "Titre du cours"}
+                  {form.titre || "Titre du cours"} - {selectedNiveau?.name || "Niveau"}
                 </p>
                 <p className="font-body text-xs text-ink-soft">
                   {selectedInstrument?.name || "Instrument"}

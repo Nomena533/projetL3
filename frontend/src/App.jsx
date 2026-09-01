@@ -144,6 +144,7 @@ export default function App() {
           <Route path="parametres" element={<ProfParametres />} />
           <Route path="cours/:id/details" element={<ProfCoursDetail />} />
           <Route path="cours/:id/lecons/nouveau" element={<ProfLeconEditeur />} />
+          <Route path="cours/:id/lecons/:lessonId" element={<ProfLeconEditeur />} />
         </Route>
 
         <Route
