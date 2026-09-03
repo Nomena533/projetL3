@@ -1,39 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { HiPlus } from "react-icons/hi";
 import {
   HiOutlineChevronLeft,
+  HiOutlineEye,
   HiOutlinePencilSquare,
   HiOutlineTrash,
-  HiOutlineVideoCamera,
   HiOutlineDocumentText,
-  HiOutlineSpeakerWave,
-  HiOutlinePhoto,
   HiOutlineCheckCircle,
   HiOutlineXMark,
+  HiOutlinePhoto,
 } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import Modal from "../../components/Modal";
+import Pill from "../../components/Pill";
+import FilterBar from "../../components/FilterBar";
 // ⚠️ getCourById / deleteLecon sont attendus dans courApi.js — voir la note
 // en bas de fichier si ces fonctions n'existent pas encore de ton côté.
 import { getCourById } from "../../app/api/courApi";
 import { deleteLecon } from "../../app/api/lessonApi";
 import { BASE_URL } from "../../app/api/api";
-
-// partie fichier
-/*
- */
-const RESOURCE_ICON = {
-  video: HiOutlineVideoCamera,
-  audio: HiOutlineSpeakerWave,
-  pdf: HiOutlineDocumentText,
-};
-
-const RESOURCE_LABEL = {
-  video: "Vidéo",
-  audio: "Audio",
-  pdf: "PDF",
-};
 
 export default function ProfCoursDetail() {
   const { id } = useParams();
@@ -46,22 +32,19 @@ export default function ProfCoursDetail() {
   const [toDelete, setToDelete] = useState(null);
   const [alert, setAlert] = useState(location.state?.success || null);
 
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    // A expliquer
     const fetchCourDetail = async () => {
       let active = true;
       setLoading(true);
       await getCourById(id)
         .then((response) => {
           if (active) setCours(response.data);
-          console.log("Response.data :", response.data);
-
           console.log("Détails du cour sélectionnés avec succès");
         })
         .catch((error) => {
           if (active) setError("Impossible de charger ce cours.");
-
           console.error(
             "Erreur lors de la récupération des détails cour :",
             error.response?.data,
@@ -91,20 +74,16 @@ export default function ProfCoursDetail() {
     return () => clearTimeout(timer);
   }, [alert]);
 
-  const handleDeleteLecon = async (id) => {
+  const handleDeleteLecon = async (leconId) => {
     try {
-      await deleteLecon(id);
+      await deleteLecon(leconId);
 
       setCours((c) => ({
         ...c,
-        lecons: c.lesson.filter((l) => l.id !== toDelete.id),
+        lesson: c.lesson.filter((l) => l.id !== toDelete.id),
       }));
 
-      // Affiche directement l'alerte
-      setAlert({
-        success: "La leçon a été supprimé avec succès !",
-      });
-
+      setAlert("La leçon a été supprimé avec succès !");
     } catch (err) {
       console.error(
         "Erreur lors de la suppression de la leçon",
@@ -114,6 +93,14 @@ export default function ProfCoursDetail() {
       setToDelete(null);
     }
   };
+
+  const filteredLecons = useMemo(() => {
+    if (!cours?.lesson) return [];
+    if (!search) return cours.lesson;
+    return cours.lesson.filter((l) =>
+      (l.titre || "").toLowerCase().includes(search.toLowerCase()),
+    );
+  }, [cours, search]);
 
   if (loading) {
     return (
@@ -177,9 +164,12 @@ export default function ProfCoursDetail() {
           <div className="space-y-4 p-6 sm:p-7">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-                  {cours.cour.instrument?.name}
-                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
+                    {cours.cour.instrument?.name}
+                  </span>
+                  {cours.cour.statut && <Pill>{cours.cour.statut}</Pill>}
+                </div>
                 <h2 className="mt-1 font-display text-2xl font-semibold text-ink sm:text-3xl">
                   {cours.cour.titre}
                 </h2>
@@ -192,7 +182,7 @@ export default function ProfCoursDetail() {
               </Link>
             </div>
 
-            {cours.description && (
+            {cours.cour.description && (
               <p className="font-body text-sm leading-relaxed text-ink-soft">
                 {cours.cour.description}
               </p>
@@ -235,60 +225,91 @@ export default function ProfCoursDetail() {
           </Link>
         </div>
 
+        {cours.lesson?.length > 0 && (
+          <div className="mb-4">
+            <FilterBar
+              searchValue={search}
+              onSearchChange={setSearch}
+              searchPlaceholder="Rechercher une leçon…"
+              resultCount={filteredLecons.length}
+              totalCount={cours.lesson.length}
+              hasActiveFilters={search !== ""}
+              onReset={() => setSearch("")}
+            />
+          </div>
+        )}
+
         {cours.lesson?.length ? (
-          <div className="space-y-3">
-            {cours.lesson?.map((l, index) => {
-              const Icon =
-                RESOURCE_ICON[l.type_ressource] || HiOutlineDocumentText;
-              return (
-                <div
-                  key={l.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ivory-dark p-4 transition-colors duration-300 hover:border-coral/30"
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span className="shrink-0 font-mono text-xs text-ink-soft">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate font-body text-sm font-semibold text-ink">
-                        {l.titre || "_"}
-                      </p>
-                      {l.description && (
-                        <p className="truncate font-body text-xs text-ink-soft">
-                          {l.description}
+          filteredLecons.length ? (
+            <div className="space-y-3">
+              {filteredLecons.map((l) => {
+                const index = cours.lesson.findIndex((x) => x.id === l.id);
+                const ressourceCount =
+                  l.ressources_count ?? l.ressources?.length ?? 0;
+                return (
+                  <div
+                    key={l.id}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ivory-dark p-4 transition-colors duration-300 hover:border-coral/30"
+                  >
+                    <Link
+                      to={`/professeur/cours/${id}/lecons/${l.id}/details`}
+                      className="flex min-w-0 flex-1 items-center gap-3"
+                    >
+                      <span className="shrink-0 font-mono text-xs text-ink-soft">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate font-body text-sm font-semibold text-ink transition-colors hover:text-coral-dark">
+                          {l.titre || "_"}
                         </p>
+                        {l.description && (
+                          <p className="truncate font-body text-xs text-ink-soft">
+                            {l.description}
+                          </p>
+                        )}
+                      </div>
+                    </Link>
+                    <div className="flex shrink-0 items-center gap-3">
+                      <span className="flex items-center gap-1.5 rounded-full border border-ivory-dark px-3 py-1 font-body text-xs text-ink-soft">
+                        <HiOutlineDocumentText size={13} />
+                        {ressourceCount} ressource{ressourceCount > 1 ? "s" : ""}
+                      </span>
+                      {l.duree && (
+                        <span className="font-mono text-xs text-ink-soft">
+                          {l.duree}
+                        </span>
                       )}
+                      <Link
+                        to={`/professeur/cours/${id}/lecons/${l.id}/details`}
+                        className="text-ink-soft transition-colors hover:text-coral-dark"
+                        aria-label="Voir la leçon"
+                      >
+                        <HiOutlineEye size={17} />
+                      </Link>
+                      <Link
+                        to={`/professeur/cours/${id}/lecons/${l.id}`}
+                        className="text-ink-soft transition-colors hover:text-coral-dark"
+                        aria-label="Modifier"
+                      >
+                        <HiOutlinePencilSquare size={17} />
+                      </Link>
+                      <button
+                        onClick={() => setToDelete(l)}
+                        className="text-ink-soft transition-colors hover:text-brick"
+                        aria-label="Supprimer la leçon"
+                      >
+                        <HiOutlineTrash size={15} />
+                      </button>
                     </div>
                   </div>
-                  <div className="flex shrink-0 items-center gap-3">
-                    <span className="flex items-center gap-1.5 rounded-full border border-ivory-dark px-3 py-1 font-body text-xs text-ink-soft">
-                      <Icon size={13} />{" "}
-                      {RESOURCE_LABEL[l.type_ressource] || "Ressource"}
-                    </span>
-                    {l.duree && (
-                      <span className="font-mono text-xs text-ink-soft">
-                        {l.duree}
-                      </span>
-                    )}
-                    <Link
-                      to={`/professeur/cours/${l.cour_id}/lecons/${l.id}`}
-                      className="text-ink-soft transition-colors hover:text-coral-dark"
-                      aria-label="Modifier"
-                    >
-                      <HiOutlinePencilSquare size={17} />
-                    </Link>
-                    <button
-                      onClick={() => setToDelete(l)}
-                      className="text-ink-soft transition-colors hover:text-brick"
-                      aria-label="Supprimer la leçon"
-                    >
-                      <HiOutlineTrash size={15} />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="rounded-xl border border-dashed border-ivory-dark px-5 py-10 text-center font-body text-sm text-ink-soft">
+              Aucune leçon ne correspond à ta recherche.
+            </p>
+          )
         ) : (
           <p className="rounded-xl border border-dashed border-ivory-dark px-5 py-10 text-center font-body text-sm text-ink-soft">
             Ce cours n'a pas encore de leçon.{" "}
@@ -309,7 +330,8 @@ export default function ProfCoursDetail() {
       >
         <p className="font-body text-sm leading-relaxed text-ink-soft">
           <span className="font-semibold text-ink">« {toDelete?.titre} »</span>{" "}
-          sera définitivement supprimée. Cette action est irréversible.
+          sera définitivement supprimée, ainsi que ses ressources. Cette action
+          est irréversible.
         </p>
         <div className="mt-6 flex gap-3">
           <button
@@ -320,7 +342,7 @@ export default function ProfCoursDetail() {
           </button>
           <button
             onClick={() => {
-              handleDeleteLecon(toDelete?.id)
+              handleDeleteLecon(toDelete?.id);
             }}
             className="flex-1 rounded-full bg-brick py-2.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-brick/25 transition-all duration-300 hover:bg-brick-light"
           >

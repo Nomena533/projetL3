@@ -1,22 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  HiOutlineChevronLeft,
-  HiOutlineCheckCircle,
-  HiOutlineCloudArrowUp,
-} from "react-icons/hi2";
+import { HiOutlineChevronLeft, HiOutlineCheckCircle } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import FormField from "../../components/FormField";
-// ⚠️ Fichier à créer côté app/api — voir leconApi.js fourni à part.
 import { storeLecon, updateLecon } from "../../app/api/lessonApi";
 import useLesson from "../../app/hooks/useLesson";
-import useGetCour from "../../app/hooks/useGetCour";
-
-const RESSOURCES = [
-  { value: "video", label: "Vidéo", accept: "video/*" },
-  { value: "audio", label: "Audio", accept: "audio/*" },
-  { value: "pdf", label: "PDF", accept: "application/pdf" },
-];
 
 function TextAreaField({ label, name, value, onChange }) {
   return (
@@ -36,15 +24,13 @@ function TextAreaField({ label, name, value, onChange }) {
 }
 
 export default function ProfLeconEditeur() {
-  const { id: coursId } = useParams();
-  const { lessonId } = useParams();
+  const { id: coursId, lessonId } = useParams();
   const navigate = useNavigate();
 
   const { lessonDetail, fetchLessonDetail } = useLesson();
-  const { fetchCoursDetail } = useGetCour();
 
   useEffect(() => {
-    fetchLessonDetail(lessonId);
+    if (lessonId) fetchLessonDetail(lessonId);
   }, [lessonId]);
 
   const [form, setForm] = useState({
@@ -52,8 +38,6 @@ export default function ProfLeconEditeur() {
     description: "",
     duree: "",
     cour_id: "",
-
-    // type_ressource: "video",
   });
 
   useEffect(() => {
@@ -76,43 +60,15 @@ export default function ProfLeconEditeur() {
     });
   };
 
-  // Partie fichier
-  /** 
-    const [fichier, setFichier] = useState(null);
-    const handleTypeChange = (e) => {
-      // On réinitialise le fichier choisi si on change de type de ressource,
-      // pour éviter d'envoyer par exemple un .mp4 déclaré comme "pdf".
-      setForm({ ...form, type_ressource: e.target.value });
-      setFichier(null);
-    };
-
-    const handleFileChange = (e) => setFichier(e.target.files?.[0] || null);
-
-    const activeType = RESSOURCES.find((r) => r.value === form.type_ressource);
-   */
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
-    // version formdata
-    /*
-    const formData = new FormData();
-    formData.append("titre", form.titre);
-    formData.append("description", form.description);
-    formData.append("duree", form.duree);
-    formData.append("type_ressource", form.type_ressource);
-    if (fichier) formData.append("ressource", fichier);
-    */
-
-   try {
+    try {
       const data = {
         ...form,
-        cour_id : coursId
+        cour_id: coursId,
       };
-  
-      console.log("Cour_id : " , coursId);
-      console.log("form  : " , form);
 
       let response;
 
@@ -122,21 +78,32 @@ export default function ProfLeconEditeur() {
         response = await storeLecon(data);
       }
 
-      // await fetchCoursDetail();
-      console.log("Opération réussi", response.data);
+      console.log("Opération réussie", response.data);
 
-      navigate(`/professeur/cours/${coursId}/details`, {
-        state: {
-          success: lessonId
-            ? "La leçon a été modifié avec succès !"
-            : "La leçon a été ajoutée avec succès !",
-        },
-      });
+      // Récupère l'id de la leçon créée/modifiée pour rediriger vers sa
+      // page de détail, où on peut désormais ajouter/gérer ses ressources.
+      const newLessonId = lessonId ?? response.data?.id ?? response.data?.lecon?.id;
+
+      if (newLessonId) {
+        navigate(`/professeur/cours/${coursId}/lecons/${newLessonId}/details`, {
+          state: {
+            success: lessonId
+              ? "La leçon a été modifiée avec succès !"
+              : "La leçon a été créée. Ajoute maintenant ses ressources.",
+          },
+        });
+      } else {
+        // Repli si l'id de la nouvelle leçon n'est pas disponible dans la réponse.
+        navigate(`/professeur/cours/${coursId}/details`, {
+          state: {
+            success: lessonId
+              ? "La leçon a été modifiée avec succès !"
+              : "La leçon a été ajoutée avec succès !",
+          },
+        });
+      }
     } catch (err) {
-      console.error(
-        "Erreur lors de l'opération",
-        err.response?.data,
-      );
+      console.error("Erreur lors de l'opération", err.response?.data);
       setError("Une erreur est survenue lors de l'enregistrement de la leçon.");
     }
   };
@@ -177,7 +144,6 @@ export default function ProfLeconEditeur() {
         delay={60}
         className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7"
       >
-        {/* <input type="hidden" name="cour_id" value={coursId} /> */}
         <FormField
           label="Titre de la leçon"
           placeholder="Ex. Accorder son valiha"
@@ -202,49 +168,13 @@ export default function ProfLeconEditeur() {
             onChange={handleChange}
           />
         </div>
-        {/* partie fichier */}
-        {/* <div className="grid gap-4 sm:grid-cols-2">
-          <FormField
-            label="Durée"
-            placeholder="Ex. 12min"
-            name="duree"
-            value={form.duree}
-            onChange={handleChange}
-          />
 
-          <label className="block">
-            <span className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">
-              Type de ressource
-            </span>
-            <select
-              name="type_ressource"
-              value={form.type_ressource}
-              onChange={handleTypeChange}
-              className="w-full rounded-xl border border-ivory-dark bg-white/70 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
-            >
-              {RESSOURCES.map((r) => (
-                <option key={r.value} value={r.value}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-
-        <label className="block">
-          <span className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">
-            Fichier ({activeType?.label})
-          </span>
-          <div className="flex items-center gap-3 rounded-xl border-2 border-dashed border-ivory-dark bg-white/70 px-4 py-4">
-            <HiOutlineCloudArrowUp size={20} className="shrink-0 text-ink-soft" />
-            <input
-              type="file"
-              accept={activeType?.accept}
-              onChange={handleFileChange}
-              className="w-full font-body text-xs text-ink-soft file:mr-3 file:rounded-full file:border-0 file:bg-coral/10 file:px-3 file:py-1.5 file:font-body file:text-xs file:font-semibold file:text-coral-dark hover:file:bg-coral/20"
-            />
-          </div>
-        </label> */}
+        {!lessonId && (
+          <p className="font-body text-xs text-ink-soft">
+            Une fois la leçon enregistrée, tu pourras y ajouter ses ressources
+            (vidéo, audio, PDF) depuis sa page de détail.
+          </p>
+        )}
 
         {error && <p className="font-body text-sm text-brick">{error}</p>}
       </AnimatedSection>

@@ -37,6 +37,10 @@ import ProfEleves from "./pages/professeur/Eleves";
 import ProfMessages from "./pages/professeur/Messages";
 // import ProfParametres from "./pages/professeur/Parametres";
 import ProfParametres from "./pages/professeur/Parametres";
+import ProfCoursDetail from "./pages/professeur/CoursDetail";
+import ProfLeconEditeur from "./pages/professeur/LeconEditeur";
+import ProfRessourceEditeur from "./pages/professeur/RessourceEditeur";
+import ProfLeconDetail from "./pages/professeur/LeconDetail";
 
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminUtilisateurs from "./pages/admin/Utilisateurs";
@@ -57,8 +61,7 @@ import Register from "./pages/auth/Register";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/RoleRoute";
-import ProfCoursDetail from "./pages/professeur/CoursDetail";
-import ProfLeconEditeur from "./pages/professeur/LeconEditeur";
+
 
 /** Remonte en haut de page à chaque changement de route */
 function ScrollToTop() {
@@ -145,6 +148,9 @@ export default function App() {
           <Route path="cours/:id/details" element={<ProfCoursDetail />} />
           <Route path="cours/:id/lecons/nouveau" element={<ProfLeconEditeur />} />
           <Route path="cours/:id/lecons/:lessonId" element={<ProfLeconEditeur />} />
+          <Route path="cours/:id/lecons/:lessonId/details" element={<ProfLeconDetail />} />
+          <Route path="cours/:id/lecons/:lessonId/ressources/nouveau" element={<ProfRessourceEditeur />} />
+          <Route path="cours/:id/lecons/:lessonId/ressources/resourceId" element={<ProfRessourceEditeur />} />
         </Route>
 
         <Route

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HiPlus } from "react-icons/hi";
 import {
@@ -13,12 +13,12 @@ import {
 import AnimatedSection from "../../components/AnimatedSection";
 import Modal from "../../components/Modal";
 import Pill from "../../components/Pill";
+import FilterBar from "../../components/FilterBar";
 import { Th, Td } from "../../components/Table";
-import { MES_COURS, formatAriary } from "../../lib/mockProfData";
+import { formatAriary } from "../../lib/mockProfData";
 import useGetCour from "../../app/hooks/useGetCour";
 import { BASE_URL } from "../../app/api/api";
 import { deleteCour } from "../../app/api/courApi";
-import { X } from "../../lib/icons";
 
 // Bandeau d'alerte succès/erreur affiché après une action (ex. création d'un
 // cours). Se ferme automatiquement après quelques secondes, ou manuellement.
@@ -53,10 +53,39 @@ export default function ProfMesCours() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // const [cours, setCours] = useState(MES_COURS);
   const [toDelete, setToDelete] = useState(null);
 
   const { cours, setCours, fetchCours } = useGetCour();
+
+  const [search, setSearch] = useState("");
+  const [statutFilter, setStatutFilter] = useState("");
+  const [instrumentFilter, setInstrumentFilter] = useState("");
+
+  const statutOptions = useMemo(() => {
+    const set = new Set(cours.map((c) => c.statut).filter(Boolean));
+    return [...set].map((s) => ({ value: s, label: s }));
+  }, [cours]);
+
+  const instrumentOptions = useMemo(() => {
+    const set = new Set(cours.map((c) => c.instrument?.name).filter(Boolean));
+    return [...set].map((n) => ({ value: n, label: n }));
+  }, [cours]);
+
+  const filteredCours = useMemo(() => {
+    return cours.filter((c) => {
+      const matchSearch = search
+        ? (c.titre || "").toLowerCase().includes(search.toLowerCase())
+        : true;
+      const matchStatut = statutFilter ? c.statut === statutFilter : true;
+      const matchInstrument = instrumentFilter
+        ? c.instrument?.name === instrumentFilter
+        : true;
+      return matchSearch && matchStatut && matchInstrument;
+    });
+  }, [cours, search, statutFilter, instrumentFilter]);
+
+  const hasActiveFilters =
+    search !== "" || statutFilter !== "" || instrumentFilter !== "";
 
   const handleDelete = async (id) => {
     try {
@@ -112,13 +141,10 @@ export default function ProfMesCours() {
     return () => clearTimeout(timer);
   }, [alert]);
 
-  console.log("liste des cours : ", cours);
-
   return (
     <div className="space-y-6">
       <AnimatedSection className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          {/* {cours} */}
           <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
             Espace professeur
           </span>
@@ -142,6 +168,38 @@ export default function ProfMesCours() {
         />
       )}
 
+      {cours.length > 0 && (
+        <FilterBar
+          searchValue={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Rechercher un cours…"
+          filters={[
+            {
+              name: "statut",
+              label: "Tous les statuts",
+              value: statutFilter,
+              onChange: setStatutFilter,
+              options: statutOptions,
+            },
+            {
+              name: "instrument",
+              label: "Tous les instruments",
+              value: instrumentFilter,
+              onChange: setInstrumentFilter,
+              options: instrumentOptions,
+            },
+          ]}
+          resultCount={filteredCours.length}
+          totalCount={cours.length}
+          hasActiveFilters={hasActiveFilters}
+          onReset={() => {
+            setSearch("");
+            setStatutFilter("");
+            setInstrumentFilter("");
+          }}
+        />
+      )}
+
       <AnimatedSection
         delay={80}
         className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/70"
@@ -161,7 +219,7 @@ export default function ProfMesCours() {
               </tr>
             </thead>
             <tbody className="divide-y divide-ivory-dark">
-              {cours.map((c) => (
+              {filteredCours.map((c) => (
                 <tr
                   key={c.id}
                   className="transition-colors duration-200 hover:bg-ivory-dark/30"
@@ -226,7 +284,7 @@ export default function ProfMesCours() {
           </table>
         </div>
 
-        {cours.length === 0 && (
+        {cours.length === 0 ? (
           <p className="px-5 py-12 text-center font-body text-sm text-ink-soft">
             Tu n'as pas encore publié de cours.{" "}
             <Link
@@ -236,6 +294,12 @@ export default function ProfMesCours() {
               Crée le premier →
             </Link>
           </p>
+        ) : (
+          filteredCours.length === 0 && (
+            <p className="px-5 py-12 text-center font-body text-sm text-ink-soft">
+              Aucun cours ne correspond à ta recherche.
+            </p>
+          )
         )}
       </AnimatedSection>
 
