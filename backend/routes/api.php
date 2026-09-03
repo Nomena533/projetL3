@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\InstrumentController;
 use App\Http\Controllers\Api\LessonController;
 use App\Http\Controllers\Api\LevelController;
+use App\Http\Controllers\Api\ResourceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,8 +52,15 @@ Route::post('/storeInstrument', [InstrumentController::class, 'store']);
 Route::get('/getLevel', [LevelController::class, 'index']);
 Route::post('/storeLevel', [LevelController::class, 'store']);
 
-Route::post('/storeLesson', [LessonController::class, 'store']);
+Route::post('/cour/{courId}/storeLesson', [LessonController::class, 'store']);
 Route::get('/getLesson', [LessonController::class, 'index']);
 Route::get('/getLessonById/{id}', [LessonController::class, 'show']);
 Route::put('/updateLesson/{id}', [LessonController::class, 'update']);
 Route::delete('/deleteLesson/{id}', [LessonController::class, 'destroy']);
+
+Route::post('/lesson/{lessonId}/storeResource', [ResourceController::class, 'store']);
+Route::get('/getResource', [ResourceController::class, 'index']);
+Route::get('/getResourceById/{id}', [ResourceController::class, 'show']);
+Route::put('/updateResource/{id}', [ResourceController::class, 'update']);
+Route::delete('/deleteResource/{id}', [ResourceController::class, 'destroy']);
+

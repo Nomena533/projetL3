@@ -24,7 +24,7 @@ function TextAreaField({ label, name, value, onChange }) {
 }
 
 export default function ProfLeconEditeur() {
-  const { id: coursId, lessonId } = useParams();
+  const { id: courId, lessonId } = useParams();
   const navigate = useNavigate();
 
   const { lessonDetail, fetchLessonDetail } = useLesson();
@@ -37,7 +37,7 @@ export default function ProfLeconEditeur() {
     titre: "",
     description: "",
     duree: "",
-    cour_id: "",
+    // cour_id: "",
   });
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function ProfLeconEditeur() {
     try {
       const data = {
         ...form,
-        cour_id: coursId,
+        // cour_id: courId,
       };
 
       let response;
@@ -75,7 +75,7 @@ export default function ProfLeconEditeur() {
       if (lessonId) {
         response = await updateLecon(lessonId, data);
       } else {
-        response = await storeLecon(data);
+        response = await storeLecon(courId, data);
       }
 
       console.log("Opération réussie", response.data);
@@ -85,7 +85,7 @@ export default function ProfLeconEditeur() {
       const newLessonId = lessonId ?? response.data?.id ?? response.data?.lecon?.id;
 
       if (newLessonId) {
-        navigate(`/professeur/cours/${coursId}/lecons/${newLessonId}/details`, {
+        navigate(`/professeur/cours/${courId}/lecons/${newLessonId}/details`, {
           state: {
             success: lessonId
               ? "La leçon a été modifiée avec succès !"
@@ -94,7 +94,7 @@ export default function ProfLeconEditeur() {
         });
       } else {
         // Repli si l'id de la nouvelle leçon n'est pas disponible dans la réponse.
-        navigate(`/professeur/cours/${coursId}/details`, {
+        navigate(`/professeur/cours/${courId}/details`, {
           state: {
             success: lessonId
               ? "La leçon a été modifiée avec succès !"
@@ -117,7 +117,7 @@ export default function ProfLeconEditeur() {
   return (
     <div className="w-full space-y-6">
       <button
-        onClick={() => navigate(`/professeur/cours/${coursId}/details`)}
+        onClick={() => navigate(`/professeur/cours/${courId}/details`)}
         className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
       >
         <HiOutlineChevronLeft size={13} /> Retour au cours
@@ -187,7 +187,7 @@ export default function ProfLeconEditeur() {
           <HiOutlineCheckCircle size={16} /> Enregistrer la leçon
         </button>
         <button
-          onClick={() => navigate(`/professeur/cours/${coursId}/details`)}
+          onClick={() => navigate(`/professeur/cours/${courId}/details`)}
           className="rounded-full border border-ivory-dark px-6 py-3 font-body text-sm font-semibold text-ink transition-all duration-300 hover:border-coral/40"
         >
           Annuler

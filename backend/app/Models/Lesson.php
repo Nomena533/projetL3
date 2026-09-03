@@ -16,4 +16,8 @@ class Lesson extends Model
     public function cour () {
         return $this->belongsTo(Cour::class);
     }
+
+    public function resource () {
+        return $this->hasMany(Resource::class);
+    }
 }

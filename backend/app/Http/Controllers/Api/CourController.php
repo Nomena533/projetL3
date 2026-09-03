@@ -51,6 +51,7 @@ class CourController extends Controller
 
         // Vérifie si une image a été envoyé
         if ($request->hasFile('image')) {
+            
             // Store le fichier dans Storage/app/public/cours
             $validated['image'] = $request->file('image')->store('cours', 'public');
         }

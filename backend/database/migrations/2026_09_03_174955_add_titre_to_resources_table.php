@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('resources', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('resources', function (Blueprint $table) {
+            $table->string('titre')->after('lesson_id');
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('resources');
+        Schema::table('resources', function (Blueprint $table) {
+            $table->dropColumn('titre');
+        });
     }
 };

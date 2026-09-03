@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\LessonResource;
+use App\Models\Cour;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 
@@ -30,14 +31,20 @@ class LessonController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, $courId)
     {
         $validated = $request->validate([
             "titre" => "required|string",
             "description" => "required|string",
             "duree" => "required",
-            "cour_id" => "required|exists:cours,id"
+            // "cour_id" => "required|exists:cours,id"
         ]);
+
+        // Vérification du cour s'il existe
+        $cour = Cour::findOrFail($courId);
+
+        // Récuperation de l'id du cour vérifié
+        $validated['cour_id'] = $cour->id;
 
         $lesson = Lesson::create($validated);
 

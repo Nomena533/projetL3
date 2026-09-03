@@ -18,7 +18,7 @@ import Modal from "../../components/Modal";
 import FilterBar from "../../components/FilterBar";
 import useLesson from "../../app/hooks/useLesson";
 import {
-  getRessourcesByLecon,
+  getRessourceByLecon,
   deleteRessource,
 } from "../../app/api/ressourceApi";
 import { BASE_URL } from "../../app/api/api";
@@ -64,7 +64,7 @@ export default function ProfLeconDetail() {
   const fetchRessources = async () => {
     setLoading(true);
     try {
-      const response = await getRessourcesByLecon(lessonId);
+      const response = await getRessourceByLecon(lessonId);
       setRessources(response.data);
     } catch (err) {
       setError("Impossible de charger les ressources de cette leçon.");

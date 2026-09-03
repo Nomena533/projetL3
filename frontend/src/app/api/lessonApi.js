@@ -1,7 +1,7 @@
 import API from "./api";
 
-export const storeLecon = (data) => {
-  return API.post(`/storeLesson`, data)
+export const storeLecon = (courId, data) => {
+  return API.post(`/cour/${courId}/storeLesson`, data)
 }
 
 export const deleteLecon = (id) => {

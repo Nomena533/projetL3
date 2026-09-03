@@ -14,7 +14,7 @@ import AnimatedSection from "../../components/AnimatedSection";
 import FormField from "../../components/FormField";
 import {
   getRessourceById,
-  storeRessources,
+  storeRessource,
   updateRessource,
 } from "../../app/api/ressourceApi";
 import { BASE_URL } from "../../app/api/api";
@@ -222,9 +222,15 @@ export default function ProfRessourceEditeur() {
       formData.append(`ressources[${i}][titre]`, s.titre);
     });
 
+
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(`FormData ${key} : `, value);
+    //   return;
+    // }
+
     setSubmitting(true);
     try {
-      await storeRessources(lessonId, formData);
+      await storeRessource(lessonId, formData);
       navigate(`/professeur/cours/${coursId}/lecons/${lessonId}/details`, {
         state: {
           success:
