@@ -43,10 +43,10 @@ export default function ProfLeconEditeur() {
   useEffect(() => {
     if (lessonDetail) {
       setForm({
-        titre: lessonDetail.titre,
-        description: lessonDetail.description,
-        duree: lessonDetail.duree,
-        cour_id: lessonDetail.cour_id,
+        titre: lessonDetail.lesson.titre,
+        description: lessonDetail.lesson.description,
+        duree: lessonDetail.lesson.duree,
+        cour_id: lessonDetail.lesson.cour_id,
       });
     }
   }, [lessonDetail]);
@@ -56,7 +56,7 @@ export default function ProfLeconEditeur() {
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value,  
     });
   };
 

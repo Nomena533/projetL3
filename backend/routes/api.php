@@ -44,6 +44,7 @@ Route::get('/getRole', [RoleController::class, 'index']);
 Route::get('/getCour', [CourController::class, 'index']);
 Route::get('/getCourDetail/{id}', [CourController::class, 'show']);
 Route::put('/updateCour/{id}', [CourController::class, 'update']);
+Route::put('/updateStatutCour/{id}', [CourController::class, 'updateStatut']);
 Route::delete('/deleteCour/{id}', [CourController::class, 'destroy']);
 
 Route::get('/getInstrument', [InstrumentController::class, 'index']);
@@ -54,13 +55,13 @@ Route::post('/storeLevel', [LevelController::class, 'store']);
 
 Route::post('/cour/{courId}/storeLesson', [LessonController::class, 'store']);
 Route::get('/getLesson', [LessonController::class, 'index']);
-Route::get('/getLessonById/{id}', [LessonController::class, 'show']);
+Route::get('/getLessonDetail/{id}', [LessonController::class, 'show']);
 Route::put('/updateLesson/{id}', [LessonController::class, 'update']);
 Route::delete('/deleteLesson/{id}', [LessonController::class, 'destroy']);
 
 Route::post('/lesson/{lessonId}/storeResource', [ResourceController::class, 'store']);
 Route::get('/getResource', [ResourceController::class, 'index']);
-Route::get('/getResourceById/{id}', [ResourceController::class, 'show']);
+Route::get('/getResourceDetail/{id}', [ResourceController::class, 'show']);
 Route::put('/updateResource/{id}', [ResourceController::class, 'update']);
 Route::delete('/deleteResource/{id}', [ResourceController::class, 'destroy']);
 

@@ -8,8 +8,8 @@ export const deleteLecon = (id) => {
   return API.delete(`/deleteLesson/${id}`);
 }
 
-export const getLeconById = (id) => {
-  return API.get(`/getLessonById/${id}`);
+export const getLeconDetail = (id) => {
+  return API.get(`/getLessonDetail/${id}`);
 }
 
 export const updateLecon = (id, data) => {

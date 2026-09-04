@@ -10,7 +10,7 @@ import {
 import AnimatedSection from "../../components/AnimatedSection";
 import FormField from "../../components/FormField";
 import Modal from "../../components/Modal";
-import { getCourById, storeCour, updateCour } from "../../app/api/courApi";
+import { storeCour, updateCour } from "../../app/api/courApi";
 import { getInstrument } from "../../app/api/instrumentApi";
 import useGetCour from "../../app/hooks/useGetCour";
 import { BASE_URL } from "../../app/api/api";
@@ -216,8 +216,12 @@ export default function ProfEditeur() {
   // Modification des champs texte/select
   const handleChange = (e) => {
     setForm({
+      /**
+       * ...form : spread operator => reprends tous les propriétés actuellement présentes dans form
+       */
       ...form,
-      [e.target.name]: e.target.value,
+      // e.target : représente l'élément HTML qui a déclenché l'évènement => ici <input/>
+      [e.target.name]:e.target.value,// remplace la valeur dans form{prof_id, etc} par la valeur saisi par l'user
     });
   };
 
@@ -225,7 +229,11 @@ export default function ProfEditeur() {
   const handleImageChange = (e) => {
     setForm({
       ...form,
-      image: e.target.files[0],
+      /**
+       * e.target.files[0] => même si l'user sélectionne une seul image, le navigateur fournit une collection de fichier
+       *  => DONC , e.target.files[0] prend le premier fichier sélectionné
+       */
+      image:e.target.files[0]
     });
   };
 

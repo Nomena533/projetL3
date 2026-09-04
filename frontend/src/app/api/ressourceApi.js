@@ -6,7 +6,7 @@ export const getRessourceByLecon = (lessonId) => {
 };
 
 export const getRessourceById = (id) => {
-  return API.get(`/getResourceById/${id}`)
+  return API.get(`/getResourceDetail/${id}`)
 };
 
 export const storeRessource = (leconId, formData) => {

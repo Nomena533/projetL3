@@ -15,9 +15,9 @@ import AnimatedSection from "../../components/AnimatedSection";
 import Modal from "../../components/Modal";
 import Pill from "../../components/Pill";
 import FilterBar from "../../components/FilterBar";
-// ⚠️ getCourById / deleteLecon sont attendus dans courApi.js — voir la note
+// ⚠️ getCourDetail / deleteLecon sont attendus dans courApi.js — voir la note
 // en bas de fichier si ces fonctions n'existent pas encore de ton côté.
-import { getCourById } from "../../app/api/courApi";
+import { getCourDetail } from "../../app/api/courApi";
 import { deleteLecon } from "../../app/api/lessonApi";
 import { BASE_URL } from "../../app/api/api";
 
@@ -26,7 +26,7 @@ export default function ProfCoursDetail() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [cours, setCours] = useState(null);
+  const [cours, d] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [toDelete, setToDelete] = useState(null);
@@ -38,9 +38,9 @@ export default function ProfCoursDetail() {
     const fetchCourDetail = async () => {
       let active = true;
       setLoading(true);
-      await getCourById(id)
+      await getCourDetail(id)
         .then((response) => {
-          if (active) setCours(response.data);
+          if (active) d(response.data);
           console.log("Détails du cour sélectionnés avec succès");
         })
         .catch((error) => {
@@ -78,7 +78,7 @@ export default function ProfCoursDetail() {
     try {
       await deleteLecon(leconId);
 
-      setCours((c) => ({
+      d((c) => ({
         ...c,
         lesson: c.lesson.filter((l) => l.id !== toDelete.id),
       }));

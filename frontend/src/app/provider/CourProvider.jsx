@@ -1,9 +1,10 @@
 import React, { Children, useEffect, useState } from "react";
-import { getCour, getCourById } from "../api/courApi";
+import { getCour, getCourDetail } from "../api/courApi";
 import { CourContext } from "../context/CourContext";
 
 function CourProvider({ children }) {
   const [cours, setCours] = useState([]);
+  const [courBrouillon, setCourBrouillon] = useState([]);
   const [cour, setCourDetail] = useState(null);
 
   useEffect(() => {
@@ -13,7 +14,8 @@ function CourProvider({ children }) {
   const fetchCours = async () => {
     try {
       const response = await getCour();
-      setCours(response.data);
+      setCours(response.data.all);
+      setCourBrouillon(response.data.brouillon);
 
       console.log("Cours sélectionnés avec succès");
     } catch (error) {
@@ -27,7 +29,7 @@ function CourProvider({ children }) {
   //   Récupération du cour par son ID
   const fetchCourDetail = async (id) => {
     try {
-      const response = await getCourById(id);
+      const response = await getCourDetail(id);
       setCourDetail(response.data);
 
       console.log("Détails du cour sélectionnés avec succès");
@@ -46,7 +48,7 @@ function CourProvider({ children }) {
 
   return (
     <CourContext.Provider
-      value={{ cours, cour, fetchCours, fetchCourDetail, setCours }}
+      value={{ cours, courBrouillon, cour, fetchCours, fetchCourDetail, setCours, setCourBrouillon }}
     >
       {children}
     </CourContext.Provider>

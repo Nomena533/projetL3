@@ -150,7 +150,7 @@ export default function App() {
           <Route path="cours/:id/lecons/:lessonId" element={<ProfLeconEditeur />} />
           <Route path="cours/:id/lecons/:lessonId/details" element={<ProfLeconDetail />} />
           <Route path="cours/:id/lecons/:lessonId/ressources/nouveau" element={<ProfRessourceEditeur />} />
-          <Route path="cours/:id/lecons/:lessonId/ressources/resourceId" element={<ProfRessourceEditeur />} />
+          <Route path="cours/:id/lecons/:lessonId/ressources/:resourceId" element={<ProfRessourceEditeur />} />
         </Route>
 
         <Route

@@ -84,12 +84,12 @@ function SelectField({ label, value, onChange, options, compact }) {
 }
 
 export default function ProfRessourceEditeur() {
-  const { id: coursId, lessonId, ressourceId } = useParams();
+  const { id: coursId, lessonId, resourceId } = useParams();
   const navigate = useNavigate();
   const inputRef = useRef(null);
 
-  // Décide entre le mode modif et ajout en fonction de ce que retourne le Boolean(ressourceId)
-  const isEditMode = Boolean(ressourceId);
+  // Décide entre le mode modif et ajout en fonction de ce que retourne le Boolean(resourceId)
+  const isEditMode = Boolean(resourceId); // => true si le resourceId est passé depuis l'url
 
   // ----- Mode ajout multiple (création) -----
   // staged contient les fichiers sélectionnés avant leur envoi au backend.
@@ -152,15 +152,15 @@ export default function ProfRessourceEditeur() {
     if (!isEditMode) return;
 
     let active = true;
-    getRessourceById(ressourceId)
+    getRessourceById(resourceId)
       .then((response) => {
         if (!active) return;
         const r = response.data;
 
         // Affichage des données textuels
         setEditForm({
-          titre: r.titre || "",
-          type: r.type || "video",
+          titre: r.titre,
+          type: r.type,
         });
 
         // Affichage du fichier
@@ -178,7 +178,9 @@ export default function ProfRessourceEditeur() {
     return () => {
       active = false;
     };
-  }, [isEditMode, ressourceId]);
+  }, [isEditMode, resourceId]);
+
+  console.log("EditForm : " ,editForm)
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -197,7 +199,7 @@ export default function ProfRessourceEditeur() {
 
       setSubmitting(true);
       try {
-        await updateRessource(ressourceId, formData);
+        await updateRessource(resourceId, formData);
         navigate(`/professeur/cours/${coursId}/lecons/${lessonId}/details`, {
           state: { success: "La ressource a été modifiée avec succès !" },
         });
@@ -222,11 +224,6 @@ export default function ProfRessourceEditeur() {
       formData.append(`ressources[${i}][titre]`, s.titre);
     });
 
-
-    // for (let [key, value] of formData.entries()) {
-    //   console.log(`FormData ${key} : `, value);
-    //   return;
-    // }
 
     setSubmitting(true);
     try {
@@ -326,7 +323,9 @@ export default function ProfRessourceEditeur() {
                 accept={
                   RESSOURCES.find((r) => r.value === editForm.type)?.accept
                 }
-                onChange={(e) => setEditFile(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  setEditFile(e.target.files?.[0] || null)
+                }}
                 className="w-full font-body text-xs text-ink-soft file:mr-3 file:rounded-full file:border-0 file:bg-coral/10 file:px-3 file:py-1.5 file:font-body file:text-xs file:font-semibold file:text-coral-dark hover:file:bg-coral/20"
               />
             </div>

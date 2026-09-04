@@ -48,7 +48,10 @@ export default function ProfLeconDetail() {
 
   const { lessonDetail, fetchLessonDetail } = useLesson();
 
-  const [ressources, setRessources] = useState([]);
+  const [resource, setResource] = useState([]);
+  const [lesson, setLesson] = useState(null);
+
+  // const [ressources, ] = ueState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [toDelete, setToDelete] = useState(null);
@@ -61,26 +64,21 @@ export default function ProfLeconDetail() {
     fetchLessonDetail(lessonId);
   }, [lessonId]);
 
-  const fetchRessources = async () => {
-    setLoading(true);
-    try {
-      const response = await getRessourceByLecon(lessonId);
-      setRessources(response.data);
-    } catch (err) {
-      setError("Impossible de charger les ressources de cette leçon.");
-      console.error(
-        "Erreur lors de la récupération des ressources :",
-        err.response?.data,
-      );
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (lessonDetail !== null) {
+      setResource(lessonDetail.resource);
     }
-  };
+  },[lessonDetail]);
 
   useEffect(() => {
-    fetchRessources();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lessonId]);
+    if (lessonDetail !== null) {
+      setLesson(lessonDetail.lesson);
+    }
+  },[lessonDetail]);
+
+  console.log("lessonDetail : ", lessonDetail);
+  console.log("lesson : ", lesson);
+  console.log("resource : ", resource);
 
   useEffect(() => {
     if (location.state) {
@@ -97,8 +95,15 @@ export default function ProfLeconDetail() {
 
   const handleDeleteRessource = async (ressourceId) => {
     try {
+
       await deleteRessource(ressourceId);
-      setRessources((list) => list.filter((r) => r.id !== ressourceId));
+
+      setResource((previousResource) => {
+        return previousResource.filter((pR) => pR.id !== ressourceId)
+      });
+      // Même logique
+      // setResource(resource.filter((r) => r.id !== ressourceId));
+
       setAlert("La ressource a été supprimée avec succès !");
     } catch (err) {
       console.error(
@@ -111,18 +116,18 @@ export default function ProfLeconDetail() {
   };
 
   const filteredRessources = useMemo(() => {
-    return ressources.filter((r) => {
+    return resource.filter((r) => {
       const matchSearch = search
         ? (r.titre || "").toLowerCase().includes(search.toLowerCase())
         : true;
       const matchType = typeFilter ? r.type === typeFilter : true;
       return matchSearch && matchType;
     });
-  }, [ressources, search, typeFilter]);
+  }, [resource, search, typeFilter]);
 
   const hasActiveFilters = search !== "" || typeFilter !== "";
 
-  if (lessonDetail === undefined || lessonDetail === null) {
+  if ( lesson === null || resource === null ) {
     return (
       <p className="font-body text-sm text-ink-soft">Chargement de la leçon…</p>
     );
@@ -159,7 +164,7 @@ export default function ProfLeconDetail() {
               Leçon
             </span>
             <h2 className="mt-1 font-display text-2xl font-semibold text-ink sm:text-3xl">
-              {lessonDetail.titre || "_"}
+              {lesson.titre || "_"}
             </h2>
           </div>
           <Link
@@ -170,20 +175,20 @@ export default function ProfLeconDetail() {
           </Link>
         </div>
 
-        {lessonDetail.description && (
+        {lesson.description && (
           <p className="mt-3 font-body text-sm leading-relaxed text-ink-soft">
-            {lessonDetail.description}
+            {lesson.description}
           </p>
         )}
 
         <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 font-body text-sm text-ink-soft">
           <span>
             <strong className="text-ink">Durée : </strong>
-            {lessonDetail.duree || "—"}
+            {lesson.duree || "—"}
           </span>
           <span>
             <strong className="text-ink">Ressources : </strong>
-            {ressources.length}
+            {resource.length}
           </span>
         </div>
       </AnimatedSection>
@@ -205,7 +210,7 @@ export default function ProfLeconDetail() {
           </Link>
         </div>
 
-        {ressources.length > 0 && (
+        {resource.length > 0 && (
           <div className="mb-4">
             <FilterBar
               searchValue={search}
@@ -221,7 +226,7 @@ export default function ProfLeconDetail() {
                 },
               ]}
               resultCount={filteredRessources.length}
-              totalCount={ressources.length}
+              totalCount={resource.length}
               hasActiveFilters={hasActiveFilters}
               onReset={() => {
                 setSearch("");
@@ -231,13 +236,13 @@ export default function ProfLeconDetail() {
           </div>
         )}
 
-        {loading ? (
+        {resource === null ? (
           <p className="font-body text-sm text-ink-soft">
             Chargement des ressources…
           </p>
         ) : error ? (
           <p className="font-body text-sm text-brick">{error}</p>
-        ) : ressources.length === 0 ? (
+        ) : resource.length === 0 ? (
           <p className="rounded-xl border border-dashed border-ivory-dark px-5 py-10 text-center font-body text-sm text-ink-soft">
             Cette leçon n'a pas encore de ressource.{" "}
             <Link
@@ -294,7 +299,7 @@ export default function ProfLeconDetail() {
                       <HiOutlinePencilSquare size={17} />
                     </Link>
                     <button
-                      onClick={() => setToDelete(r)}
+                      onClick={() => setToDelete(r)} // r est ici sera pris comme toDelete => donc toDelete va recevoir tous les valeurs de r
                       className="text-ink-soft transition-colors hover:text-brick"
                       aria-label="Supprimer la ressource"
                     >

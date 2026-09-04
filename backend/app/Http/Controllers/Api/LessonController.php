@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\LessonResource;
 use App\Models\Cour;
 use App\Models\Lesson;
+use App\Models\Resource;
 use Illuminate\Http\Request;
 
 class LessonController extends Controller
@@ -60,8 +61,12 @@ class LessonController extends Controller
     public function show($id)
     {
         $lesson = Lesson::find($id);
+        $resource = Resource::where('lesson_id',$id)->orderBy("created_at","DESC")->get();
 
-        return response()->json($lesson);
+        return response()->json([
+            "lesson"=>$lesson,
+            "resource"=>$resource
+        ]);
     }
 
     /**

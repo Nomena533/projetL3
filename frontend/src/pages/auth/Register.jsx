@@ -79,9 +79,14 @@ export default function Register() {
     });
   };
 
+    const [error, setError] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);
+
   // Envoie du formulaire
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setErrorMessage(null);
 
     if (!role) {
       alert("Veuillez sélectionner un rôle.");
@@ -100,6 +105,12 @@ export default function Register() {
       // redirection après inscription
       navigate("/connexion");
     } catch (error) {
+      const message = error.response?.data.errors;
+      setErrorMessage({
+        email : message.email,
+        password : message.password
+      });
+      setError("Une erreur est survenue lors de l'inscription.");
       console.error("Erreur inscription : ", error.response?.data);
     }
   };
@@ -295,6 +306,15 @@ export default function Register() {
                 </button>
               }
             />
+
+            {error && <p className="font-body text-sm text-brick">Erreur : {error}</p>}
+
+            {errorMessage && (
+              <div>
+                <p className="font-body text-sm text-brick">Erreur : {errorMessage.email}</p>
+                <p className="font-body text-sm text-brick">Erreur : {errorMessage.password}</p>
+              </div>
+            )}
 
             <button
               type="submit"

@@ -7,6 +7,7 @@ use App\Http\Resources\ResourceResource;
 use App\Models\Lesson;
 use App\Models\Resource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ResourceController extends Controller
 {
@@ -33,35 +34,6 @@ class ResourceController extends Controller
      */
     public function store(Request $request, $lessonId)
     {
-        /*
-        // 1. Validation des données envoyées par React
-        $validated = $request->validate([
-
-            "titre" => "string",
-            "type" => "in:video,audio,pdf",
-            "file" => "file",
-        ]);
-
-        // 2. Vérifie que la leçon existe
-        $lesson = Lesson::findOrFail($lessonId);
-
-        if ($validated['file']) {
-            // 5. Stocke le fichier dans Storage/app/public/ressources
-            $validated["file"] = $validated["file"]->store("ressources", "public");
-        }
-
-        // 6. Ajoute automatiquement l'id de la leçon
-        $validated["lesson_id"] = $lesson->id;
-
-        // 7. Crée la ressource dans la base de données
-        $ressource = Resource::create($validated);
-
-        // 9. Retourne une réponse JSON
-        return response()->json([
-            "message" => "Ressource créée avec succès",
-            "ressource" => new ResourceResource($ressource),
-        ], 201);
-        */
         
         // 1. Validation des données envoyées par React
         $validated = $request->validate([
@@ -96,10 +68,6 @@ class ResourceController extends Controller
             // 6. Ajoute automatiquement l'id de la leçon
             $ressourceData["lesson_id"] = $lesson->id;
 
-            // dd(
-            //     $request->all(),
-            //     $request->file('ressources')
-            // );
 
             // 7. Crée la ressource dans la base de données
             $ressource = Resource::create($ressourceData);
@@ -124,9 +92,7 @@ class ResourceController extends Controller
     {
         $resource = Resource::find($id);
 
-        return response()->json([
-            "resource"=> new ResourceResource(($resource))
-        ]);
+        return response()->json($resource);
     }
 
     /**
@@ -140,16 +106,64 @@ class ResourceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Resource $resource)
+    public function update(Request $request, $id)
     {
-        //
+        $resource = Resource::findOrFail($id);
+
+        if (!$resource) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Resources introuvable'
+            ], 404);
+        }
+
+        // 1. Validation des données envoyées par React
+        $request->validate([
+            "titre" => "required|string",
+            "type" => "required|in:video,audio,pdf",
+            "fichier" => "file",
+        ]);
+
+        $resource->titre = $request->titre;
+        $resource->type = $request->type;
+
+        // Vérifie si une image a été envoyé
+        if ($request->hasFile('fichier')) {
+            // supprime l'ancienne image 
+            if ($resource->fichier) {
+                Storage::disk("public")->delete($resource->fichier);
+            }
+
+            // Store le fichier dans Storage/app/public/ressources
+            $path = $request->file('fichier')->store("ressources", "public");
+
+            $resource->fichier = $path;
+        }
+
+        $resource->save();
+
+        return response()->json([
+            'message' => 'Resource modifié avec succès',
+            'cour' => new ResourceResource($resource)
+        ], 201);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Resource $resource)
+    public function destroy($id)
     {
-        //
+        $resource = Resource::find($id);
+
+        if ($resource->fichier) {
+            Storage::disk("public")->delete($resource->fichier);
+        }
+
+        $resource->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ressource supprimé avec succès'
+        ]);
     }
 }

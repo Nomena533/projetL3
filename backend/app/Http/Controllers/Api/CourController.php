@@ -16,9 +16,13 @@ class CourController extends Controller
      */
     public function index()
     {
-        $cour = Cour::with('instrument')->with('level')->get();
+        $cour = Cour::with('instrument')->with('level')->with('prof')->get();
+        $courBrouillon = Cour::with('instrument')->with('level')->with('prof')->where("statut", "brouillon")->get();
 
-        return response()->json($cour);
+        return response()->json([
+            "all" => $cour, 
+            "brouillon"=> $courBrouillon
+        ]);
     }
 
     /**
@@ -70,7 +74,7 @@ class CourController extends Controller
     public function show($id)
     {
         $cour = Cour::with("instrument")->find($id);
-        $lesson = Lesson::where("cour_id", $id)->get();
+        $lesson = Lesson::where("cour_id", $id)->orderBy('created_at','ASC')->get();
 
         return response()->json([
             "cour" => $cour, 
@@ -136,6 +140,34 @@ class CourController extends Controller
 
         return response()->json([
             'message' => 'Cour modifié avec succès',
+            'cour' => new CourResource($cour)
+        ], 201);
+    }
+
+    public function updateStatut(Request $request, $id)
+    {
+        // dd($request, $id);
+        $cour = Cour::findOrFail($id);
+
+        if (!$cour) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cours introuvable'
+            ], 404);
+        }
+
+        $cour->instrument_id = $request->instrument_id;
+        $cour->niveau_id = $request->niveau_id;
+        $cour->titre = $request->titre;
+        $cour->description = $request->description;
+        $cour->prix = $request->prix;
+        $cour->duree = $request->duree;
+        $cour->statut = $request->statut;
+
+        $cour->save();
+
+        return response()->json([
+            'message' => 'Statut du cour modifié avec succès',
             'cour' => new CourResource($cour)
         ], 201);
     }
