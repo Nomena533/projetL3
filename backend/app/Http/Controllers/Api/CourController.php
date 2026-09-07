@@ -43,7 +43,7 @@ class CourController extends Controller
             "niveau_id" => 'required|exists:levels,id',
             "titre" => 'required|string',
             "description" => 'required|string',
-            "prix" => 'required',
+            // "prix" => 'required',
 
             // mimes : extension autorisé pour l'insertion d'image
             "image" => 'nullable|image|mimes:jpg,jpeg,png,webp',
@@ -109,7 +109,7 @@ class CourController extends Controller
             "niveau_id" => 'required|exists:levels,id',
             "titre" => 'required|string',
             "description" => 'required|string',
-            "prix" => 'required',
+            // "prix" => 'required',
 
             // mimes : extension autorisé pour l'insertion d'image
             "image" => 'nullable|image|mimes:jpg,jpeg,png,webp',

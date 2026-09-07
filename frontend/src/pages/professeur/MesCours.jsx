@@ -214,7 +214,7 @@ export default function ProfMesCours() {
                 <Th>Durée</Th>
                 <Th>Élèves</Th>
                 <Th>Statut</Th>
-                <Th>Prix</Th>
+                {/* <Th>Prix</Th> */}
                 <Th></Th>
               </tr>
             </thead>
@@ -252,7 +252,7 @@ export default function ProfMesCours() {
                   <Td>
                     <Pill>{c.statut}</Pill>
                   </Td>
-                  <Td className="font-mono">{formatAriary(c.prix)}</Td>
+                  {/* <Td className="font-mono">{formatAriary(c.prix)}</Td> */}
                   <Td>
                     <div className="flex items-center gap-3">
                       <Link

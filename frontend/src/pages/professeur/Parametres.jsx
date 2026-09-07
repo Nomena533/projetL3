@@ -3,7 +3,6 @@ import {
   HiOutlineMoon,
   HiOutlineLanguage,
   HiOutlineBellAlert,
-  HiOutlineLockClosed,
   HiOutlineBanknotes,
   HiOutlineCheckCircle,
 } from "react-icons/hi2";
@@ -11,6 +10,7 @@ import AnimatedSection from "../../components/AnimatedSection";
 import SettingsSection from "../../components/SettingsSection";
 import Toggle from "../../components/Toggle";
 import FormField from "../../components/FormField";
+import ProfilLinkCard from "../../components/ProfilLinkCard";
 
 const LANGUES = [
   { id: "fr", label: "Français" },
@@ -100,14 +100,7 @@ export default function ProfParametres() {
           </SettingsSection>
         </AnimatedSection>
 
-        <AnimatedSection delay={220}>
-          <SettingsSection icon={HiOutlineLockClosed} title="Sécurité" description="Modifie le mot de passe de ton compte.">
-            <div className="grid gap-4 py-5 sm:grid-cols-2">
-              <FormField label="Nouveau mot de passe" type="password" placeholder="••••••••" />
-              <FormField label="Confirmer le mot de passe" type="password" placeholder="••••••••" />
-            </div>
-          </SettingsSection>
-        </AnimatedSection>
+        <ProfilLinkCard to="/professeur/profil" delay={220} />
       </div>
 
       <AnimatedSection delay={260}>

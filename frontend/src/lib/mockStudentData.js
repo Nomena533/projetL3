@@ -160,7 +160,8 @@ export const AVIS_COURS = [
 /* "path" correspond à la route react-router-dom (relative au layout Shell) */
 export const NAV = [
   { path: "/eleve", label: "Tableau de bord", icon: LayoutDashboard, end: true },
-  { path: "/eleve/catalogue", label: "Cours", icon: BookOpen },
+  // { path: "/eleve/catalogue", label: "Cours", icon: BookOpen },
+  { path: "/eleve/formation", label: "Formations", icon: BookOpen },
   { path: "/eleve/progression", label: "Progression & certificats", icon: Award },
   { path: "/eleve/favoris", label: "Favoris", icon: Heart },
   { path: "/eleve/messages", label: "Messages", icon: MessageCircle },

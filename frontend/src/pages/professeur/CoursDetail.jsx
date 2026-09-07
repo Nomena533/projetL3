@@ -26,7 +26,7 @@ export default function ProfCoursDetail() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [cours, d] = useState(null);
+  const [cours, setCoursDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [toDelete, setToDelete] = useState(null);
@@ -40,7 +40,7 @@ export default function ProfCoursDetail() {
       setLoading(true);
       await getCourDetail(id)
         .then((response) => {
-          if (active) d(response.data);
+          if (active) setCoursDetail(response.data);
           console.log("Détails du cour sélectionnés avec succès");
         })
         .catch((error) => {

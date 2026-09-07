@@ -17,6 +17,15 @@ export default function AdminValidation() {
 
   console.log(courBrouillon);
 
+  const formatDate = (date) => {
+    const formatted = new Date(date).toLocaleDateString('fr-FR', {
+      day : 'numeric',
+      month : 'long',
+      year : 'numeric'
+    });
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  }
+
   const handleSubmit = async (id, data) => {
     // event.preventDefault();
     // console.log(data.statut);
@@ -86,7 +95,7 @@ export default function AdminValidation() {
                 </p>
                 <p className="mt-0.5 font-body text-xs text-ink-soft">
                   {c.prof.name} {c.prof.firstname} · {c.instrument.name} ·
-                  soumis le {c.created_at}
+                  soumis le {formatDate(c.created_at)}
                 </p>
               </div>
               <div className="flex gap-2">

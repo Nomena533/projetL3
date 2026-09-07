@@ -33,7 +33,7 @@ export default function Parametres() {
   }
 
   return (
-    <div className="max-w-2xl space-y-8">
+    <div className="max-w-4xl space-y-8">
       <AnimatedSection>
         <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">Mon compte</span>
         <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">Paramètres</h2>
@@ -42,34 +42,36 @@ export default function Parametres() {
         </p>
       </AnimatedSection>
 
-      <AnimatedSection delay={60}>
-        <SettingsSection icon={HiOutlineMoon} title="Apparence" description="Choisis comment la plateforme s'affiche pour toi.">
-          <Toggle
-            checked={darkMode}
-            onChange={setDarkMode}
-            label="Mode sombre"
-            description="Bascule l'interface vers un thème sombre."
-          />
-        </SettingsSection>
-      </AnimatedSection>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <AnimatedSection delay={60}>
+          <SettingsSection icon={HiOutlineMoon} title="Apparence" description="Choisis comment la plateforme s'affiche pour toi.">
+            <Toggle
+              checked={darkMode}
+              onChange={setDarkMode}
+              label="Mode sombre"
+              description="Bascule l'interface vers un thème sombre."
+            />
+          </SettingsSection>
+        </AnimatedSection>
 
-      <AnimatedSection delay={100}>
-        <SettingsSection icon={HiOutlineLanguage} title="Langue" description="Langue utilisée dans ton espace élève.">
-          <div className="flex gap-2 py-4">
-            {LANGUES.map((l) => (
-              <button
-                key={l.id}
-                onClick={() => setLangue(l.id)}
-                className={`rounded-full px-4 py-2 font-body text-sm font-semibold transition-all duration-300 ${
-                  langue === l.id ? "bg-coral text-ivory shadow-md shadow-coral/25" : "border border-ivory-dark text-ink-soft hover:border-coral/40"
-                }`}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
-        </SettingsSection>
-      </AnimatedSection>
+        <AnimatedSection delay={100}>
+          <SettingsSection icon={HiOutlineLanguage} title="Langue" description="Langue utilisée dans ton espace élève.">
+            <div className="flex gap-2 py-4">
+              {LANGUES.map((l) => (
+                <button
+                  key={l.id}
+                  onClick={() => setLangue(l.id)}
+                  className={`rounded-full px-4 py-2 font-body text-sm font-semibold transition-all duration-300 ${
+                    langue === l.id ? "bg-coral text-ivory shadow-md shadow-coral/25" : "border border-ivory-dark text-ink-soft hover:border-coral/40"
+                  }`}
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
+          </SettingsSection>
+        </AnimatedSection>
+      </div>
 
       <AnimatedSection delay={140}>
         <SettingsSection icon={HiOutlineBellAlert} title="Notifications" description="Choisis ce qui te tient informé.">

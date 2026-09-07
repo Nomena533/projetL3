@@ -27,7 +27,7 @@ export default function FilterBar({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-ivory-dark bg-white/70 p-3 sm:p-3.5">
-      <label className="relative min-w-[180px] flex-1">
+      <label className="relative min-w-45 flex-1">
         <HiOutlineMagnifyingGlass
           size={15}
           className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-soft"

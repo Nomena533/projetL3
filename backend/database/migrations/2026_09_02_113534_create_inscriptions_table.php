@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('inscriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("cour_id")->constrained("cours")->onDelete("cascade");
+            $table->foreignId("niveau_id")->constrained("levels")->onDelete("cascade");
             $table->foreignId("user_id")->constrained("users")->cascadeOnDelete();
-            $table->unsignedTinyInteger("progression")->default(0);
+            $table->foreignId("instrument_id")->constrained("instruments")->cascadeOnDelete();
+            $table->decimal("montant");
             $table->enum("statut",["pending","confirmed","canceled"])->default("pending");
             $table->timestamps();
         });

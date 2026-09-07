@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId("niveau_id")->constrained("levels")->cascadeOnDelete();
             $table->string("titre");
             $table->longText("description");
-            $table->decimal("prix");
+            // $table->decimal("prix");
             $table->string("image");
             $table->string("duree");
             $table->enum("statut",["brouillon", "publié"])->default("brouillon");

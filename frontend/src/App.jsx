@@ -18,6 +18,8 @@ import Instructors from "./pages/home/Instructors";
 import Pricing from "./pages/home/Pricing";
 import FAQ from "./pages/home/FAQ";
 import NotFound from "./pages/home/NotFound";
+import Inscription from "./pages/eleve/Inscription";
+import NiveauInscription from "./pages/eleve/Inscription";
 
 import Dashboard from "./pages/eleve/Dashboard";
 import Catalogue from "./pages/eleve/Catalogue";
@@ -28,19 +30,20 @@ import Favoris from "./pages/eleve/Favoris";
 import Messages from "./pages/eleve/Messages";
 import Profil from "./pages/eleve/Profil";
 import Parametres from "./pages/eleve/Parametres";
+import Formation from "./pages/eleve/Formation";
 
 import ProfDashboard from "./pages/professeur/Dashboard";
 import ProfMesCours from "./pages/professeur/MesCours";
-import ProfEditeur from "./pages/professeur/Editeur";
+import ProfCourEditeur from "./pages/professeur/CourEditeur";
 import ProfCorrections from "./pages/professeur/Corrections";
 import ProfEleves from "./pages/professeur/Eleves";
 import ProfMessages from "./pages/professeur/Messages";
-// import ProfParametres from "./pages/professeur/Parametres";
 import ProfParametres from "./pages/professeur/Parametres";
 import ProfCoursDetail from "./pages/professeur/CoursDetail";
 import ProfLeconEditeur from "./pages/professeur/LeconEditeur";
 import ProfRessourceEditeur from "./pages/professeur/RessourceEditeur";
 import ProfLeconDetail from "./pages/professeur/LeconDetail";
+import ProfProfil from "./pages/professeur/Profil";
 
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminUtilisateurs from "./pages/admin/Utilisateurs";
@@ -61,6 +64,7 @@ import Register from "./pages/auth/Register";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/RoleRoute";
+import FormationDetail from "./pages/eleve/FormationDetail";
 
 
 /** Remonte en haut de page à chaque changement de route */
@@ -91,7 +95,7 @@ export default function App() {
     // <BrowserRouter>
       <Routes>
         <Route path="/connexion" element={<Login />} />
-        <Route path="/inscription" element={<Register />} />
+        <Route path="/inscriptionRegister" element={<Register />} />
         <Route
           path="/profPage"
           element={<Navigate to="/professeur" replace />}
@@ -106,6 +110,16 @@ export default function App() {
           <Route path="/tarifs" element={<Pricing />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
+
+          {/* Fonctionne pour le test */}
+          <Route path="/eleve/inscription/niveau" element={<NiveauInscription />} />
+
+          {/* les niveaux viennent du lib/mockformationData.js => affiche 404 not found  */}
+          <Route path="/eleve/inscription?niveau=initiation" element={<NiveauInscription />} />
+          <Route path="/eleve/inscription?niveau=intermediaire" element={<NiveauInscription />} />
+
+          {/* Route original à corriger le syntaxe */}
+          <Route path="/eleve/inscription?niveau=:niveau" element={<NiveauInscription />} />
 
           <Route path="*" element={<NotFound />} />
         </Route>
@@ -127,6 +141,19 @@ export default function App() {
           <Route path="messages" element={<Messages />} />
           <Route path="profil" element={<Profil />} />
           <Route path="parametres" element={<Parametres />} />
+          <Route path="formation" element={<Formation />} />
+
+          {/* les niveaux viennent du lib/mockformationData.js => affiche 404 not found  */}
+          <Route path="inscription?niveau=initiation" element={<NiveauInscription />} />
+          <Route path="inscription?niveau=intermediaire" element={<NiveauInscription />} />
+
+          
+          {/* Route original à corriger le syntaxe */}
+          <Route path="/eleve/inscription?niveau=:niveau" element={<NiveauInscription />} />
+
+
+          {/* Route original à corriger le syntaxe */}
+          <Route path="formation/:niveauId" element={<FormationDetail />} />
         </Route>
 
         <Route
@@ -139,8 +166,8 @@ export default function App() {
         >
           <Route index element={<ProfDashboard />} />
           <Route path="mescours" element={<ProfMesCours />} />
-          <Route path="cours/nouveau" element={<ProfEditeur />} />
-          <Route path="cours/:id" element={<ProfEditeur />} />
+          <Route path="cours/nouveau" element={<ProfCourEditeur />} />
+          <Route path="cours/:id" element={<ProfCourEditeur />} />
           <Route path="corrections" element={<ProfCorrections />} />
           <Route path="eleves" element={<ProfEleves />} />
           <Route path="messages" element={<ProfMessages />} />
@@ -151,6 +178,7 @@ export default function App() {
           <Route path="cours/:id/lecons/:lessonId/details" element={<ProfLeconDetail />} />
           <Route path="cours/:id/lecons/:lessonId/ressources/nouveau" element={<ProfRessourceEditeur />} />
           <Route path="cours/:id/lecons/:lessonId/ressources/:resourceId" element={<ProfRessourceEditeur />} />
+          <Route path="profil" element={<ProfProfil />} />
         </Route>
 
         <Route

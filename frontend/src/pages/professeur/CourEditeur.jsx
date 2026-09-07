@@ -131,17 +131,27 @@ function TextAreaField({ label, name, value, onChange }) {
   );
 }
 
-export default function ProfEditeur() {
+export default function ProfCourEditeur() {
   const { id } = useParams();
+
+  const isEditMode = Boolean(id);
+
   const navigate = useNavigate();
   const [instrumentList, setInstrumentList] = useState([]);
   const [levelList, setLevelList] = useState([]);
 
   const { cour, fetchCours, fetchCourDetail } = useGetCour();
+  const [courDetail, setCourDetail] = useState(null)
 
   useEffect(() => {
     fetchCourDetail(id);
   }, [id]);
+
+  useEffect(() => {
+    if (cour !== null) {
+      setCourDetail(cour.cour);
+    }
+  }, [cour]);
 
   console.log("cour détail : ", cour);
 
@@ -149,10 +159,10 @@ export default function ProfEditeur() {
   const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
-    if (cour?.cour.image) {
-      setImagePreview(`${BASE_URL}/storage/${cour.cour.image}`);
+    if (courDetail) {
+      setImagePreview(`${BASE_URL}/storage/${courDetail.image}`);
     }
-  }, [cour]);
+  }, [courDetail]);
 
   // Données du formulaire du cours
   const [form, setForm] = useState({
@@ -160,7 +170,7 @@ export default function ProfEditeur() {
     niveau_id: "",
     titre: "",
     description: "",
-    prix: "",
+    // prix: "",
     image: null,
     duree: "",
   });
@@ -168,18 +178,19 @@ export default function ProfEditeur() {
   // insères les donnés récupérer par cour et les ajoutes dans le const form
   // plus besoin de faire {id ? cour.nanana : form.nanana} dans le formulaire
   useEffect(() => {
-    if (cour) {
+    if (courDetail) {
       setForm({
-        instrument_id: cour.cour.instrument_id || "",
-        niveau_id: cour.cour.niveau_id || "",
-        titre: cour.cour.titre || "",
-        description: cour.cour.description || "",
-        prix: cour.cour.prix || "",
+        instrument_id: courDetail.instrument_id || "",
+        niveau_id: courDetail.niveau_id || "",
+        titre: courDetail.titre || "",
+        description: courDetail.description || "",
+        // prix: courDetail.prix || "",
         image: null,
-        duree: cour.cour.duree || "",
+        duree: courDetail.duree || "",
       });
+      // setImagePreview(`${BASE_URL}/storage/${courDetail.image}`);
     }
-  }, [cour]);
+  }, [courDetail]);
 
   // Récupération des instruments
   useEffect(() => {
@@ -247,7 +258,7 @@ export default function ProfEditeur() {
     formData.append("instrument_id", form.instrument_id);
     formData.append("niveau_id", form.niveau_id);
     formData.append("description", form.description);
-    formData.append("prix", form.prix);
+    // formData.append("prix", form.prix);
     formData.append("duree", form.duree);
 
     if (form.image) {
@@ -300,7 +311,7 @@ export default function ProfEditeur() {
     (n) => String(n.id) === String(form.niveau_id),
   );
 
-  if (id && cour == null) {
+  if (id && courDetail == null) {
     return (
       <p className="font-body text-sm text-ink-soft">Chargement du cours…</p>
     );
@@ -363,7 +374,7 @@ export default function ProfEditeur() {
                   onChange={handleChange}
                 />
                 {/* Autres informations */}
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-3">
                   {/* Instrument */}
                   <SelectField
                     label="Instrument"
@@ -381,12 +392,12 @@ export default function ProfEditeur() {
                     onChange={handleChange}
                   />
                   {/* Prix */}
-                  <FormField
+                  {/* <FormField
                     label="Prix (Ar)"
                     name="prix"
                     value={form.prix}
                     onChange={handleChange}
-                  />
+                  /> */}
                   {/* Durée */}
                   <FormField
                     label="Durée du cours"
@@ -457,11 +468,11 @@ export default function ProfEditeur() {
                   {selectedInstrument?.name || "Instrument"}
                   {form.duree && ` · ${form.duree}`}
                 </p>
-                <p className="font-mono text-sm text-coral-dark">
+                {/* <p className="font-mono text-sm text-coral-dark">
                   {form.prix
                     ? `${Number(form.prix).toLocaleString("fr-FR")} Ar`
                     : "Prix"}
-                </p>
+                </p> */}
               </div>
             </div>
           </AnimatedSection>

@@ -9,6 +9,7 @@ import {
 } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import Toggle from "../../components/Toggle";
+import ProfilLinkCard from "../../components/ProfilLinkCard";
 
 const LANGUES = [
   { id: "fr", label: "Français" },
@@ -111,17 +112,21 @@ export default function AdminParametres() {
         </SettingsSection>
       </div>
 
-      {/* ---------- MAINTENANCE ---------- */}
-      <SettingsSection icon={HiOutlineWrenchScrewdriver} title="Maintenance" description="Rend le site public inaccessible aux visiteurs le temps d'une intervention." delay={220}>
-        <Toggle
-          checked={maintenance}
-          onChange={setMaintenance}
-          label="Mode maintenance"
-          description="Seuls les administrateurs pourront se connecter tant que le mode est actif."
-        />
-      </SettingsSection>
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* ---------- MAINTENANCE ---------- */}
+        <SettingsSection icon={HiOutlineWrenchScrewdriver} title="Maintenance" description="Rend le site public inaccessible aux visiteurs le temps d'une intervention." delay={220}>
+          <Toggle
+            checked={maintenance}
+            onChange={setMaintenance}
+            label="Mode maintenance"
+            description="Seuls les administrateurs pourront se connecter tant que le mode est actif."
+          />
+        </SettingsSection>
 
-      <AnimatedSection delay={260}>
+        <ProfilLinkCard to="/admin/profil" delay={260} />
+      </div>
+
+      <AnimatedSection delay={300}>
         <button
           onClick={handleSave}
           className="inline-flex items-center gap-2 rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
