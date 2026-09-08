@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('inscriptions', function (Blueprint $table) {
+        Schema::create('inscription_instrument', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("niveau_id")->constrained("levels")->onDelete("cascade");
-            $table->foreignId("user_id")->constrained("users")->cascadeOnDelete();
+            $table->foreignId("inscription_id")->constrained("inscriptions")->cascadeOnDelete();
             $table->foreignId("instrument_id")->constrained("instruments")->cascadeOnDelete();
-            $table->decimal("montant");
-            $table->enum("statut",["pending","confirmed","canceled"])->default("pending");
             $table->timestamps();
         });
     }
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('inscriptions');
+        Schema::dropIfExists('inscription_instrument');
     }
 };

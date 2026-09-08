@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+/* Les fichiers de police eux-mêmes sont chargés en tant que fichiers locaux
+   (npm @fontsource, importés dans main.jsx) — aucune requête réseau vers
+   Google Fonts ou un autre CDN n'est nécessaire, y compris hors connexion. */
+.font-display {
+  font-family: "Fraunces", ui-serif, Georgia, serif;
+}
+.font-body {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+.font-mono {
+  font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+/* ============================================================
+   KALON'NY — Design tokens
+   Palette : corail / brique / ambre / ivoire chaud
+   Typo     : Fraunces (display) · Plus Jakarta Sans (texte) · IBM Plex Mono (chiffres)
+   ============================================================ */
+@theme {
+  /* Polices */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Fonds */
+  --color-ivory: #f8faf8;
+  --color-ivory-dark: #e8f1ed;
+
+  /* Couleur principale (CTA, boutons, liens) */
+  --color-coral: #0f766e;
+  --color-coral-dark: #115e59;
+  --color-coral-light: #5eead4;
+
+  /* Couleur secondaire (titres, sections sombres) */
+  --color-brick: #134e4a;
+  --color-brick-light: #16615b;
+
+  /* Accent */
+  --color-amber: #fbbf24;
+  --color-amber-light: #fde68a;
+
+  /* Texte */
+  --color-ink: #1f2937;
+  --color-ink-soft: #6b7280;
+
+  /* Animations */
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fade-in: fade-in 0.6s ease-out forwards;
+  --animate-string: string-pluck 2.4s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes string-pluck {
+  0%, 100% { transform: scaleY(1); opacity: 0.5; }
+  50% { transform: scaleY(1.15); opacity: 1; }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-ivory);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+  }
+  ::selection {
+    background-color: var(--color-amber-light);
+    color: var(--color-brick);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-coral);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Utilitaire : élément révélé au scroll (piloté par AnimatedSection.jsx) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}

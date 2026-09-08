@@ -9,7 +9,8 @@ class Level extends Model
     protected $fillable = [
         "name",
         "description",
-        "duree"
+        "duree",
+        "prix"
     ];
 
     public function cour() {

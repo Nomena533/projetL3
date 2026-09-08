@@ -20,19 +20,25 @@ import App from "./App";
 import AuthProvider from "./app/provider/AuthProvider";
 import CourProvider from "./app/provider/CourProvider";
 import LessonProvider from "./app/provider/LessonProvider";
+import LevelProvider from "./app/provider/LevelProvider";
+import InstrumentProvider from "./app/provider/InstrumentProvider";
 // import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <LessonProvider>
-      <CourProvider>
-        <BrowserRouter>
-          {/* AuthProvider englobe toute l'application, tous les composants enfants peuvent accéder à user, logout, setUser */}
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </BrowserRouter>
-      </CourProvider>
-    </LessonProvider>
+    <InstrumentProvider>
+      <LevelProvider>
+        <LessonProvider>
+          <CourProvider>
+            <BrowserRouter>
+              {/* AuthProvider englobe toute l'application, tous les composants enfants peuvent accéder à user, logout, setUser */}
+              <AuthProvider>
+                <App />
+              </AuthProvider>
+            </BrowserRouter>
+          </CourProvider>
+        </LessonProvider>
+      </LevelProvider>
+    </InstrumentProvider>
   </React.StrictMode>,
 );

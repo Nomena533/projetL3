@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import Logo from "../components/Logo";
+import { useAuth } from "../app/hooks/useAuth";
+import { LogOut } from "../lib/icons";
 
 const LINKS = [
   { to: "/", label: "Accueil" },
@@ -30,6 +32,17 @@ export default function Navbar() {
     setOpen(false);
   }, [location.pathname]);
 
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/connexion");
+  };
+
+  const initials = user
+    ? `${user.firstname?.[0] || ""}${user.name?.[0] || ""}`.toUpperCase()
+    : "?";
+
   const linkClass = ({ isActive }) =>
     `relative px-1 py-2 font-body text-sm font-medium transition-colors duration-200 ${
       isActive ? "text-coral-dark" : "text-ink-soft hover:text-ink"
@@ -40,34 +53,59 @@ export default function Navbar() {
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-ivory/90 backdrop-blur-md shadow-[0_1px_0_0_var(--color-ivory-dark)]" : "bg-ivory/0"
+        scrolled
+          ? "bg-ivory/90 backdrop-blur-md shadow-[0_1px_0_0_var(--color-ivory-dark)]"
+          : "bg-ivory/0"
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 sm:px-8">
         <Logo size="md" />
 
-        <nav className="hidden items-center gap-7 lg:flex" aria-label="Navigation principale">
+        <nav
+          className="hidden items-center gap-7 lg:flex"
+          aria-label="Navigation principale"
+        >
           {LINKS.map((l) => (
-            <NavLink key={l.to} to={l.to} end={l.to === "/"} className={linkClass}>
+            <NavLink
+              key={l.to}
+              to={l.to}
+              end={l.to === "/"}
+              className={linkClass}
+            >
               {l.label}
             </NavLink>
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
-          <NavLink
-            to="/connexion"
-            className="font-body text-sm font-medium text-ink-soft transition-colors hover:text-ink"
-          >
-            Se connecter
-          </NavLink>
-          <NavLink
-            to="/inscription"
-            className="rounded-full bg-coral px-5 py-2.5 font-body text-sm font-semibold text-ivory shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark hover:shadow-lg hover:shadow-coral/30"
-          >
-            Commencer
-          </NavLink>
-        </div>
+        {user ? (
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-amber-200 flex items-center justify-center font-display text-teal-950 text-sm">
+              {initials}
+            </div>
+            <button
+              onClick={handleLogout}
+              title="Déconnexion"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-stone-500 hover:bg-stone-100 hover:text-teal-950 transition-colors"
+            >
+              <LogOut size={18} />
+            </button>
+          </div>
+        ) : (
+          <div className="hidden items-center gap-3 lg:flex">
+            <NavLink
+              to="/connexionCompte"
+              className="font-body text-sm font-medium text-ink-soft transition-colors hover:text-ink"
+            >
+              Se connecter
+            </NavLink>
+            <NavLink
+              to="/inscriptionCompte"
+              className="rounded-full bg-coral px-5 py-2.5 font-body text-sm font-semibold text-ivory shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark hover:shadow-lg hover:shadow-coral/30"
+            >
+              Commencer
+            </NavLink>
+          </div>
+        )}
 
         <button
           type="button"
@@ -87,7 +125,10 @@ export default function Navbar() {
         }`}
       >
         <div className="min-h-0">
-          <nav className="flex flex-col gap-1 border-t border-ivory-dark bg-ivory px-5 pb-5 pt-3" aria-label="Navigation mobile">
+          <nav
+            className="flex flex-col gap-1 border-t border-ivory-dark bg-ivory px-5 pb-5 pt-3"
+            aria-label="Navigation mobile"
+          >
             {LINKS.map((l) => (
               <NavLink
                 key={l.to}
@@ -95,7 +136,9 @@ export default function Navbar() {
                 end={l.to === "/"}
                 className={({ isActive }) =>
                   `rounded-lg px-3 py-2.5 font-body text-sm font-medium transition-colors ${
-                    isActive ? "bg-coral/10 text-coral-dark" : "text-ink-soft hover:bg-ivory-dark"
+                    isActive
+                      ? "bg-coral/10 text-coral-dark"
+                      : "text-ink-soft hover:bg-ivory-dark"
                   }`
                 }
               >
@@ -103,10 +146,16 @@ export default function Navbar() {
               </NavLink>
             ))}
             <div className="mt-2 flex flex-col gap-2 border-t border-ivory-dark pt-3">
-              <NavLink to="/connexion" className="rounded-lg px-3 py-2.5 text-center font-body text-sm font-medium text-ink-soft hover:bg-ivory-dark">
+              <NavLink
+                to="/connexion"
+                className="rounded-lg px-3 py-2.5 text-center font-body text-sm font-medium text-ink-soft hover:bg-ivory-dark"
+              >
                 Se connecter
               </NavLink>
-              <NavLink to="/inscription" className="rounded-full bg-coral px-3 py-2.5 text-center font-body text-sm font-semibold text-ivory">
+              <NavLink
+                to="/inscription"
+                className="rounded-full bg-coral px-3 py-2.5 text-center font-body text-sm font-semibold text-ivory"
+              >
                 Commencer
               </NavLink>
             </div>

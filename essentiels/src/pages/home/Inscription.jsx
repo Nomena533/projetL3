@@ -8,10 +8,9 @@ function formatAriary(n) {
   return new Intl.NumberFormat("fr-MG").format(n) + " Ar";
 }
 
-export default function NiveauInscription() {
+export default function Inscription() {
   const [params] = useSearchParams();
   const niveauId = params.get("niveau") || "initiation";
-  console.log(niveauId);
   const niveau = NIVEAUX_PARCOURS.find((n) => n.id === niveauId) || NIVEAUX_PARCOURS[0];
 
   const [form, setForm] = useState({ nom: "", prenom: "", email: "", telephone: "" });
@@ -141,7 +140,9 @@ export default function NiveauInscription() {
               <div>
                 <h2 className="font-display text-lg font-semibold text-ink">Instruments à apprendre</h2>
                 <p className="mt-1 font-body text-xs text-ink-soft">Choix multiple possible.</p>
-                <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {/* Liste verticale scrollable : reste lisible même si la liste
+                    d'instruments s'agrandit une fois branchée sur la BDD. */}
+                <div className="mt-4 max-h-72 divide-y divide-ivory-dark overflow-y-auto rounded-2xl border border-ivory-dark bg-ivory">
                   {INSTRUMENTS_DISPONIBLES.map((instr) => {
                     const selected = instruments.includes(instr.id);
                     return (
@@ -149,17 +150,19 @@ export default function NiveauInscription() {
                         type="button"
                         key={instr.id}
                         onClick={() => toggleInstrument(instr.id)}
-                        className={`relative flex flex-col items-center gap-1.5 rounded-2xl border px-3 py-4 transition-all duration-300 ${
-                          selected
-                            ? "border-coral bg-coral/10 shadow-md shadow-coral/15"
-                            : "border-ivory-dark bg-ivory hover:border-coral/40"
+                        className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-200 ${
+                          selected ? "bg-coral/10" : "hover:bg-ivory-dark/40"
                         }`}
                       >
-                        {selected && (
-                          <HiOutlineCheckCircle size={16} className="absolute right-2 top-2 text-coral-dark" />
-                        )}
-                        <span className="text-2xl">{instr.emoji}</span>
-                        <span className="font-body text-xs font-semibold text-ink">{instr.nom}</span>
+                        <span className="text-xl">{instr.emoji}</span>
+                        <span className="flex-1 font-body text-sm font-medium text-ink">{instr.nom}</span>
+                        <span
+                          className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border transition-colors duration-200 ${
+                            selected ? "border-coral bg-coral text-ivory" : "border-ivory-dark bg-white text-transparent"
+                          }`}
+                        >
+                          <HiOutlineCheckCircle size={14} />
+                        </span>
                       </button>
                     );
                   })}

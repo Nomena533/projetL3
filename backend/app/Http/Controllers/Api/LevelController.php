@@ -36,13 +36,15 @@ class LevelController extends Controller
             "name" => "required|string",
             "description" => "required|string",
             "duree" => "required|string",
+            "prix" => "required"
 
         ]);
 
         $Level = Level::create([
             "name" => $request->name,
             "description" => $request->description,
-            "duree" => $request->duree
+            "duree" => $request->duree,
+            "prix" => $request->prix
         ]);
 
         return response()->json([
