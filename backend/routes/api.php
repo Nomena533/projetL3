@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CourController;
+use App\Http\Controllers\Api\InscriptionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\InstrumentController;
 use App\Http\Controllers\Api\LessonController;
@@ -17,7 +18,6 @@ use App\Http\Controllers\Api\ResourceController;
 */
 
 Route::post('/register', [AuthController::class, 'register']);
-
 Route::post('/login', [AuthController::class, 'login']);
 
 /*
@@ -31,12 +31,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Récupérer le profil de l'utilisateur connecté
     Route::get('/profile', [AuthController::class, 'profile']);
-
-    // Déconnexion
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    
     Route::post('/storeCour', [CourController::class, 'store']);
+
+    Route::post('/niveau/{niveauId}/storeInscription', [InscriptionController::class, 'store']);
 });
 
 Route::get('/getRole', [RoleController::class, 'index']);
@@ -64,4 +63,8 @@ Route::get('/getResource', [ResourceController::class, 'index']);
 Route::get('/getResourceDetail/{id}', [ResourceController::class, 'show']);
 Route::put('/updateResource/{id}', [ResourceController::class, 'update']);
 Route::delete('/deleteResource/{id}', [ResourceController::class, 'destroy']);
+
+Route::get('/getInscription', [InscriptionController::class, 'index']);
+Route::get('/getInscriptionDetail/{id}', [InscriptionController::class, 'show']);
+Route::put('/updateStatutInscription/{id}', [InscriptionController::class, 'updateStatut']);
 

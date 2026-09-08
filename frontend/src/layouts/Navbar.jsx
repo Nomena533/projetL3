@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import Logo from "../components/Logo";
 import { useAuth } from "../app/hooks/useAuth";
@@ -19,6 +19,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -36,7 +37,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     await logout();
-    navigate("/connexion");
+    navigate("/connexionCompte");
   };
 
   const initials = user

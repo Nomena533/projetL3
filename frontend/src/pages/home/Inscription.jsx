@@ -9,6 +9,7 @@ import AnimatedSection from "../../components/AnimatedSection";
 import { useAuth } from "../../app/hooks/useAuth";
 import { useLevel } from "../../app/hooks/useLevel";
 import { useInstrument } from "../../app/hooks/useInstrument";
+import { storeInscription } from "../../app/api/inscriptionApi";
 
 function formatAriary(n) {
   return new Intl.NumberFormat("fr-MG").format(n) + " Ar";
@@ -22,10 +23,8 @@ export default function Inscription() {
   const { user } = useAuth();
 
   const [form, setForm] = useState({
-    nom: user.name,
-    prenom: user.firstname,
-    email: user.email,
     telephone: "",
+    montant: "",
   });
 
   const { levels } = useLevel();
@@ -44,14 +43,18 @@ export default function Inscription() {
   // Ids des instruments choisis par l'utilisateur dans le formulaire.
   const [selectedInstruments, setSelectedInstruments] = useState([]);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
+  // A expliquer
   const toggleInstrument = (id) =>
     setSelectedInstruments((list) =>
       list.includes(id) ? list.filter((x) => x !== id) : [...list, id],
     );
+
+  console.log("selectedInstruments : ", selectedInstruments);
 
   const nombreInstruments = selectedInstruments.length;
   // Montant = nombre d'instruments sélectionnés × prix du niveau
@@ -60,12 +63,30 @@ export default function Inscription() {
     [nombreInstruments, niveau],
   );
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (nombreInstruments === 0) return;
-    // Intégration API à brancher ici : POST /api/inscriptions
-    // (nom, prenom, email, telephone, niveau: niveau.id, instruments: selectedInstruments)
-    setSent(true);
+
+    try {
+      const data = {
+        telephone: form.telephone,
+        montant: montantTotal,
+        instruments: selectedInstruments,
+      };
+
+      // console.log("data : ", data);
+      // return;
+
+      const response = await storeInscription(niveau.id, data);
+
+      console.log("Inscription réussie", response.data);
+
+      // (nom, prenom, email, telephone, niveau: niveau.id, instruments: selectedInstruments)
+      setSent(true);
+    } catch (err) {
+      console.error("Erreur lors de l'inscription", err.response?.data);
+      setError("Une erreur est survenue lors de l'enregistrement de la leçon.");
+    }
   };
 
   if (!niveau) {
@@ -166,7 +187,7 @@ export default function Inscription() {
                     </span>
                     <input
                       name="nom"
-                      value={form.nom}
+                      value={user.name}
                       onChange={handleChange}
                       required
                       placeholder="Rakoto"
@@ -179,7 +200,7 @@ export default function Inscription() {
                     </span>
                     <input
                       name="prenom"
-                      value={form.prenom}
+                      value={user.firstname}
                       onChange={handleChange}
                       required
                       placeholder="Fara"
@@ -193,7 +214,7 @@ export default function Inscription() {
                     <input
                       type="email"
                       name="email"
-                      value={form.email}
+                      value={user.email}
                       onChange={handleChange}
                       required
                       placeholder="vous@email.com"
@@ -258,6 +279,7 @@ export default function Inscription() {
                 </div>
               </div>
 
+              {error && <p className="font-body text-sm text-brick">{error}</p>}
               {/* Récapitulatif automatique */}
               <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-linear-to-br from-brick via-coral-dark to-coral p-5 text-ivory">
                 <div>

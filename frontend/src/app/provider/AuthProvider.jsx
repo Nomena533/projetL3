@@ -1,9 +1,12 @@
 import React, { useState } from 'react'
 import { logout as logoutAPI } from '../api/authApi';
 import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 // Composant qui va fourinir les données à toutes l'app
 export default function AuthProvider({children}) {
+
+  const navigate = useNavigate();
   // On initialise l'user connecté au chargement de l'app, on vérifie si l'user existe déjà dans localStorage 
   const [user, setUser] = useState(() => {
     // Récupère l'user sauvegardé après le login
@@ -17,6 +20,9 @@ export default function AuthProvider({children}) {
     try {
       // envoie une requête à Laravel
       await logoutAPI();
+
+      
+
     } catch (error) {
       console.error("Erreur lors du logout : ", error);
     } finally {
