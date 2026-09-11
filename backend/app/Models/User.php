@@ -46,7 +46,8 @@ class User extends Authenticatable
         'firstname',
         'email',
         'password',
-        'role_id'
+        'role_id',
+        'telephone'
     ];
 
     /*
@@ -98,4 +99,8 @@ class User extends Authenticatable
         return $this->hasMany(Cour::class, 'prof_id');
     }
 
+    public function inscription()
+    {
+        return $this->hasMany(Inscription::class);
+    }
 }

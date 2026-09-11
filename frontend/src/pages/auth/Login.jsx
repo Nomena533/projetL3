@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   HiOutlineArrowLeft,
   HiOutlineEnvelope,
@@ -23,6 +23,9 @@ export default function Login() {
   const {setUser} = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  console.log( "location : " , location);
+  
 
   const [form, setForm] = useState({
     email : "",
@@ -47,6 +50,9 @@ export default function Login() {
       // Laravel renvoie le token Sanctum
       // const token = response.data.token;
       const {token,user} = response.data;
+      
+      // console.log("user",user);
+      // return;
 
       // Sauvegarde le token pour les prochaines requêtes API
       localStorage.setItem("token", token);
@@ -59,18 +65,28 @@ export default function Login() {
       console.log("Connexion réussi : ", response.data);
       
       setUser(user);
+
+      // si l'utilisateur était en train d'accéder à une page protégée, on la renvoir vers cette page après connexion
+      // state et from sont envoyé en même temps avec la navigation dans components/RoleRoute.jsx
+      const from = location.state?.from; // => donne /inscription?niveau=1 après console.log()
+
+      if (from) {
+        // replace: true empêche l'user de revenir en arrière qui est la page login
+        navigate(from, { replace: true });
+        return;
+      }
       
       // Récupération du rôle
       const role = user.role;
 
       console.log(role);
       // Redirection selon role
-      if (role === "eleve") {
-        navigate("/eleve")
+      if (role === "eleve") {      
+        navigate("/eleve",  { replace: true } );
       } else if (role === "professeur") {
-        navigate("/professeur")
+        navigate("/professeur", { replace: true });
       } else {
-        navigate("/administrateur")
+        navigate("/administrateur", { replace: true });
       }
 
       // const roleRoutes = {

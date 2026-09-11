@@ -10,6 +10,7 @@ import { useAuth } from "../../app/hooks/useAuth";
 import { useLevel } from "../../app/hooks/useLevel";
 import { useInstrument } from "../../app/hooks/useInstrument";
 import { storeInscription } from "../../app/api/inscriptionApi";
+import { getListInscription } from "../../app/api/userApi";
 
 function formatAriary(n) {
   return new Intl.NumberFormat("fr-MG").format(n) + " Ar";
@@ -18,12 +19,37 @@ function formatAriary(n) {
 export default function Inscription() {
   const [params] = useSearchParams();
   const niveauName = params.get("niveau") || "initiation";
+  const isInitiation = niveauName === "initiation";
   const [niveau, setNiveau] = useState(null);
+
+  const [listInscription, setListInscription] = useState([]);
 
   const { user } = useAuth();
 
+  useEffect(() => {
+    const fetchListInscription = async () => {
+      try {
+        const response = await getListInscription(user.id);
+        setListInscription(response.data);
+
+        console.log(
+          "Liste des inscription sélectionnés avec succès",
+          response.data,
+        );
+      } catch (error) {
+        console.error(
+          "Erreur lors de la récupération des inscription :",
+          error.response?.data,
+        );
+      }
+    };
+    fetchListInscription();
+  }, []);
+
+  console.log("listInscription : ", listInscription);
+
   const [form, setForm] = useState({
-    telephone: "",
+    telephone: user.telephone || "",
     montant: "",
   });
 
@@ -48,9 +74,35 @@ export default function Inscription() {
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
+  // // Cherche l'inscription du niveau initiation
+  const inscriptionInitiation = listInscription.find(
+    (inscription) =>
+      inscription.level.name.toLowerCase() === "initiation" &&
+      inscription.instruments.length > 0,
+  );
+
+  console.log("inscriptionInitiation : " ,inscriptionInitiation);
+  // Remplissage automatique de selectedInstruments avec les ids des intruments de l'inscription sur le niveau initation
+  useEffect(() => {
+    // Cherche l'inscription du niveau initiation
+    const inscriptionInitiation = listInscription.find(
+      (inscription) =>
+        inscription.level.name.toLowerCase() === "initiation" &&
+        inscription.instruments.length > 0,
+    );
+  
+
+    if (inscriptionInitiation) {
+      const ids = inscriptionInitiation.instruments.map((instrument) => instrument.id)
+      setSelectedInstruments(ids);
+    }
+  }, [listInscription]);
+
   // A expliquer
   const toggleInstrument = (id) =>
     setSelectedInstruments((list) =>
+      // Méthode include() permet de rechercher une valeur dans un tableau en la passant entre les (),
+      // retourne true si existe sinon false
       list.includes(id) ? list.filter((x) => x !== id) : [...list, id],
     );
 
@@ -59,7 +111,7 @@ export default function Inscription() {
   const nombreInstruments = selectedInstruments.length;
   // Montant = nombre d'instruments sélectionnés × prix du niveau
   const montantTotal = useMemo(
-    () => nombreInstruments * (niveau?.prix || 0),
+    () => nombreInstruments * (niveau?.prix_mensuel || 0),
     [nombreInstruments, niveau],
   );
 
@@ -142,7 +194,7 @@ export default function Inscription() {
                   Durée : {niveau.duree}
                 </p>
                 <p className="font-body text-xs text-ink-soft">
-                  {formatAriary(niveau.prix)} par instrument
+                  {formatAriary(niveau.prix_mensuel)} par mois par instrument
                 </p>
               </div>
             </div>
@@ -255,7 +307,11 @@ export default function Inscription() {
                       <button
                         type="button"
                         key={instr.id}
-                        onClick={() => toggleInstrument(instr.id)}
+                        onClick={() => {
+                          if (!isInitiation) return; // empêche le clique
+                          toggleInstrument(instr.id)
+                        }}
+                        disabled={!isInitiation}
                         className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-200 ${
                           selected ? "bg-coral/10" : "hover:bg-ivory-dark/40"
                         }`}

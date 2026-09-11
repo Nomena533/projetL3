@@ -23,4 +23,13 @@ class Inscription extends Model
             "instrument_id"
         )->withTimestamps();
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function level() {
+        return $this->belongsTo(Level::class, "niveau_id");
+    }
 }

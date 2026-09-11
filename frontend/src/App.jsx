@@ -64,7 +64,8 @@ import Register from "./pages/auth/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/RoleRoute";
 import FormationDetail from "./pages/eleve/FormationDetail";
-
+import FormationPublique from "./pages/home/FormationPublique";
+import PaiementPublic from "./pages/home/PaiementPublic";
 
 /** Remonte en haut de page à chaque changement de route */
 function ScrollToTop() {
@@ -92,102 +93,111 @@ function HomeLayout() {
 export default function App() {
   return (
     // <BrowserRouter>
-      <Routes>
-        <Route path="/connexionCompte" element={<Login />} />
-        <Route path="/inscriptionCompte" element={<Register />} />
+    <Routes>
+      <Route path="/connexionCompte" element={<Login />} />
+      <Route path="/inscriptionCompte" element={<Register />} />
+      <Route path="/profPage" element={<Navigate to="/professeur" replace />} />
+
+      <Route element={<HomeLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/a-propos" element={<About />} />
+        <Route path="/cours" element={<Courses />} />
+        <Route path="/cours/:id" element={<HomeCourseDetail />} />
+        <Route path="/professeurs" element={<Instructors />} />
+        <Route path="/tarifs" element={<Pricing />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/contact" element={<Contact />} />
         <Route
-          path="/profPage"
-          element={<Navigate to="/professeur" replace />}
-        />
-
-        <Route element={<HomeLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/a-propos" element={<About />} />
-          <Route path="/cours" element={<Courses />} />
-          <Route path="/cours/:id" element={<HomeCourseDetail />} />
-          <Route path="/professeurs" element={<Instructors />} />
-          <Route path="/tarifs" element={<Pricing />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/contact" element={<Contact />} />
-
-          {/* Fonctionne pour le test */}
-          <Route path="/eleve/inscription/niveau" element={<NiveauInscription />} />
-
-          {/* les niveaux viennent du lib/mockformationData.js => affiche 404 not found  */}
-          <Route path="/eleve/inscription?niveau=initiation" element={<NiveauInscription />} />
-          <Route path="/eleve/inscription?niveau=intermediaire" element={<NiveauInscription />} />
-
-          {/* Route original à corriger le syntaxe */}
-          <Route path="/inscription" element={<NiveauInscription />} />
-
-          <Route path="*" element={<NotFound />} />
-        </Route>
-
-        <Route
-          path="/eleve"
+          path="/inscription"
           element={
             <RoleRoute allowedRole={"eleve"}>
-              <LayoutStudent />
+              <NiveauInscription />
             </RoleRoute>
           }
-        >
-          <Route index element={<Dashboard />} />
-          <Route path="catalogue" element={<Catalogue />} />
-          <Route path="cours/:id" element={<CourseDetail />} />
-          <Route path="lecon" element={<LessonPlayer />} />
-          <Route path="progression" element={<Progression />} />
-          <Route path="favoris" element={<Favoris />} />
-          <Route path="messages" element={<Messages />} />
-          <Route path="profil" element={<Profil />} />
-          <Route path="parametres" element={<Parametres />} />
-          <Route path="formation" element={<Formation />} />
+        />
+        <Route path="/formation" element={<FormationPublique />} />
+        <Route path="/paiement" element={<PaiementPublic />} />
 
-          {/* Route original à corriger le syntaxe */}
-          <Route path="formation/:niveauId" element={<FormationDetail />} />
-        </Route>
+        <Route path="*" element={<NotFound />} />
+      </Route>
 
+      <Route
+        path="/eleve"
+        element={
+          <RoleRoute allowedRole={"eleve"}>
+            <LayoutStudent />
+          </RoleRoute>
+        }
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="catalogue" element={<Catalogue />} />
+        <Route path="cours/:id" element={<CourseDetail />} />
+        <Route path="lecon" element={<LessonPlayer />} />
+        <Route path="progression" element={<Progression />} />
+        <Route path="favoris" element={<Favoris />} />
+        <Route path="messages" element={<Messages />} />
+        <Route path="profil" element={<Profil />} />
+        <Route path="parametres" element={<Parametres />} />
+        <Route path="formation" element={<Formation />} />
+
+        {/* Route original à corriger le syntaxe */}
+        <Route path="formation/:niveauId" element={<FormationDetail />} />
+      </Route>
+
+      <Route
+        path="/professeur"
+        element={
+          <RoleRoute allowedRole={"professeur"}>
+            <LayoutProf />
+          </RoleRoute>
+        }
+      >
+        <Route index element={<ProfDashboard />} />
+        <Route path="mescours" element={<ProfMesCours />} />
+        <Route path="cours/nouveau" element={<ProfCourEditeur />} />
+        <Route path="cours/:id" element={<ProfCourEditeur />} />
+        <Route path="corrections" element={<ProfCorrections />} />
+        <Route path="eleves" element={<ProfEleves />} />
+        <Route path="messages" element={<ProfMessages />} />
+        <Route path="parametres" element={<ProfParametres />} />
+        <Route path="cours/:id/details" element={<ProfCoursDetail />} />
+        <Route path="cours/:id/lecons/nouveau" element={<ProfLeconEditeur />} />
         <Route
-          path="/professeur"
-          element={
-              <RoleRoute allowedRole={"professeur"}>
-                <LayoutProf />
-              </RoleRoute>
-          }
-        >
-          <Route index element={<ProfDashboard />} />
-          <Route path="mescours" element={<ProfMesCours />} />
-          <Route path="cours/nouveau" element={<ProfCourEditeur />} />
-          <Route path="cours/:id" element={<ProfCourEditeur />} />
-          <Route path="corrections" element={<ProfCorrections />} />
-          <Route path="eleves" element={<ProfEleves />} />
-          <Route path="messages" element={<ProfMessages />} />
-          <Route path="parametres" element={<ProfParametres />} />
-          <Route path="cours/:id/details" element={<ProfCoursDetail />} />
-          <Route path="cours/:id/lecons/nouveau" element={<ProfLeconEditeur />} />
-          <Route path="cours/:id/lecons/:lessonId" element={<ProfLeconEditeur />} />
-          <Route path="cours/:id/lecons/:lessonId/details" element={<ProfLeconDetail />} />
-          <Route path="cours/:id/lecons/:lessonId/ressources/nouveau" element={<ProfRessourceEditeur />} />
-          <Route path="cours/:id/lecons/:lessonId/ressources/:resourceId" element={<ProfRessourceEditeur />} />
-          <Route path="profil" element={<ProfProfil />} />
-        </Route>
-
+          path="cours/:id/lecons/:lessonId"
+          element={<ProfLeconEditeur />}
+        />
         <Route
-          path="/administrateur"
-          element={
-              <RoleRoute allowedRole={"admin"}>
-                <LayoutAdmin />
-              </RoleRoute>
-          }
-        >
-          <Route index element={<AdminDashboard />} />
-          <Route path="utilisateurs" element={<AdminUtilisateurs />} />
-          <Route path="validation" element={<AdminValidation />} />
-          <Route path="referentiels" element={<AdminReferentiels />} />
-          <Route path="paiements" element={<AdminPaiements />} />
-          <Route path="avis" element={<AdminAvis />} />
-          <Route path="parametres" element={<AdminParametres />} />
-        </Route>
-      </Routes>
+          path="cours/:id/lecons/:lessonId/details"
+          element={<ProfLeconDetail />}
+        />
+        <Route
+          path="cours/:id/lecons/:lessonId/ressources/nouveau"
+          element={<ProfRessourceEditeur />}
+        />
+        <Route
+          path="cours/:id/lecons/:lessonId/ressources/:resourceId"
+          element={<ProfRessourceEditeur />}
+        />
+        <Route path="profil" element={<ProfProfil />} />
+      </Route>
+
+      <Route
+        path="/administrateur"
+        element={
+          <RoleRoute allowedRole={"admin"}>
+            <LayoutAdmin />
+          </RoleRoute>
+        }
+      >
+        <Route index element={<AdminDashboard />} />
+        <Route path="utilisateurs" element={<AdminUtilisateurs />} />
+        <Route path="validation" element={<AdminValidation />} />
+        <Route path="referentiels" element={<AdminReferentiels />} />
+        <Route path="paiements" element={<AdminPaiements />} />
+        <Route path="avis" element={<AdminAvis />} />
+        <Route path="parametres" element={<AdminParametres />} />
+      </Route>
+    </Routes>
     // {/* </BrowserRouter> */}
   );
 }

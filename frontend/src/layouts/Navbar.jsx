@@ -8,9 +8,9 @@ import { LogOut } from "../lib/icons";
 const LINKS = [
   { to: "/", label: "Accueil" },
   { to: "/a-propos", label: "À propos" },
-  { to: "/cours", label: "Cours" },
+  { to: "/formation", label: "Formation" },
   { to: "/professeurs", label: "Professeurs" },
-  { to: "/tarifs", label: "Tarifs" },
+  // { to: "/tarifs", label: "Tarifs" },
   { to: "/faq", label: "FAQ" },
   { to: "/contact", label: "Contact" },
 ];

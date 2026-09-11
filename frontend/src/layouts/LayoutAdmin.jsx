@@ -25,7 +25,8 @@ export default function LayoutAdmin() {
 
   const handleLogout = async () => {
     await logout();
-    navigate("/connexionCompte");
+    // pas nécessaire, redirection déja faite par components/RoleRoute.jsx
+    // navigate("/");
   };
 
   const initials = user

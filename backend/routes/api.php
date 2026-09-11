@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\InstrumentController;
 use App\Http\Controllers\Api\LessonController;
 use App\Http\Controllers\Api\LevelController;
 use App\Http\Controllers\Api\ResourceController;
+use App\Http\Controllers\Api\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,12 +33,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // Récupérer le profil de l'utilisateur connecté
     Route::get('/profile', [AuthController::class, 'profile']);
     Route::post('/logout', [AuthController::class, 'logout']);
-
+    
     Route::post('/storeCour', [CourController::class, 'store']);
-
+    
     Route::post('/niveau/{niveauId}/storeInscription', [InscriptionController::class, 'store']);
-});
 
+    });
+    
 Route::get('/getRole', [RoleController::class, 'index']);
 
 Route::get('/getCour', [CourController::class, 'index']);
@@ -64,6 +66,7 @@ Route::get('/getResourceDetail/{id}', [ResourceController::class, 'show']);
 Route::put('/updateResource/{id}', [ResourceController::class, 'update']);
 Route::delete('/deleteResource/{id}', [ResourceController::class, 'destroy']);
 
+Route::get('/user/{userId}/listInscription', [UserController::class, 'listInscription']);
 Route::get('/getInscription', [InscriptionController::class, 'index']);
 Route::get('/getInscriptionDetail/{id}', [InscriptionController::class, 'show']);
 Route::put('/updateStatutInscription/{id}', [InscriptionController::class, 'updateStatut']);

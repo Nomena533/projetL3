@@ -36,7 +36,8 @@ class LevelController extends Controller
             "name" => "required|string",
             "description" => "required|string",
             "duree" => "required|string",
-            "prix" => "required"
+            "prix_mensuel" => "required",
+            "droit_inscription" => 'required',
 
         ]);
 
@@ -44,7 +45,8 @@ class LevelController extends Controller
             "name" => $request->name,
             "description" => $request->description,
             "duree" => $request->duree,
-            "prix" => $request->prix
+            "prix_mensuel" => $request->prix_mensuel,
+            "droit_inscription" => $request->droit_inscription
         ]);
 
         return response()->json([

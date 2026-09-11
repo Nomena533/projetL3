@@ -41,6 +41,8 @@ class UserResource extends JsonResource
             'role' => $this->role->name, // Relation avec le model Role mise dans le model User
 
             // Date de création
+            'telephone' => $this->telephone,
+
             'created_at' => $this->created_at,
 
             // Date de modification

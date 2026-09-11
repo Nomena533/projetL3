@@ -10,10 +10,15 @@ class Level extends Model
         "name",
         "description",
         "duree",
-        "prix"
+        "prix_mensuel",
+        "droit_inscripition",
     ];
 
     public function cour() {
         return $this->hasMany(Cour::class);
+    }
+
+    public function inscription() {
+        return $this->hasMany(Inscription::class);
     }
 }

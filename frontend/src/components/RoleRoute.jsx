@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../app/hooks/useAuth";
 
 // Utilsant la logique token
@@ -29,14 +29,24 @@ export default function RoleRoute({ children, allowedRole }) {
 // Utilisant useAtuh
 export default function RoleRoute({ children, allowedRole }) {
   // Récupération de user
-  const {user} = useAuth();
+  const { user } = useAuth();
+
+  const location = useLocation();
+  console.log(location);
 
   // Pas connecté
   if (!user) {
-    return <Navigate to="/connexion" replace />;
+    return (
+      // Le state est aussi envoyé vers login
+      <Navigate
+        to="/connexionCompte"
+        state={{ from: location.pathname + location.search }}
+        replace
+      />
+    );
   }
 
-  // Vérification du role
+  // Vérification du role (allowedRole = role qui est permis)
   if (user?.role !== allowedRole) {
     return <Navigate to="/unauthorized" replace />;
   }

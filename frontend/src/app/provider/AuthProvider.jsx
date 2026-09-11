@@ -12,6 +12,7 @@ export default function AuthProvider({children}) {
     // Récupère l'user sauvegardé après le login
     const savedUser = localStorage.getItem("user");
 
+    console.log("localStorage : ", localStorage );
     // Transformation du text stocker par localStorage par JSON.parse en objet JS
     return savedUser ? JSON.parse(savedUser) : null;
   });
@@ -20,7 +21,6 @@ export default function AuthProvider({children}) {
     try {
       // envoie une requête à Laravel
       await logoutAPI();
-
       
 
     } catch (error) {
