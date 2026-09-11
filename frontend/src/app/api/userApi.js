@@ -6,6 +6,6 @@ export const getUser = () => {
     return API.get("/profile");
 };
 
-export const getListInscription = (userId) => {
-    return API.get(`/user/${userId}/listInscription`);
+export const getUserListInscription = (userId) => {
+    return API.get(`/user/${userId}/userListInscription`);
 };

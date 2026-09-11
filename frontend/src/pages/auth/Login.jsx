@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import {
   HiOutlineArrowLeft,
   HiOutlineEnvelope,
@@ -10,34 +16,42 @@ import {
   HiOutlineUserPlus,
   HiOutlineAcademicCap,
   HiOutlineMusicalNote,
+  HiOutlineCheckCircle,
 } from "react-icons/hi2";
 import { HiStar } from "react-icons/hi";
 import AnimatedSection from "../../components/AnimatedSection";
 import ValihaMotif from "../../components/ValihaMotif";
 import FormField from "../../components/FormField";
+import Modal from "../../components/Modal";
 import { login } from "../../app/api/authApi";
 import { useAuth } from "../../app/hooks/useAuth";
-
+import { useUserInscription } from "../../app/hooks/useUserInscription";
+import { LogoBlanc } from "../../components/Logo";
 
 export default function Login() {
-  const {setUser} = useAuth();
+  const { setUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  console.log( "location : " , location);
-  
+
+  const { fetchUserListInscription } = useUserInscription();
 
   const [form, setForm] = useState({
-    email : "",
-    password : "",
+    email: "",
+    password: "",
   });
+
+  // Affichage d'une modale quand l'élève est déjà inscrit au niveau visé
+  const [showAlreadyEnrolledModal, setShowAlreadyEnrolledModal] =
+    useState(false);
+  const [alreadyEnrolledNiveau, setAlreadyEnrolledNiveau] = useState(null);
 
   const handleChange = (e) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value,
     });
-  } 
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,8 +63,8 @@ export default function Login() {
 
       // Laravel renvoie le token Sanctum
       // const token = response.data.token;
-      const {token,user} = response.data;
-      
+      const { token, user } = response.data;
+
       // console.log("user",user);
       // return;
 
@@ -60,49 +74,79 @@ export default function Login() {
       // const user = response.data.user;
 
       // Sauvegarde les information de l'user, JSON.stringify transforme l'objet user en text pour pouvoir le stocker
-      localStorage.setItem("user", JSON.stringify(user))
+      localStorage.setItem("user", JSON.stringify(user));
 
       console.log("Connexion réussi : ", response.data);
-      
+
       setUser(user);
+
+      // listInscription contient les données qui seront juste disponible dans le handleSubmit
+      const listInscription = await fetchUserListInscription(user.id);
 
       // si l'utilisateur était en train d'accéder à une page protégée, on la renvoir vers cette page après connexion
       // state et from sont envoyé en même temps avec la navigation dans components/RoleRoute.jsx
-      const from = location.state?.from; // => donne /inscription?niveau=1 après console.log()
+      const from = location.state?.from; // => donne /inscription?niveau=initiation après console.log()
+
+      // "from" n'existe que si l'utilisateur venait d'une redirection (ex: page protégée).
+      // Sur une connexion classique il est undefined, donc on protège l'accès avant de le parser.
+      let inscrit = false;
+      let niveauFromParams = null;
+
+      if (from) {
+        const searchParams = new URLSearchParams(from.split("?")[1] || "");
+        niveauFromParams = searchParams.get("niveau");
+
+        if (niveauFromParams) {
+          const inscription = listInscription.filter(
+            (inscription) => inscription.level.name === niveauFromParams,
+          );
+
+          inscrit = inscription.length === 1;
+        }
+      }
+
+      if (inscrit) {
+        setAlreadyEnrolledNiveau(niveauFromParams);
+        setShowAlreadyEnrolledModal(true);
+        return;
+      }
 
       if (from) {
         // replace: true empêche l'user de revenir en arrière qui est la page login
         navigate(from, { replace: true });
         return;
       }
-      
+
       // Récupération du rôle
       const role = user.role;
 
       console.log(role);
       // Redirection selon role
-      if (role === "eleve") {      
-        navigate("/eleve",  { replace: true } );
+      if (role === "eleve") {
+        navigate("/eleve", { replace: true });
       } else if (role === "professeur") {
         navigate("/professeur", { replace: true });
       } else {
         navigate("/administrateur", { replace: true });
       }
-
-      // const roleRoutes = {
-      //   eleve:"/eleve",
-      //   prefesseur:"/professeur",
-      //   admin:"/administrateur"
-      // }
-
-      // const route = roleRoutes[role];
-
-      // navigate(route || "/unauthorized");
     } catch (error) {
       console.error("Erreur lors de la connexion : ", error.response?.data);
     }
+  };
 
-  }
+  const handleCloseAlreadyEnrolledModal = () => {
+    setShowAlreadyEnrolledModal(false);
+  };
+
+  const handleGoToFormation = () => {
+    setShowAlreadyEnrolledModal(false);
+    navigate("/eleve/formation", { replace: true });
+  };
+
+  const handleGoHome = () => {
+    setShowAlreadyEnrolledModal(false);
+    navigate("/", { replace: true });
+  };
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-ivory px-5 py-10 font-body sm:px-8">
@@ -125,45 +169,37 @@ export default function Login() {
       <div className="relative mx-auto w-full max-w-5xl overflow-hidden rounded-4xl shadow-2xl shadow-brick/20 md:grid md:grid-cols-2">
         {/* ---------- PANNEAU ÉDITORIAL ---------- */}
         <AnimatedSection className="relative hidden flex-col justify-between overflow-hidden bg-linear-to-br from-brick via-coral to-amber p-1 md:flex">
-          <div className="flex h-full flex-col justify-between rounded-[1.85rem] bg-ink/90 p-10">
-            <div>
-              <span className="font-display text-lg font-semibold text-ivory">
-                Kalon'ny
-              </span>
-              <p className="mt-10 font-display text-2xl italic leading-snug text-ivory">
-                « Chaque corde tressée
-                <br />
-                est une leçon apprise. »
-              </p>
-              <p className="mt-4 font-body text-sm leading-relaxed text-ivory/60">
-                Apprends un instrument avec de vrais professeurs, à ton rythme,
-                où que tu sois à Madagascar.
-              </p>
-            </div>
-
-            <div>
-              <ValihaMotif count={24} tone="amber" className="h-20" />
-              <div className="mt-6 flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  {[0, 1, 2].map((i) => (
-                    <span
-                      key={i}
-                      className="h-8 w-8 rounded-full border-2 border-ink bg-linear-to-br from-coral to-amber"
-                    />
-                  ))}
-                </div>
-                <div>
-                  <p className="flex items-center gap-1 font-body text-sm font-semibold text-ivory">
-                    4.8 <HiStar className="text-amber" size={13} />
-                  </p>
-                  <p className="font-mono text-[10px] uppercase tracking-wide text-ivory/50">
-                    +1 000 élèves nous font confiance
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </AnimatedSection>
+                  <div className="flex h-full flex-col justify-between rounded-[1.85rem] bg-ink/90 p-10">
+                    <div className="flex justify-center">
+                      <LogoBlanc width="200px" />
+                    </div>
+                    <div>
+                      <ValihaMotif count={24} tone="amber" className="h-20" />
+                      <p className="mt-4 font-body text-sm leading-relaxed text-ivory/60">
+                        Apprends un instrument avec de vrais professeurs, à ton rythme,
+                        où que tu sois à Madagascar.
+                      </p>
+                      <div className="mt-6 flex items-center gap-3">
+                        <div className="flex -space-x-2">
+                          {[0, 1, 2].map((i) => (
+                            <span
+                              key={i}
+                              className="h-8 w-8 rounded-full border-2 border-ink bg-linear-to-br from-coral to-amber"
+                            />
+                          ))}
+                        </div>
+                        <div>
+                          <p className="flex items-center gap-1 font-body text-sm font-semibold text-ivory">
+                            4.8 <HiStar className="text-amber" size={13} />
+                          </p>
+                          <p className="font-mono text-[10px] uppercase tracking-wide text-ivory/50">
+                            +1 000 élèves nous font confiance
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </AnimatedSection>
 
         {/* ---------- FORMULAIRE ---------- */}
         <AnimatedSection delay={100} className="bg-white/90 p-8 sm:p-10">
@@ -185,7 +221,7 @@ export default function Login() {
                 }
               />
             </NavLink>
-                
+
             <NavLink
               to={"/inscriptionCompte"}
               className={({ isActive }) =>
@@ -204,8 +240,11 @@ export default function Login() {
               />
             </NavLink>
           </div>
-
-          <form onSubmit={handleSubmit} key={"login"} className="animate-fade-in">
+          <form
+            onSubmit={handleSubmit}
+            key={"login"}
+            className="animate-fade-in items-center"
+          >
             <FormField
               label="Adresse e-mail"
               type="email"
@@ -249,12 +288,12 @@ export default function Login() {
             />
 
             <div className="mb-2 text-right">
-            <button
+              <button
                 type="button"
                 className="font-body text-xs font-medium text-coral-dark transition-colors hover:text-brick"
-            >
+              >
                 Mot de passe oublié ?
-            </button>
+              </button>
             </div>
 
             <button
@@ -274,6 +313,51 @@ export default function Login() {
           </p>
         </AnimatedSection>
       </div>
+
+      {/* ---------- MODALE : DÉJÀ INSCRIT À CE NIVEAU ---------- */}
+      <Modal
+        open={showAlreadyEnrolledModal}
+        onClose={handleCloseAlreadyEnrolledModal}
+        title="Déjà inscrit(e) à ce niveau"
+      >
+        <div className="text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-light/50 text-amber-dark">
+            <HiOutlineCheckCircle size={28} />
+          </div>
+
+          <p className="font-body text-sm leading-relaxed text-ink-soft">
+            {alreadyEnrolledNiveau ? (
+              <>
+                Tu es déjà inscrit(e) au niveau{" "}
+                <span className="font-semibold text-ink">
+                  {alreadyEnrolledNiveau}
+                </span>
+                . Tu peux continuer ta formation depuis ton tableau de bord.
+              </>
+            ) : (
+              "Tu es déjà inscrit(e) à ce niveau. Tu peux continuer ta formation depuis ton tableau de bord."
+            )}
+          </p>
+
+          <div className="mt-6 flex flex-col gap-2.5">
+            <button
+              type="button"
+              onClick={handleGoToFormation}
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-coral py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
+            >
+              <HiOutlineAcademicCap size={16} />
+              Voir ma formation
+            </button>
+            <button
+              type="button"
+              onClick={handleGoHome}
+              className="w-full rounded-full py-3 font-body text-sm font-semibold text-ink-soft transition-colors hover:text-ink"
+            >
+              Retour à l'accueil
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

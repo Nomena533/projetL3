@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function listInscription(Request $request, $userId) {
+    public function userListInscription(Request $request, $userId) {
         // // Récupère l'id de l'user connecté
         // $userId = $request->user()->id;
         // dd($userId);

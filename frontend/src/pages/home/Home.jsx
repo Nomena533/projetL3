@@ -117,7 +117,7 @@ export default function Home() {
                 to={`/cours?instrument=${instr.id}`}
                 className="group block rounded-2xl border border-ivory-dark bg-white/60 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-coral/40 hover:shadow-xl hover:shadow-coral/10"
               >
-                <span className="text-3xl">{instr.emoji}</span>
+                {/* <span className="text-3xl">{instr.emoji}</span> */}
                 <h3 className="mt-4 font-display text-lg font-semibold text-ink group-hover:text-coral-dark">
                   {instr.nom}
                 </h3>
@@ -267,7 +267,7 @@ export default function Home() {
             Rejoignez plus de 1 000 élèves malgaches qui apprennent la musique à leur rythme, avec de vrais professeurs.
           </p>
           <Link
-            to="/inscription"
+            to="/inscriptionCompte"
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-ivory px-8 py-3.5 font-body text-sm font-semibold text-brick shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
           >
             Créer mon compte gratuit <HiOutlineArrowRight />

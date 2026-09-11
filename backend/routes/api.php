@@ -66,7 +66,7 @@ Route::get('/getResourceDetail/{id}', [ResourceController::class, 'show']);
 Route::put('/updateResource/{id}', [ResourceController::class, 'update']);
 Route::delete('/deleteResource/{id}', [ResourceController::class, 'destroy']);
 
-Route::get('/user/{userId}/listInscription', [UserController::class, 'listInscription']);
+Route::get('/user/{userId}/userListInscription', [UserController::class, 'userListInscription']);
 Route::get('/getInscription', [InscriptionController::class, 'index']);
 Route::get('/getInscriptionDetail/{id}', [InscriptionController::class, 'show']);
 Route::put('/updateStatutInscription/{id}', [InscriptionController::class, 'updateStatut']);

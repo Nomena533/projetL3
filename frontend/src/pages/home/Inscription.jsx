@@ -10,7 +10,8 @@ import { useAuth } from "../../app/hooks/useAuth";
 import { useLevel } from "../../app/hooks/useLevel";
 import { useInstrument } from "../../app/hooks/useInstrument";
 import { storeInscription } from "../../app/api/inscriptionApi";
-import { getListInscription } from "../../app/api/userApi";
+import { getUserListInscription } from "../../app/api/userApi";
+import { useUserInscription } from "../../app/hooks/useUserInscription";
 
 function formatAriary(n) {
   return new Intl.NumberFormat("fr-MG").format(n) + " Ar";
@@ -22,31 +23,16 @@ export default function Inscription() {
   const isInitiation = niveauName === "initiation";
   const [niveau, setNiveau] = useState(null);
 
-  const [listInscription, setListInscription] = useState([]);
-
   const { user } = useAuth();
 
+  const { userListInscription, fetchUserListInscription } =
+    useUserInscription();
+
   useEffect(() => {
-    const fetchListInscription = async () => {
-      try {
-        const response = await getListInscription(user.id);
-        setListInscription(response.data);
+    fetchUserListInscription(user.id);
+  }, [user]);
 
-        console.log(
-          "Liste des inscription sélectionnés avec succès",
-          response.data,
-        );
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des inscription :",
-          error.response?.data,
-        );
-      }
-    };
-    fetchListInscription();
-  }, []);
-
-  console.log("listInscription : ", listInscription);
+  console.log("userListInscription : ", userListInscription);
 
   const [form, setForm] = useState({
     telephone: user.telephone || "",
@@ -67,6 +53,7 @@ export default function Inscription() {
   }, [levels, niveauName]);
 
   // Ids des instruments choisis par l'utilisateur dans le formulaire.
+  // const [selectedInstruments, setSelectedInstruments] = useState([]);
   const [selectedInstruments, setSelectedInstruments] = useState([]);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState(null);
@@ -75,41 +62,62 @@ export default function Inscription() {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
   // // Cherche l'inscription du niveau initiation
-  const inscriptionInitiation = listInscription.find(
+  const inscriptionInitiation = userListInscription.find(
     (inscription) =>
       inscription.level.name.toLowerCase() === "initiation" &&
       inscription.instruments.length > 0,
   );
 
-  console.log("inscriptionInitiation : " ,inscriptionInitiation);
+  console.log("inscriptionInitiation : ", inscriptionInitiation);
   // Remplissage automatique de selectedInstruments avec les ids des intruments de l'inscription sur le niveau initation
   useEffect(() => {
     // Cherche l'inscription du niveau initiation
-    const inscriptionInitiation = listInscription.find(
+    const inscriptionInitiation = userListInscription.find(
       (inscription) =>
         inscription.level.name.toLowerCase() === "initiation" &&
         inscription.instruments.length > 0,
     );
-  
 
     if (inscriptionInitiation) {
-      const ids = inscriptionInitiation.instruments.map((instrument) => instrument.id)
-      setSelectedInstruments(ids);
+      const instruments = inscriptionInitiation.instruments.map(
+        (instrument) => ({
+          id: instrument.id,
+          name: instrument.name,
+        }),
+      );
+
+      setSelectedInstruments(instruments);
     }
-  }, [listInscription]);
+  }, [userListInscription]);
+  console.log("azkjhealzheak : ", selectedInstruments);
 
   // A expliquer
-  const toggleInstrument = (id) =>
-    setSelectedInstruments((list) =>
-      // Méthode include() permet de rechercher une valeur dans un tableau en la passant entre les (),
-      // retourne true si existe sinon false
-      list.includes(id) ? list.filter((x) => x !== id) : [...list, id],
-    );
+  // const toggleInstrument = (id, name) => {
+  //   setSelectedInstruments((list) =>
+  //     // Méthode include() permet de rechercher une valeur dans un tableau en la passant entre les (),
+  //     // retourne true si existe sinon false
+  //     // n'accepte qu'un tableau
+  //     list.includes(id) ? list.filter((x) => x !== id) : [...list, id],
+  //   );
+  // };
+
+  const toggleInstrument = (id, name) => {
+    setSelectedInstruments((list) => {
+      const existe = list.some((instrument) => instrument.id === id);
+
+      if (existe) {
+        return list.filter((instrument) => instrument.id !== id);
+      }
+
+      return [...list, { id, name }];
+    });
+  };
 
   console.log("selectedInstruments : ", selectedInstruments);
 
   const nombreInstruments = selectedInstruments.length;
-  // Montant = nombre d'instruments sélectionnés × prix du niveau
+
+  // Montant = nombre d'instruments sélectionnés × prix mensuel du niveau
   const montantTotal = useMemo(
     () => nombreInstruments * (niveau?.prix_mensuel || 0),
     [nombreInstruments, niveau],
@@ -123,7 +131,7 @@ export default function Inscription() {
       const data = {
         telephone: form.telephone,
         montant: montantTotal,
-        instruments: selectedInstruments,
+        instruments: selectedInstruments.map((instrument) => instrument.id),
       };
 
       // console.log("data : ", data);
@@ -140,6 +148,10 @@ export default function Inscription() {
       setError("Une erreur est survenue lors de l'enregistrement de la leçon.");
     }
   };
+
+  const instrumentsParam = selectedInstruments
+    .map((instrument) => instrument.name.toLowerCase())
+    .join(",");
 
   if (!niveau) {
     return (
@@ -219,10 +231,10 @@ export default function Inscription() {
                 {form.email || "ton adresse"}.
               </p>
               <Link
-                to="/"
+                to={`/paiement?niveau=${niveau.name}&instruments=${instrumentsParam}`}
                 className="mt-3 font-body text-sm font-semibold text-coral-dark hover:text-brick"
               >
-                Retour à l'accueil
+                Finaliser le paiement pour cette inscription
               </Link>
             </div>
           ) : (
@@ -302,14 +314,18 @@ export default function Inscription() {
                     d'instruments s'agrandit une fois branchée sur la BDD. */}
                 <div className="mt-4 max-h-72 divide-y divide-ivory-dark overflow-y-auto rounded-2xl border border-ivory-dark bg-ivory">
                   {instruments.map((instr) => {
-                    const selected = selectedInstruments.includes(instr.id);
+                    const selected = selectedInstruments.some(
+                      (instrument) => instrument.id === instr.id,
+                    );
+                    // const selected = selectedInstruments.includes(instr.id);
+
                     return (
                       <button
                         type="button"
                         key={instr.id}
                         onClick={() => {
                           if (!isInitiation) return; // empêche le clique
-                          toggleInstrument(instr.id)
+                          toggleInstrument(instr.id, instr.name);
                         }}
                         disabled={!isInitiation}
                         className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-200 ${

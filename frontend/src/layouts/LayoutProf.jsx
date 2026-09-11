@@ -42,9 +42,8 @@ export default function LayoutProf({ role }) {
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}
       >
-        <div className="px-6 py-6 flex items-center gap-2 border-b border-teal-900">
-          <Music size={20} className="text-amber-400" />
-          <span className="font-display text-lg text-stone-50">Kalon'ny</span>
+        <div className="px-6 py-6 flex items-center justify-center gap-2 border-b border-teal-900">
+          <LogoBlanc />
           <button
             className="ml-auto md:hidden"
             onClick={() => setMobileOpen(false)}

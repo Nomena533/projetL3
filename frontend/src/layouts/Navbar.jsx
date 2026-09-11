@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
-import Logo from "../components/Logo";
+import { LogoVert } from "../components/Logo";
 import { useAuth } from "../app/hooks/useAuth";
 import { LogOut } from "../lib/icons";
 
@@ -60,7 +60,7 @@ export default function Navbar() {
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 sm:px-8">
-        <Logo size="md" />
+        <LogoVert />
 
         <nav
           className="hidden items-center gap-7 lg:flex"

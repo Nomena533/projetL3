@@ -17,7 +17,7 @@ import ValihaMotif from "../../components/ValihaMotif";
 import FormField from "../../components/FormField";
 import { register } from "../../app/api/authApi";
 import { getRoles } from "../../app/api/roleApi";
-
+import { LogoBlanc } from "../../components/Logo";
 
 const ROLES_ICONS = {
   professeur: HiOutlineMusicalNote,
@@ -52,14 +52,14 @@ export default function Register() {
         // Appel l'api http:://localhost:8000/api/getRoles
         const response = await getRoles();
 
-        console.log("Response.data : ",response.data);
+        console.log("Response.data : ", response.data);
 
         // On adapte les données de Laravel
         // au format utilisé par notre interface.
         const formattedRoles = response.data.map((r) => ({
-            id: r.id,
-            label: r.name,
-            icon: ROLES_ICONS[r.name]
+          id: r.id,
+          label: r.name,
+          icon: ROLES_ICONS[r.name],
         }));
 
         setRoles(formattedRoles);
@@ -79,8 +79,8 @@ export default function Register() {
     });
   };
 
-    const [error, setError] = useState(null);
-    const [errorMessage, setErrorMessage] = useState(null);
+  const [error, setError] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   // Envoie du formulaire
   const handleSubmit = async (e) => {
@@ -95,8 +95,8 @@ export default function Register() {
     try {
       const data = {
         ...Form,
-        role_id : role
-      }
+        role_id: role,
+      };
       // Envoie des données à POST http:://localhost:8000/api/register
       const response = await register(data);
 
@@ -107,8 +107,8 @@ export default function Register() {
     } catch (error) {
       const message = error.response?.data.errors;
       setErrorMessage({
-        email : message.email,
-        password : message.password
+        email: message.email,
+        password: message.password,
       });
       setError("Une erreur est survenue lors de l'inscription.");
       console.error("Erreur inscription : ", error.response?.data);
@@ -137,23 +137,15 @@ export default function Register() {
         {/* ---------- PANNEAU ÉDITORIAL ---------- */}
         <AnimatedSection className="relative hidden flex-col justify-between overflow-hidden bg-linear-to-br from-brick via-coral to-amber p-1 md:flex">
           <div className="flex h-full flex-col justify-between rounded-[1.85rem] bg-ink/90 p-10">
+            <div className="flex justify-center">
+              <LogoBlanc width="200px" />
+            </div>
             <div>
-              <span className="font-display text-lg font-semibold text-ivory">
-                Kalon'ny
-              </span>
-              <p className="mt-10 font-display text-2xl italic leading-snug text-ivory">
-                « Chaque corde tressée
-                <br />
-                est une leçon apprise. »
-              </p>
+              <ValihaMotif count={24} tone="amber" className="h-20" />
               <p className="mt-4 font-body text-sm leading-relaxed text-ivory/60">
                 Apprends un instrument avec de vrais professeurs, à ton rythme,
                 où que tu sois à Madagascar.
               </p>
-            </div>
-
-            <div>
-              <ValihaMotif count={24} tone="amber" className="h-20" />
               <div className="mt-6 flex items-center gap-3">
                 <div className="flex -space-x-2">
                   {[0, 1, 2].map((i) => (
@@ -248,19 +240,18 @@ export default function Register() {
                 {roles.map((r) => (
                   // const Icon = ROLES_ICONS[r.name];
 
-                    <button
-                      type="button"
-                      key={r.id}
-                      onClick={() => setRole(r.id)}
-                      className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 font-body text-sm font-semibold transition-all duration-300 ${
-                        role === r.id
-                          ? "border-coral bg-coral/10 text-coral-dark"
-                          : "border-ivory-dark text-ink-soft hover:border-coral/40"
-                      }`}
-                    >
-                      <r.icon size={16} /> {r.label}
-                    </button>
-                  
+                  <button
+                    type="button"
+                    key={r.id}
+                    onClick={() => setRole(r.id)}
+                    className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 font-body text-sm font-semibold transition-all duration-300 ${
+                      role === r.id
+                        ? "border-coral bg-coral/10 text-coral-dark"
+                        : "border-ivory-dark text-ink-soft hover:border-coral/40"
+                    }`}
+                  >
+                    <r.icon size={16} /> {r.label}
+                  </button>
                 ))}
               </div>
             </div>
@@ -307,12 +298,18 @@ export default function Register() {
               }
             />
 
-            {error && <p className="font-body text-sm text-brick">Erreur : {error}</p>}
+            {error && (
+              <p className="font-body text-sm text-brick">Erreur : {error}</p>
+            )}
 
             {errorMessage && (
               <div>
-                <p className="font-body text-sm text-brick">Erreur : {errorMessage.email}</p>
-                <p className="font-body text-sm text-brick">Erreur : {errorMessage.password}</p>
+                <p className="font-body text-sm text-brick">
+                  Erreur : {errorMessage.email}
+                </p>
+                <p className="font-body text-sm text-brick">
+                  Erreur : {errorMessage.password}
+                </p>
               </div>
             )}
 
@@ -320,7 +317,7 @@ export default function Register() {
               type="submit"
               className="group mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-coral py-3.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark disabled:pointer-events-none disabled:opacity-70"
             >
-                <HiOutlineUserPlus size={16} />
+              <HiOutlineUserPlus size={16} />
               Créer mon compte
             </button>
           </form>

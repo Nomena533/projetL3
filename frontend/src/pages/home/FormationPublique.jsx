@@ -8,15 +8,29 @@ import {
 import AnimatedSection from "../../components/AnimatedSection";
 import { NIVEAUX_PARCOURS } from "../../lib/mockFormationData";
 import { useLevel } from "../../app/hooks/useLevel";
+import { useUserInscription } from "../../app/hooks/useUserInscription";
+import { useEffect } from "react";
+import { useAuth } from "../../app/hooks/useAuth";
 
 export default function FormationPublique() {
   const { levels } = useLevel();
+  const { user } = useAuth();
 
-  
+  const { userListInscription, fetchUserListInscription } =
+    useUserInscription();
+
+  useEffect(() => {
+    if (user) {
+      fetchUserListInscription(user.id);
+    }
+  }, [user]);
+
   const location = useLocation();
   console.log(location);
-  
-  // console.log(levels); return;
+
+  console.log("userListInscription : ", userListInscription);
+
+  const isInscritQuelquePart = userListInscription.length > 0;
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 px-4 py-12 sm:px-6">
@@ -39,16 +53,21 @@ export default function FormationPublique() {
 
       <div className="space-y-4">
         {levels.map((n, i) => {
-          let ouvertInscription;
-          if (n.name === "initiation") {
-            ouvertInscription = true;
-          } else if (n.name === "debutant") {
+          const inscription = userListInscription.filter(
+            (inscription) => inscription.niveau_id === n.id,
+          );
+          const inscrit = inscription.length === 1;
+
+          let ouvertInscription = false;
+          
+          if (inscrit || isInscritQuelquePart) {
             ouvertInscription = false;
-          } else if (n.name === "intermediaire") {
-            ouvertInscription = false;
-          } else if (n.name === "avance") {
-            ouvertInscription = true;
+          } else {
+            if (n.name === "initiation" || n.name === "avance") {
+              ouvertInscription = true;
+            }
           }
+
           return (
             <AnimatedSection
               key={n.id}
@@ -56,22 +75,29 @@ export default function FormationPublique() {
               className="flex flex-col gap-4 rounded-2xl border border-ivory-dark bg-white/70 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brick/10 sm:flex-row sm:items-center sm:gap-6 sm:p-6"
             >
               {/* pastille niveau */}
-
               <div
                 className={`grid h-14 w-14 shrink-0 place-items-center rounded-full font-display text-base font-semibold sm:h-16 sm:w-16 ${
-                  ouvertInscription
-                    ? "bg-coral/10 text-coral-dark"
-                    : "bg-ivory-dark text-ink-soft"
+                  inscrit
+                    ? "bg-amber text-ink"
+                    : ouvertInscription
+                      ? "bg-coral/10 text-coral-dark"
+                      : "bg-ivory-dark text-ink-soft"
                 }`}
               >
-                {i+1}
+                {i + 1}
               </div>
 
               {/* détail */}
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="font-display text-lg font-semibold text-ink">
-                    {n.name}
+                    {n.name === "initiation"
+                      ? "Initiation"
+                      : n.name === "debutant"
+                        ? "Débutant"
+                        : n.name === "intermediaire"
+                          ? "Intermédiaire"
+                          : "Avancé"}
                   </h3>
                   <span
                     className={`rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide ${
@@ -80,7 +106,11 @@ export default function FormationPublique() {
                         : "bg-ivory-dark text-ink-soft"
                     }`}
                   >
-                    {ouvertInscription ? "Inscription ouverte" : "Progressif"}
+                    {inscrit
+                      ? "Insrit"
+                      : ouvertInscription
+                        ? "Inscription ouverte"
+                        : "Progressif"}
                   </span>
                 </div>
                 <p className="mt-1 font-body text-sm text-ink-soft">
@@ -103,9 +133,20 @@ export default function FormationPublique() {
 
               {/* action */}
               <div className="shrink-0 sm:w-48">
-                {ouvertInscription ? (
+                {inscrit ? (
                   <Link
-                    to={`/inscription?niveau=${n.id}`}
+                    to={`/eleve/formation/${n.name}`}
+                    className="group inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-coral px-4 py-2.5 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick sm:w-auto"
+                  >
+                    Voir
+                    <HiOutlineArrowRight
+                      size={14}
+                      className="transition-transform duration-300 group-hover:translate-x-1"
+                    />
+                  </Link>
+                ) : ouvertInscription === true ? (
+                  <Link
+                    to={`/inscription?niveau=${n.name}`}
                     className="group inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-coral px-4 py-2.5 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick sm:w-auto"
                   >
                     S'inscrire

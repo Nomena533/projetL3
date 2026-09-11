@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from "react-icons/fa";
 import { HiOutlineMail, HiOutlinePhone, HiOutlineLocationMarker } from "react-icons/hi";
-import Logo from "../components/Logo";
+import {LogoBlanc} from "../components/Logo";
 import ValihaMotif from "../components/ValihaMotif";
 
 const COLUMNS = [
@@ -33,11 +33,11 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-5 pb-10 pt-16 sm:px-8">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
           <div>
-            <Logo variant="light" size="md" />
-            <p className="mt-4 max-w-xs font-body text-sm leading-relaxed text-ivory/70">
+            <LogoBlanc/>
+            {/* <p className="mt-4 max-w-xs font-body text-sm leading-relaxed text-ivory/70">
               L'école de musique en ligne pensée pour Madagascar : valiha, kabosy, guitare, piano
               et bien plus, avec de vrais professeurs.
-            </p>
+            </p> */}
             <div className="mt-5 flex gap-3">
               {[FaFacebook, FaInstagram, FaYoutube, FaTiktok].map((Icon, i) => (
                 <a

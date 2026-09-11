@@ -42,7 +42,7 @@ export default function Instructors() {
                 active === i.nom ? "bg-coral text-ivory" : "bg-ivory-dark text-ink-soft hover:bg-ivory-dark/70"
               }`}
             >
-              {i.emoji} {i.nom}
+              {i.nom}
             </button>
           ))}
         </AnimatedSection>
@@ -85,7 +85,7 @@ export default function Instructors() {
           <p className="max-w-md font-body text-sm text-ink-soft">
             Rejoignez le corps professoral de Kalon'ny et partagez votre savoir avec des élèves motivés partout à Madagascar.
           </p>
-          <Link to="/inscription" className="inline-flex items-center gap-2 rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark">
+          <Link to="/inscriptionCompte" className="inline-flex items-center gap-2 rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark">
             Postuler comme professeur <HiOutlineArrowRight />
           </Link>
         </AnimatedSection>

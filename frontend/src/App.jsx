@@ -66,6 +66,7 @@ import RoleRoute from "./components/RoleRoute";
 import FormationDetail from "./pages/eleve/FormationDetail";
 import FormationPublique from "./pages/home/FormationPublique";
 import PaiementPublic from "./pages/home/PaiementPublic";
+import Paiement from "./pages/eleve/Paiement";
 
 /** Remonte en haut de page à chaque changement de route */
 function ScrollToTop() {
@@ -139,6 +140,7 @@ export default function App() {
         <Route path="profil" element={<Profil />} />
         <Route path="parametres" element={<Parametres />} />
         <Route path="formation" element={<Formation />} />
+        <Route path="paiement" element={<Paiement />} />
 
         {/* Route original à corriger le syntaxe */}
         <Route path="formation/:niveauId" element={<FormationDetail />} />

@@ -12,9 +12,10 @@ import StatCard from "../../components/StatCard";
 import { NIVEAUX_PARCOURS } from "../../lib/mockFormationData";
 import { useLevel } from "../../app/hooks/useLevel";
 import { useEffect, useState } from "react";
-import { getListInscription } from "../../app/api/userApi";
+import { getUserListInscription } from "../../app/api/userApi";
 import { useAuth } from "../../app/hooks/useAuth";
 import { formatDate } from "../../lib/formatFunction";
+import { useUserInscription } from "../../app/hooks/useUserInscription";
 
 const NIVEAUX_TERMINES = NIVEAUX_PARCOURS.filter(
   (n) => n.inscrit && n.progression >= 100,
@@ -27,32 +28,14 @@ const NIVEAUX_INSCRITS = NIVEAUX_PARCOURS.filter((n) => n.inscrit).length;
 export default function Formation() {
   const { levels } = useLevel();
   const { user } = useAuth();
-
-  const [listInscription, setListInscription] = useState([]);
+  const { userListInscription, fetchUserListInscription } = useUserInscription();
 
   useEffect(() => {
-    const fetchListInscription = async () => {
-      try {
-        const response = await getListInscription(user.id);
-        setListInscription(response.data);
+    fetchUserListInscription(user.id);
+  }, [user]);
 
-        console.log(
-          "Liste des inscription sélectionnés avec succès",
-          response.data,
-        );
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des inscription :",
-          error.response?.data,
-        );
-      }
-    };
-    fetchListInscription();
-  }, []);
-
-  console.log("listInscription : ", listInscription);
+  console.log("userListInscription : ", userListInscription);
   // return;
-
 
   // Un niveau est ouvert à l'inscription si c'est le premier de la liste,
   // ou si le niveau précédent est terminé (inscrit + progression 100%).
@@ -96,7 +79,7 @@ export default function Formation() {
         <StatCard
           icon={HiOutlineMusicalNote}
           label="Niveaux avec inscription"
-          value={listInscription.length}
+          value={userListInscription.length}
           delay={160}
         />
         <StatCard
@@ -117,7 +100,7 @@ export default function Formation() {
 
         <div className="space-y-5">
           {levels.map((n, i) => {
-            const inscription = listInscription.filter(
+            const inscription = userListInscription.filter(
               (inscription) => inscription.niveau_id === n.id,
             );
             const inscrit = inscription.length === 1;
