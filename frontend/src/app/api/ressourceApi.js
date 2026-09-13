@@ -2,7 +2,7 @@ import API from "./api";
 
 
 export const getRessourceByLecon = (lessonId) => {
-  return API.get(`/lesson/${lessonId}/resource`)
+  return API.get(`/getResourceByLesson/${lessonId}`)
 };
 
 export const getRessourceById = (id) => {

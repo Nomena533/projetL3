@@ -34,7 +34,7 @@ class ResourceController extends Controller
      */
     public function store(Request $request, $lessonId)
     {
-        
+
         // 1. Validation des données envoyées par React
         $validated = $request->validate([
             "ressources" => "required|array|min:1",
@@ -55,7 +55,7 @@ class ResourceController extends Controller
 
             $file = $request->file("ressources.{$index}.fichier");
 
-            
+
             if (!$file) {
                 continue;
             }
@@ -75,9 +75,9 @@ class ResourceController extends Controller
             // 8. Conserve la ressource créée pour la réponse JSON
             $ressources[] = $ressource;
         }
-        
 
-        
+
+
         // 9. Retourne une réponse JSON
         return response()->json([
             "message" => "Ressources créées avec succès",
@@ -91,6 +91,13 @@ class ResourceController extends Controller
     public function show($id)
     {
         $resource = Resource::find($id);
+
+        return response()->json($resource);
+    }
+
+    public function getByLesson($lessonId)
+    {
+        $resource = Resource::where("lesson_id", $lessonId)->get();
 
         return response()->json($resource);
     }

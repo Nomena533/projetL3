@@ -10,6 +10,7 @@ import { Music, Menu, X, ShieldCheck, LogOut, Search } from "../lib/icons";
 import ValihaStrings from "../components/ValihaStrings";
 import { NAV_PROF } from "../lib/mockProfData";
 import { useAuth } from "../app/hooks/useAuth";
+import { LogoBlanc } from "../components/Logo";
 
 export default function LayoutProf({ role }) {
   const [mobileOpen, setMobileOpen] = useState(false);

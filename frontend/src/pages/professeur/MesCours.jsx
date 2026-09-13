@@ -19,6 +19,7 @@ import { formatAriary } from "../../lib/mockProfData";
 import useGetCour from "../../app/hooks/useGetCour";
 import { BASE_URL } from "../../app/api/api";
 import { deleteCour } from "../../app/api/courApi";
+import { capitalize } from "../../lib/formatFunction";
 
 // Bandeau d'alerte succès/erreur affiché après une action (ex. création d'un
 // cours). Se ferme automatiquement après quelques secondes, ou manuellement.
@@ -56,6 +57,7 @@ export default function ProfMesCours() {
   const [toDelete, setToDelete] = useState(null);
 
   const { cours, setCours, fetchCours } = useGetCour();
+  console.log("cours : ", cours);
 
   const [search, setSearch] = useState("");
   const [statutFilter, setStatutFilter] = useState("");
@@ -241,12 +243,12 @@ export default function ProfMesCours() {
                         )}
                       </span>
                       <span className="font-semibold text-ink transition-colors group-hover:text-coral-dark">
-                        {c.titre}
+                        {capitalize(c.titre)}
                       </span>
                     </Link>
                   </Td>
-                  <Td>{c.instrument.name || "—"}</Td>
-                  <Td>{c.level.name || "—"}</Td>
+                  <Td>{capitalize(c.instrument.name) || "—"}</Td>
+                  <Td>{capitalize(c.level.name) || "—"}</Td>
                   <Td>{c.duree || "—"}</Td>
                   <Td>{c.eleves ?? 0}</Td>
                   <Td>

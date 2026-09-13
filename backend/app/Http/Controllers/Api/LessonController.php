@@ -69,6 +69,13 @@ class LessonController extends Controller
         ]);
     }
 
+    public function getByCour($courId)
+    {
+        $lesson = Lesson::where("cour_id", $courId)->get();
+
+        return response()->json($lesson);
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

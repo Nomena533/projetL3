@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { getLeconDetail } from "../api/lessonApi";
+import { getLessonDetail } from "../api/lessonApi";
 import { LessonContext } from "../context/LessonContext";
 
 function LessonProvider({children}) {
   const [lessonDetail, setLessonDetail] = useState(null);
   const fetchLessonDetail = async (id) => {
     try {
-      const response = await getLeconDetail(id);
+      const response = await getLessonDetail(id);
       setLessonDetail(response.data);
 
       console.log("Détails du leçon sélectionnés avec succès");

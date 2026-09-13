@@ -15,11 +15,13 @@ import AnimatedSection from "../../components/AnimatedSection";
 import Modal from "../../components/Modal";
 import Pill from "../../components/Pill";
 import FilterBar from "../../components/FilterBar";
-// ⚠️ getCourDetail / deleteLecon sont attendus dans courApi.js — voir la note
+// ⚠️ getCourDetail / deleteLesson sont attendus dans courApi.js — voir la note
 // en bas de fichier si ces fonctions n'existent pas encore de ton côté.
 import { getCourDetail } from "../../app/api/courApi";
-import { deleteLecon } from "../../app/api/lessonApi";
+import { deleteLesson } from "../../app/api/lessonApi";
 import { BASE_URL } from "../../app/api/api";
+import { capitalize } from "../../lib/formatFunction";
+import { getRessourceByLecon } from "../../app/api/ressourceApi";
 
 export default function ProfCoursDetail() {
   const { id } = useParams();
@@ -31,6 +33,8 @@ export default function ProfCoursDetail() {
   const [error, setError] = useState(null);
   const [toDelete, setToDelete] = useState(null);
   const [alert, setAlert] = useState(location.state?.success || null);
+
+  const [resourceCounts, setResourceCounts] = useState({});
 
   const [search, setSearch] = useState("");
 
@@ -62,6 +66,35 @@ export default function ProfCoursDetail() {
     fetchCourDetail();
   }, [id]);
 
+
+  // A EXPLIQUER
+  useEffect(() => {
+    if(!cours) return;
+
+    const fetchResources = async () => {
+      const results = await Promise.all(
+        cours.lesson.map(async (lesson) => {
+          const response = await getRessourceByLecon(lesson.id);
+
+          return {
+            id : lesson.id,
+            count : response.data.length
+          };
+        })
+      );
+
+      const counts = {};
+
+      results.forEach((result) => {
+        counts[result.id] = result.count;
+      });
+
+      setResourceCounts(counts);
+    };
+
+    fetchResources();
+  }, [cours]);
+
   useEffect(() => {
     if (location.state)
       navigate(location.pathname, { replace: true, state: {} });
@@ -76,7 +109,7 @@ export default function ProfCoursDetail() {
 
   const handleDeleteLecon = async (leconId) => {
     try {
-      await deleteLecon(leconId);
+      await deleteLesson(leconId);
 
       d((c) => ({
         ...c,
@@ -94,6 +127,7 @@ export default function ProfCoursDetail() {
     }
   };
 
+  // A EXPLIQUER
   const filteredLecons = useMemo(() => {
     if (!cours?.lesson) return [];
     if (!search) return cours.lesson;
@@ -171,7 +205,7 @@ export default function ProfCoursDetail() {
                   {cours.cour.statut && <Pill>{cours.cour.statut}</Pill>}
                 </div>
                 <h2 className="mt-1 font-display text-2xl font-semibold text-ink sm:text-3xl">
-                  {cours.cour.titre}
+                  {capitalize(cours.cour.titre)}
                 </h2>
               </div>
               <Link
@@ -244,8 +278,8 @@ export default function ProfCoursDetail() {
             <div className="space-y-3">
               {filteredLecons.map((l) => {
                 const index = cours.lesson.findIndex((x) => x.id === l.id);
-                const ressourceCount =
-                  l.ressources_count ?? l.ressources?.length ?? 0;
+                // const ressourceCount =
+                //   l.ressources_count ?? l.ressources?.length ?? 0;
                 return (
                   <div
                     key={l.id}
@@ -260,11 +294,11 @@ export default function ProfCoursDetail() {
                       </span>
                       <div className="min-w-0">
                         <p className="truncate font-body text-sm font-semibold text-ink transition-colors hover:text-coral-dark">
-                          {l.titre || "_"}
+                          {capitalize(l.titre) || "_"}
                         </p>
                         {l.description && (
                           <p className="truncate font-body text-xs text-ink-soft">
-                            {l.description}
+                            {capitalize(l.description)}
                           </p>
                         )}
                       </div>
@@ -272,7 +306,7 @@ export default function ProfCoursDetail() {
                     <div className="flex shrink-0 items-center gap-3">
                       <span className="flex items-center gap-1.5 rounded-full border border-ivory-dark px-3 py-1 font-body text-xs text-ink-soft">
                         <HiOutlineDocumentText size={13} />
-                        {ressourceCount} ressource{ressourceCount > 1 ? "s" : ""}
+                        {resourceCounts[l.id]} ressource{resourceCounts > 1 ? "s" : ""}
                       </span>
                       {l.duree && (
                         <span className="font-mono text-xs text-ink-soft">

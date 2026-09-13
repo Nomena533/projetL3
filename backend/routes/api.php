@@ -56,6 +56,7 @@ Route::post('/storeLevel', [LevelController::class, 'store']);
 
 Route::post('/cour/{courId}/storeLesson', [LessonController::class, 'store']);
 Route::get('/getLesson', [LessonController::class, 'index']);
+Route::get('/getLessonByCour/{courId}', [LessonController::class, 'getByCour']);
 Route::get('/getLessonDetail/{id}', [LessonController::class, 'show']);
 Route::put('/updateLesson/{id}', [LessonController::class, 'update']);
 Route::delete('/deleteLesson/{id}', [LessonController::class, 'destroy']);
@@ -63,6 +64,7 @@ Route::delete('/deleteLesson/{id}', [LessonController::class, 'destroy']);
 Route::post('/lesson/{lessonId}/storeResource', [ResourceController::class, 'store']);
 Route::get('/getResource', [ResourceController::class, 'index']);
 Route::get('/getResourceDetail/{id}', [ResourceController::class, 'show']);
+Route::get('/getResourceByLesson/{lessonId}', [resourceController::class, 'getByLesson']);
 Route::put('/updateResource/{id}', [ResourceController::class, 'update']);
 Route::delete('/deleteResource/{id}', [ResourceController::class, 'destroy']);
 

@@ -30,7 +30,7 @@ export default function FormationPublique() {
 
   console.log("userListInscription : ", userListInscription);
 
-  const isInscritQuelquePart = userListInscription.length > 0;
+  const inscritQuelquePart = userListInscription.length > 0;
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 px-4 py-12 sm:px-6">
@@ -60,7 +60,7 @@ export default function FormationPublique() {
 
           let ouvertInscription = false;
           
-          if (inscrit || isInscritQuelquePart) {
+          if (inscrit || inscritQuelquePart) {
             ouvertInscription = false;
           } else {
             if (n.name === "initiation" || n.name === "avance") {

@@ -46,10 +46,7 @@ export default function ProfLeconDetail() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { lessonDetail, fetchLessonDetail } = useLesson();
-
-  const [resource, setResource] = useState([]);
-  const [lesson, setLesson] = useState(null);
+  
 
   // const [ressources, ] = ueState([]);
   const [loading, setLoading] = useState(true);
@@ -59,6 +56,10 @@ export default function ProfLeconDetail() {
 
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
+
+  const { lessonDetail, fetchLessonDetail } = useLesson();
+  const [resource, setResource] = useState([]);
+  const [lesson, setLesson] = useState(null);
 
   useEffect(() => {
     fetchLessonDetail(lessonId);

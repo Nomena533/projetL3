@@ -73,7 +73,7 @@ class CourController extends Controller
      */
     public function show($id)
     {
-        $cour = Cour::with("instrument")->find($id);
+        $cour = Cour::with("instrument")->with("level")->with("prof")->find($id);
         $lesson = Lesson::where("cour_id", $id)->orderBy('created_at','ASC')->get();
 
         return response()->json([
@@ -120,7 +120,7 @@ class CourController extends Controller
         $cour->niveau_id = $request->niveau_id;
         $cour->titre = $request->titre;
         $cour->description = $request->description;
-        $cour->prix = $request->prix;
+        // $cour->prix = $request->prix;
         $cour->duree = $request->duree;
 
         // Vérifie si une image a été envoyé

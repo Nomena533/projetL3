@@ -22,7 +22,7 @@ import NiveauInscription from "./pages/home/Inscription";
 
 import Dashboard from "./pages/eleve/Dashboard";
 import Catalogue from "./pages/eleve/Catalogue";
-import CourseDetail from "./pages/eleve/CourseDetail";
+import CoursDetail from "./pages/eleve/CoursDetail";
 import LessonPlayer from "./pages/eleve/LessonPlayer";
 import Progression from "./pages/eleve/Progression";
 import Favoris from "./pages/eleve/Favoris";
@@ -132,8 +132,8 @@ export default function App() {
       >
         <Route index element={<Dashboard />} />
         <Route path="catalogue" element={<Catalogue />} />
-        <Route path="cours/:id" element={<CourseDetail />} />
-        <Route path="lecon" element={<LessonPlayer />} />
+        <Route path="cours/:id" element={<CoursDetail />} />
+        <Route path="lecon/:id" element={<LessonPlayer />} />
         <Route path="progression" element={<Progression />} />
         <Route path="favoris" element={<Favoris />} />
         <Route path="messages" element={<Messages />} />
@@ -143,7 +143,7 @@ export default function App() {
         <Route path="paiement" element={<Paiement />} />
 
         {/* Route original à corriger le syntaxe */}
-        <Route path="formation/:niveauId" element={<FormationDetail />} />
+        <Route path="formation/:niveauName" element={<FormationDetail />} />
       </Route>
 
       <Route

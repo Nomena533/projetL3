@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { HiOutlineChevronLeft, HiOutlineCheckCircle } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import FormField from "../../components/FormField";
-import { storeLecon, updateLecon } from "../../app/api/lessonApi";
+import { storeLesson, updateLesson } from "../../app/api/lessonApi";
 import useLesson from "../../app/hooks/useLesson";
 
 function TextAreaField({ label, name, value, onChange }) {
@@ -73,9 +73,9 @@ export default function ProfLeconEditeur() {
       let response;
 
       if (lessonId) {
-        response = await updateLecon(lessonId, data);
+        response = await updateLesson(lessonId, data);
       } else {
-        response = await storeLecon(courId, data);
+        response = await storeLesson(courId, data);
       }
 
       console.log("Opération réussie", response.data);

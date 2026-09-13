@@ -154,6 +154,7 @@ export default function ProfCourEditeur() {
   }, [cour]);
 
   console.log("cour détail : ", cour);
+  console.log("courDetail : ", courDetail);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
