@@ -106,7 +106,6 @@ export default function AdminValidation() {
                       niveau_id: c.niveau_id,
                       titre: c.titre,
                       description: c.description,
-                      prix: c.prix,
                       duree: c.duree,
                       statut: "publié",
                     });
@@ -123,7 +122,6 @@ export default function AdminValidation() {
                       niveau_id: c.niveau_id,
                       titre: c.titre,
                       description: c.description,
-                      prix: c.prix,
                       duree: c.duree,
                       statut: "refusé",
                     });

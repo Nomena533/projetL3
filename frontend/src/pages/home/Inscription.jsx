@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   HiOutlineCheckCircle,
   HiOutlineClock,
@@ -20,8 +20,15 @@ function formatAriary(n) {
 export default function Inscription() {
   const [params] = useSearchParams();
   const niveauName = params.get("niveau") || "initiation";
+  const navigate = useNavigate();
   const isInitiation = niveauName === "initiation";
   const [niveau, setNiveau] = useState(null);
+
+  const handlePaiement = () => {
+    navigate(
+      `/paiement?niveau=${niveau.name}&instruments=${instrumentsParam}`,{replace:true}
+    );
+  }
 
   const { user } = useAuth();
 
@@ -230,12 +237,11 @@ export default function Inscription() {
                 ) a bien été enregistrée. Un e-mail de confirmation arrive à{" "}
                 {form.email || "ton adresse"}.
               </p>
-              <Link
-                to={`/paiement?niveau=${niveau.name}&instruments=${instrumentsParam}`}
+              <button onClick={handlePaiement}
                 className="mt-3 font-body text-sm font-semibold text-coral-dark hover:text-brick"
               >
                 Finaliser le paiement pour cette inscription
-              </Link>
+              </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">

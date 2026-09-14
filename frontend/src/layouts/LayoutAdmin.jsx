@@ -10,6 +10,8 @@ import { Music, Menu, X, ShieldCheck, LogOut, Search } from "../lib/icons";
 import ValihaStrings from "../components/ValihaStrings";
 import { NAV_ADMIN } from "../lib/mockAdminData";
 import { useAuth } from "../app/hooks/useAuth";
+import { LogoBlanc } from "../components/Logo";
+
 
 export default function LayoutAdmin() {
   const [mobileOpen, setMobileOpen] = useState(false);

@@ -15,6 +15,7 @@ import { getInstrument } from "../../app/api/instrumentApi";
 import useGetCour from "../../app/hooks/useGetCour";
 import { BASE_URL } from "../../app/api/api";
 import { getLevel } from "../../app/api/levelApi";
+import { capitalize } from "../../lib/formatFunction";
 
 // Champ select stylé
 function SelectField({ label, name, value, onChange, options }) {
@@ -34,7 +35,7 @@ function SelectField({ label, name, value, onChange, options }) {
       >
         {options.map((option) => (
           <option key={option.id} value={option.id}>
-            {option.name}
+            {capitalize(option.name)}
           </option>
         ))}
       </select>

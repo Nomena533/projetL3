@@ -160,7 +160,6 @@ class CourController extends Controller
         $cour->niveau_id = $request->niveau_id;
         $cour->titre = $request->titre;
         $cour->description = $request->description;
-        $cour->prix = $request->prix;
         $cour->duree = $request->duree;
         $cour->statut = $request->statut;
 

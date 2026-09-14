@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : ven. 28 août 2026 à 00:59
+-- Généré le : lun. 14 sep. 2026 à 12:28
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données : `projetl3`
+-- Base de données : `2am`
 --
 
 -- --------------------------------------------------------
@@ -69,10 +69,10 @@ CREATE TABLE `cours` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `prof_id` bigint(20) UNSIGNED NOT NULL,
   `instrument_id` bigint(20) UNSIGNED NOT NULL,
+  `niveau_id` bigint(20) UNSIGNED NOT NULL,
   `titre` varchar(255) NOT NULL,
   `description` longtext NOT NULL,
-  `prix` decimal(8,2) NOT NULL,
-  `image` varchar(255) DEFAULT NULL,
+  `image` varchar(255) NOT NULL,
   `duree` varchar(255) NOT NULL,
   `statut` enum('brouillon','publié') NOT NULL DEFAULT 'brouillon',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -83,10 +83,9 @@ CREATE TABLE `cours` (
 -- Déchargement des données de la table `cours`
 --
 
-INSERT INTO `cours` (`id`, `prof_id`, `instrument_id`, `titre`, `description`, `prix`, `image`, `duree`, `statut`, `created_at`, `updated_at`) VALUES
-(1, 2, 2, 'Cour de guitare', 'test', 50000.00, NULL, '6 mois', 'brouillon', '2026-08-25 16:44:33', '2026-08-25 16:44:33'),
-(2, 7, 2, 'kjhkjh', 'khkjhkj', 20000.00, 'cours/U2dkMmrkRhjl8YJ1kkAUOfxmmAyOvJl5ibvkVgjr.png', '2 heures', 'brouillon', '2026-08-27 18:53:06', '2026-08-27 18:53:06'),
-(3, 7, 2, 'Les bases de la guitare', 'Débuter sur l\'instrument de guitare depuis la base', 20000.00, 'cours/UmcARN000TaIIFgnBYHn0tt8NUUw5sCEqoWBtfKF.png', '2 heures', 'brouillon', '2026-08-27 19:32:14', '2026-08-27 19:32:14');
+INSERT INTO `cours` (`id`, `prof_id`, `instrument_id`, `niveau_id`, `titre`, `description`, `image`, `duree`, `statut`, `created_at`, `updated_at`) VALUES
+(1, 3, 2, 1, 'Cour test', 'test 2', 'cours/tFXp7DDFUPiwXMRpChm6ZlbURyvlVsuMfhYqW4qB.jpg', '12 min', 'publié', '2026-09-14 05:41:42', '2026-09-14 06:15:45'),
+(2, 3, 1, 1, 'Cour test 2', 'test 2', 'cours/N3uvA4gZNbX76CXREAXQtljhPr2CJ1vWZzZX5dZ9.png', '2 heures', 'brouillon', '2026-09-14 05:50:14', '2026-09-14 05:50:14');
 
 -- --------------------------------------------------------
 
@@ -141,13 +140,45 @@ CREATE TABLE `favoris` (
 
 CREATE TABLE `inscriptions` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `cour_id` bigint(20) UNSIGNED NOT NULL,
+  `niveau_id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
-  `progression` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
+  `montant` decimal(8,2) NOT NULL,
   `statut` enum('pending','confirmed','canceled') NOT NULL DEFAULT 'pending',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `inscriptions`
+--
+
+INSERT INTO `inscriptions` (`id`, `niveau_id`, `user_id`, `montant`, `statut`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 100000.00, 'pending', '2026-09-14 05:54:15', '2026-09-14 05:54:15'),
+(2, 1, 4, 100000.00, 'pending', '2026-09-14 06:25:20', '2026-09-14 06:25:20');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `inscription_instrument`
+--
+
+CREATE TABLE `inscription_instrument` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `inscription_id` bigint(20) UNSIGNED NOT NULL,
+  `instrument_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `inscription_instrument`
+--
+
+INSERT INTO `inscription_instrument` (`id`, `inscription_id`, `instrument_id`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '2026-09-14 05:54:15', '2026-09-14 05:54:15'),
+(2, 1, 2, '2026-09-14 05:54:15', '2026-09-14 05:54:15'),
+(3, 2, 1, '2026-09-14 06:25:20', '2026-09-14 06:25:20'),
+(4, 2, 2, '2026-09-14 06:25:20', '2026-09-14 06:25:20');
 
 -- --------------------------------------------------------
 
@@ -169,8 +200,9 @@ CREATE TABLE `instruments` (
 --
 
 INSERT INTO `instruments` (`id`, `name`, `description`, `image`, `created_at`, `updated_at`) VALUES
-(1, 'Guitare', NULL, NULL, '2026-08-25 16:18:45', '2026-08-25 16:18:45'),
-(2, 'Guitare', 'test', NULL, '2026-08-25 16:23:02', '2026-08-25 16:23:02');
+(1, 'Guitare', NULL, NULL, NULL, NULL),
+(2, 'Piano', NULL, NULL, NULL, NULL),
+(3, 'Violon', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -223,6 +255,30 @@ CREATE TABLE `lessons` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Déchargement des données de la table `lessons`
+--
+
+INSERT INTO `lessons` (`id`, `cour_id`, `titre`, `description`, `duree`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Leçon 1', 'Test', '12 min', '2026-09-14 05:45:12', '2026-09-14 05:45:12'),
+(2, 2, 'Leçon 1', 'test', '10 min', '2026-09-14 05:50:36', '2026-09-14 05:50:36');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `lessonsbackup`
+--
+
+CREATE TABLE `lessonsbackup` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `cour_id` bigint(20) UNSIGNED NOT NULL,
+  `titre` varchar(255) NOT NULL,
+  `description` longtext NOT NULL,
+  `duree` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- --------------------------------------------------------
 
 --
@@ -233,9 +289,22 @@ CREATE TABLE `levels` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` longtext DEFAULT NULL,
+  `duree` varchar(255) NOT NULL,
+  `prix_mensuel` decimal(8,2) NOT NULL,
+  `droit_inscription` decimal(8,2) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `levels`
+--
+
+INSERT INTO `levels` (`id`, `name`, `description`, `duree`, `prix_mensuel`, `droit_inscription`, `created_at`, `updated_at`) VALUES
+(1, 'initiation', NULL, '9 mois', 50000.00, 0.00, NULL, NULL),
+(2, 'debutant', NULL, '9 mois', 60000.00, 0.00, NULL, NULL),
+(3, 'intermediare', NULL, '10 mois', 70000.00, 0.00, NULL, NULL),
+(4, 'avance', NULL, '10 mois', 80000.00, 0.00, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -260,21 +329,25 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (4, '2026_07_21_164409_create_roles_table', 1),
 (5, '2026_07_21_164738_create_levels_table', 1),
 (6, '2026_07_21_164945_create_instruments_table', 1),
-(7, '2026_07_21_164946_create_cours_table', 1),
-(8, '2026_07_21_164947_create_lessons_table', 1),
-(9, '2026_07_21_165049_create_exercices_table', 1),
-(10, '2026_07_21_172728_add_columns_to_users_table', 1),
-(11, '2026_07_23_112921_create_soumissions_table', 1),
-(12, '2026_07_23_113534_create_inscriptions_table', 1),
-(13, '2026_07_23_115636_create_paiements_table', 1),
-(14, '2026_07_23_120526_add_statut_to_users_table', 1),
-(15, '2026_07_23_121425_create_certificats_table', 2),
-(16, '2026_07_23_122058_create_favoris_table', 2),
-(17, '2026_07_28_172546_create_resources_table', 2),
-(18, '2026_07_28_173425_add_role_to_users_table', 2),
-(19, '2026_07_28_215354_create_personal_access_tokens_table', 3),
-(20, '2026_08_10_211433_add_firstname_to_users_table', 4),
-(21, '2026_08_25_164946_create_cours_table', 5);
+(7, '2026_07_21_172728_add_columns_to_users_table', 2),
+(8, '2026_07_23_120526_add_statut_to_users_table', 3),
+(9, '2026_07_28_173425_add_role_to_users_table', 3),
+(10, '2026_07_28_215354_create_personal_access_tokens_table', 3),
+(11, '2026_08_10_211433_add_firstname_to_users_table', 3),
+(12, '2026_09_01_164737_add_duree_to_levels_table', 3),
+(13, '2026_09_02_104738_create_cours_table', 3),
+(14, '2026_09_02_114947_create_lessonsBackup_table', 4),
+(15, '2026_09_02_115049_create_exercices_table', 4),
+(16, '2026_09_02_116921_create_soumissions_table', 5),
+(17, '2026_09_02_121425_create_certificats_table', 5),
+(18, '2026_09_02_122058_create_favoris_table', 5),
+(19, '2026_09_02_172546_create_resources_table', 5),
+(20, '2026_09_03_174955_add_titre_to_resources_table', 5),
+(21, '2026_09_07_113534_create_inscriptions_table', 5),
+(22, '2026_09_08_124833_create_inscription_instrument_table', 5),
+(23, '2026_09_08_135303_add_prix_to_levels_table', 5),
+(24, '2026_09_09_115636_create_paiements_table', 6),
+(25, '2026_09_09_162359_add_droit_inscription_to_levels_table', 7);
 
 -- --------------------------------------------------------
 
@@ -283,6 +356,22 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 --
 
 CREATE TABLE `paiements` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `inscription_id` bigint(20) UNSIGNED NOT NULL,
+  `montant` decimal(8,2) NOT NULL,
+  `mode_paiement` varchar(255) NOT NULL,
+  `statut` enum('pending','successful','failed') NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `paiementsbackup`
+--
+
+CREATE TABLE `paiementsbackup` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `inscription_id` bigint(20) UNSIGNED NOT NULL,
   `montant` decimal(8,2) NOT NULL,
@@ -328,40 +417,11 @@ CREATE TABLE `personal_access_tokens` (
 --
 
 INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `last_used_at`, `expires_at`, `created_at`, `updated_at`) VALUES
-(1, 'App\\Models\\User', 2, 'react-app', '91f8a805f2a99344532e110c0f9fc7639f25d9f8e41b00a9d2f21ef0c237cf76', '[\"*\"]', NULL, NULL, '2026-08-10 21:33:58', '2026-08-10 21:33:58'),
-(2, 'App\\Models\\User', 3, 'react-app', '0cfb7c3ce8c9467f39514d0a77983649cc8f76f283812e6e35cbbde57f9f5f51', '[\"*\"]', NULL, NULL, '2026-08-10 21:36:43', '2026-08-10 21:36:43'),
-(3, 'App\\Models\\User', 4, 'react-app', 'd50c395b0b637dcc41c858211f20bf08fff8fb365a47f48e8ec6062dd2ccb856', '[\"*\"]', NULL, NULL, '2026-08-10 21:40:14', '2026-08-10 21:40:14'),
-(4, 'App\\Models\\User', 4, 'react-app', '389a4c0f205a99728c39624d75dade56836e05bd799f37397168f7571d78fe86', '[\"*\"]', NULL, NULL, '2026-08-10 22:23:16', '2026-08-10 22:23:16'),
-(5, 'App\\Models\\User', 5, 'react-app', '691ffb5762f2c8bb4367aeeb4d827d4e54e88250f321a6fd3889fd58491d755c', '[\"*\"]', NULL, NULL, '2026-08-10 22:25:13', '2026-08-10 22:25:13'),
-(6, 'App\\Models\\User', 5, 'react-app', '793976ffec383ba4f6099fbff5ab20a814c15166fe7eea7f87ee409e9b1a2ad4', '[\"*\"]', NULL, NULL, '2026-08-10 22:25:33', '2026-08-10 22:25:33'),
-(7, 'App\\Models\\User', 5, 'react-app', 'fd474217ff883874fcd547a9be8339eb4397d3f717305132d9a3405f2893d0c3', '[\"*\"]', NULL, NULL, '2026-08-10 22:32:11', '2026-08-10 22:32:11'),
-(8, 'App\\Models\\User', 5, 'react-app', '707d7cb6c5f217bb0930707d599a2acb188ab4442fe0877a700806092fd69676', '[\"*\"]', NULL, NULL, '2026-08-10 22:50:27', '2026-08-10 22:50:27'),
-(9, 'App\\Models\\User', 5, 'react-app', '84181317fc8dc860f9e0509ba3f3ad98a8a7714bca18cd2670ec6e37a4218c65', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:00', '2026-08-10 22:51:00'),
-(10, 'App\\Models\\User', 5, 'react-app', 'b6601d1f3a18e7b72eabb437867f0ca4a76928dfc89bc5d0cf51ee9366c9b39f', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:02', '2026-08-10 22:51:02'),
-(11, 'App\\Models\\User', 5, 'react-app', '34318f80cb2811bcf988e9441c501968e91e1d6f21ab77c1f88ed503a587e9f1', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:03', '2026-08-10 22:51:03'),
-(12, 'App\\Models\\User', 5, 'react-app', 'a69cf331fab07ca3a046654c9a1f7d84686c5a886943adb3b0a148995d4333f7', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:05', '2026-08-10 22:51:05'),
-(13, 'App\\Models\\User', 5, 'react-app', '2844f289eb2cb6ad1d32c81978bea3ee31cca08446cbd0d84f0bc753e6919d2a', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:08', '2026-08-10 22:51:08'),
-(14, 'App\\Models\\User', 5, 'react-app', 'cf45473e41259a56db39296d0b7eabb3114c1b42e2de7eff2313b68ede05362c', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:09', '2026-08-10 22:51:09'),
-(15, 'App\\Models\\User', 5, 'react-app', 'af384a71d93d13810e118b413fd729eea0aa65f3463b04191bb9789ec73a0dcf', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:10', '2026-08-10 22:51:10'),
-(16, 'App\\Models\\User', 5, 'react-app', 'bcd44c430dd01a5792dad2775289d8175cfe636ac4d39bbd220cd53751809181', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:11', '2026-08-10 22:51:11'),
-(17, 'App\\Models\\User', 5, 'react-app', '32e811b06e8db93a938f5f3cb3bf4572a498a0d5458d0e714839671c16a1fd98', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:13', '2026-08-10 22:51:13'),
-(18, 'App\\Models\\User', 5, 'react-app', 'ae298afb37bd181fe4f502900ef2bc43db13105b720c317a63cf859dc0bd2c09', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:14', '2026-08-10 22:51:14'),
-(19, 'App\\Models\\User', 5, 'react-app', '1f46c57885fe79c3de911fa06c6d13b34aff7a05f2e4cc5b37766bcd66e5b10e', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:16', '2026-08-10 22:51:16'),
-(20, 'App\\Models\\User', 5, 'react-app', '600952322d7dab020d2a7bf949bcdfe626e63a33296a707b35c4e1a35e22a01c', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:17', '2026-08-10 22:51:17'),
-(21, 'App\\Models\\User', 5, 'react-app', '78f9b8af39d8e2323ac0da29cb99ae969570244935d1c1cabfa8c49bb294275f', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:19', '2026-08-10 22:51:19'),
-(22, 'App\\Models\\User', 5, 'react-app', 'c261e7f7fe13914342d34b78cc730ea697cdbea56b32658c659ce4f02ed19b6b', '[\"*\"]', NULL, NULL, '2026-08-10 22:51:20', '2026-08-10 22:51:20'),
-(23, 'App\\Models\\User', 5, 'react-app', '00a880bb2a65ee29fa5d463c1c08bf85f95f6ca405b1cdfb58e02d3f050c3751', '[\"*\"]', NULL, NULL, '2026-08-11 15:14:01', '2026-08-11 15:14:01'),
-(24, 'App\\Models\\User', 4, 'react-app', '58706e8d2a079e53f13b25ae1b8fb737618aad18a23aaebef64d02251a84d0f1', '[\"*\"]', NULL, NULL, '2026-08-11 15:14:59', '2026-08-11 15:14:59'),
-(25, 'App\\Models\\User', 5, 'react-app', 'd18d4bad898f50bfb718da3d52a33851f516360fda8fea530ce7285db779b37b', '[\"*\"]', NULL, NULL, '2026-08-11 15:26:16', '2026-08-11 15:26:16'),
-(26, 'App\\Models\\User', 5, 'react-app', '2781f3f739d3809913e885a8bf0fcec6cf2b1fb096c16928d59af0f95af53aad', '[\"*\"]', NULL, NULL, '2026-08-11 15:31:19', '2026-08-11 15:31:19'),
-(27, 'App\\Models\\User', 5, 'react-app', 'c994543f396c2dd432bb3383b1c13ab716306afeb819f86797faa797d46e59c4', '[\"*\"]', NULL, NULL, '2026-08-11 15:50:56', '2026-08-11 15:50:56'),
-(28, 'App\\Models\\User', 5, 'react-app', 'b131da9a771337e9300cff3d24a4a1ce3887d16b19721c391e4b3c9a25dc2a6a', '[\"*\"]', NULL, NULL, '2026-08-11 15:52:54', '2026-08-11 15:52:54'),
-(29, 'App\\Models\\User', 5, 'react-app', 'e11b6a2828c52238309e0ba2c332af744f17f479e7c9053db520c1e36ffe619b', '[\"*\"]', NULL, NULL, '2026-08-11 19:03:41', '2026-08-11 19:03:41'),
-(33, 'App\\Models\\User', 6, 'react-app', '01fd41a74ae07de34980aad7a4164c6ce20bb48f95e29bd925f4ef8b1e86d064', '[\"*\"]', NULL, NULL, '2026-08-11 19:19:05', '2026-08-11 19:19:05'),
-(39, 'App\\Models\\User', 7, 'react-app', '89f2afb60ac84b7afdfc39a707eb2e6789ec3091ba7bd36b9d47697fadfb9850', '[\"*\"]', NULL, NULL, '2026-08-11 20:33:06', '2026-08-11 20:33:06'),
-(40, 'App\\Models\\User', 7, 'react-app', '9c20778e4259c86293b468e1dd848461d6fb19c6532f1a21396c2e35bccb7f30', '[\"*\"]', NULL, NULL, '2026-08-11 20:33:21', '2026-08-11 20:33:21'),
-(41, 'App\\Models\\User', 7, 'react-app', '1fa00ba34f696a714f17e8d77442650370c269f9275450afcbd799be13e0b542', '[\"*\"]', NULL, NULL, '2026-08-26 18:29:45', '2026-08-26 18:29:45'),
-(42, 'App\\Models\\User', 7, 'react-app', 'f19de1612dad071eb7b2285d20935a63234c92b968e273a24aee7ef5f5cd6450', '[\"*\"]', '2026-08-27 19:32:12', NULL, '2026-08-27 18:26:46', '2026-08-27 19:32:12');
+(1, 'App\\Models\\User', 1, 'react-app', 'f3044cafcae068c8d7cbad939fa3acca35ae1da6421a052a1b10f9bb78ac8956', '[\"*\"]', NULL, NULL, '2026-09-14 05:31:54', '2026-09-14 05:31:54'),
+(3, 'App\\Models\\User', 2, 'react-app', '228bb392f95e8d03467d09853b4afaa63dda65946d74a5c01bec585ea061d2af', '[\"*\"]', NULL, NULL, '2026-09-14 05:33:00', '2026-09-14 05:33:00'),
+(6, 'App\\Models\\User', 3, 'react-app', '1e48bd02eefe1da3552694c12556c44f785f25aeb2bb1ea23657a2aecc9da125', '[\"*\"]', NULL, NULL, '2026-09-14 05:36:09', '2026-09-14 05:36:09'),
+(10, 'App\\Models\\User', 4, 'react-app', '7373f4a04941e288cf462bb436954cbe24afb4ddfe1d24c0323460d9a990bcc0', '[\"*\"]', NULL, NULL, '2026-09-14 06:21:53', '2026-09-14 06:21:53'),
+(13, 'App\\Models\\User', 3, 'react-app', '418d2b311c5a5a67137dd8688ced93d61adf3c0beb74b35ea7666678c465a1f0', '[\"*\"]', NULL, NULL, '2026-09-14 06:40:39', '2026-09-14 06:40:39');
 
 -- --------------------------------------------------------
 
@@ -372,11 +432,23 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 CREATE TABLE `resources` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `lesson_id` bigint(20) UNSIGNED NOT NULL,
+  `titre` varchar(255) NOT NULL,
   `type` enum('video','audio','pdf') NOT NULL,
-  `url` varchar(255) NOT NULL,
+  `fichier` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `resources`
+--
+
+INSERT INTO `resources` (`id`, `lesson_id`, `titre`, `type`, `fichier`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Les Bases du FingerPicking pour les DÉBUTANTS !', 'video', 'ressources/LlQq4LqE1lWw8cVsptCSfJ6JR1Ao19FeDG5m5GMs.mkv', '2026-09-14 05:48:17', '2026-09-14 05:48:17'),
+(2, 1, 'Canva projet', 'pdf', 'ressources/bY82n1kOFRyy9OCgKxXAArS2fK97xWTgrRsBZgaA.pdf', '2026-09-14 05:48:17', '2026-09-14 05:48:17'),
+(3, 2, 'PLAN-DAFFAIRE-IM', 'pdf', 'ressources/DdOPGJdnJzXYCuAYMQqimdQfpDy2in1ihghuBoI3.pdf', '2026-09-14 05:52:03', '2026-09-14 05:52:03'),
+(4, 2, 'Créer un flyer', 'pdf', 'ressources/d11FWozW9f8x5TdvJbzyJKv3hDtlPKf9kP6kANqR.pdf', '2026-09-14 05:52:03', '2026-09-14 05:52:03'),
+(5, 2, 'hallelujah-aleluya-haendel', 'audio', 'ressources/C19hIUpkKnOkYVKeMavPlA26poTSviGt4kYGQhQL.mp3', '2026-09-14 05:52:04', '2026-09-14 05:52:04');
 
 -- --------------------------------------------------------
 
@@ -397,9 +469,9 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES
-(1, 'eleve', NULL, NULL, NULL),
-(2, 'professeur', NULL, NULL, NULL),
-(3, 'admin', NULL, NULL, NULL);
+(1, 'admin', NULL, NULL, NULL),
+(2, 'eleve', NULL, NULL, NULL),
+(3, 'professeur', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -423,6 +495,23 @@ CREATE TABLE `sessions` (
 --
 
 CREATE TABLE `soumissions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `exercice_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `fichier` varchar(255) NOT NULL,
+  `note` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
+  `commentaire` longtext DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `soumissionsbackup`
+--
+
+CREATE TABLE `soumissionsbackup` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `exercice_id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
@@ -460,13 +549,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `firstname`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `photo`, `telephone`, `statut`, `role_id`) VALUES
-(1, 'Rakoto', '', 'rakoto@gmail.com', NULL, '$2y$12$stb75ASanAxWnSP86pqqbutZTWgP85W884vEPzW2fMCU915vWdMPO', NULL, '2026-07-28 18:42:30', '2026-07-28 18:42:30', NULL, NULL, 'actif', 2),
-(2, 'Razafindralambo', 'Anjaranomena', 'anjaranomenarazafindralambo@gmail.com', NULL, '$2y$12$KU5AqvVAzl6jc2.RZazGnuEJxfU7F6UKpceSIz3oLyRaZY774S6Ve', NULL, '2026-08-10 21:33:57', '2026-08-10 21:33:57', NULL, NULL, 'actif', 1),
-(3, 'Razafindralambo', 'Anjaranekena', 'anjaranekenarazafindralambo@gmail.com', NULL, '$2y$12$L46/3apssHniqI4TkcV4Xe0JwSg4lXRtu4DVkkydjLWYULs.5S8f.', NULL, '2026-08-10 21:36:42', '2026-08-10 21:36:42', NULL, NULL, 'actif', 1),
-(4, 'Razafindralambo', 'Miotisoa', 'miotisoarazafindralambo@gmail.com', NULL, '$2y$12$HdC7N9ZEjqHvqQzOwx9/O.fzsMxh5RgGxMThu.Id.R.ZS9RVF3EPS', NULL, '2026-08-10 21:40:14', '2026-08-10 21:40:14', NULL, NULL, 'actif', 1),
-(5, 'Razafindralambo', 'Manavotra', 'manavotrarazafindralambo@gmail.com', NULL, '$2y$12$H3DJ8xiMqWRKMx6/ModPTeQTNnfUnOFdDm2q3RUrClZ70cfOQbUyS', NULL, '2026-08-10 22:25:12', '2026-08-10 22:25:12', NULL, NULL, 'actif', 1),
-(6, 'Razafindralambo', 'Valisoa', 'valisoa@gmail.com', NULL, '$2y$12$nsx.V4lofPwOw.3su4ODse8Z29sBuCkIBd8cQ5kVkm9RJEdXS73Oi', NULL, '2026-08-11 19:19:04', '2026-08-11 19:19:04', NULL, NULL, 'actif', 1),
-(7, 'Razafindralambo', 'Heriniaina', 'heriniaina@gmail.com', NULL, '$2y$12$tyPWYii7MQYQUZt6PzvIfestq2AxEM0ZhoX8L2C8EZz02EqSZrxxe', NULL, '2026-08-11 20:33:03', '2026-08-11 20:33:03', NULL, NULL, 'actif', 2);
+(1, 'Razafindralambo', 'Valisoa', 'valisoarazafindralambo@gmail.com', NULL, '$2y$12$XROKGQD9BQqmxGZgF4UPP.R7FZwuB3OfQ8WXMaIzD5U/exV2cMTEC', NULL, '2026-09-14 05:31:54', '2026-09-14 05:54:15', NULL, '0383456734', 'actif', 2),
+(2, 'admin', 'admin', 'admin@gmail.com', NULL, '$2y$12$hCA192AHk4fhRsRLj8ofTOH/BN3ekVMt8E3T0skNA1zk6bHirvh5O', NULL, '2026-09-14 05:33:00', '2026-09-14 05:33:00', NULL, NULL, 'actif', 1),
+(3, 'Razafindralambo', 'Heriniaina', 'heriniaina@gmail.com', NULL, '$2y$12$qbNpO6AcoN4MJ45H4.8mw.HWmWfx1yEwurSlxESza17uCclissf0e', NULL, '2026-09-14 05:36:09', '2026-09-14 05:36:09', NULL, NULL, 'actif', 3),
+(4, 'Razafindralambo', 'Nono', 'nono@gmail.com', NULL, '$2y$12$GXJoO82hDtF8xVrMZMbwOOPytszj5yQ3wlevACzQEVjCSqFU2D2ma', NULL, '2026-09-14 06:21:53', '2026-09-14 06:25:20', NULL, '0383456734', 'actif', 2);
 
 --
 -- Index pour les tables déchargées
@@ -500,7 +586,8 @@ ALTER TABLE `certificats`
 ALTER TABLE `cours`
   ADD PRIMARY KEY (`id`),
   ADD KEY `cours_prof_id_foreign` (`prof_id`),
-  ADD KEY `cours_instrument_id_foreign` (`instrument_id`);
+  ADD KEY `cours_instrument_id_foreign` (`instrument_id`),
+  ADD KEY `cours_niveau_id_foreign` (`niveau_id`);
 
 --
 -- Index pour la table `exercices`
@@ -529,8 +616,16 @@ ALTER TABLE `favoris`
 --
 ALTER TABLE `inscriptions`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `inscriptions_cour_id_foreign` (`cour_id`),
+  ADD KEY `inscriptions_niveau_id_foreign` (`niveau_id`),
   ADD KEY `inscriptions_user_id_foreign` (`user_id`);
+
+--
+-- Index pour la table `inscription_instrument`
+--
+ALTER TABLE `inscription_instrument`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `inscription_instrument_inscription_id_foreign` (`inscription_id`),
+  ADD KEY `inscription_instrument_instrument_id_foreign` (`instrument_id`);
 
 --
 -- Index pour la table `instruments`
@@ -555,8 +650,14 @@ ALTER TABLE `job_batches`
 -- Index pour la table `lessons`
 --
 ALTER TABLE `lessons`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `lessonsbackup`
+--
+ALTER TABLE `lessonsbackup`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `lessons_cour_id_foreign` (`cour_id`);
+  ADD KEY `lessonsbackup_cour_id_foreign` (`cour_id`);
 
 --
 -- Index pour la table `levels`
@@ -574,8 +675,14 @@ ALTER TABLE `migrations`
 -- Index pour la table `paiements`
 --
 ALTER TABLE `paiements`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `paiementsbackup`
+--
+ALTER TABLE `paiementsbackup`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `paiements_inscription_id_foreign` (`inscription_id`);
+  ADD KEY `paiementsbackup_inscription_id_foreign` (`inscription_id`);
 
 --
 -- Index pour la table `password_reset_tokens`
@@ -617,9 +724,15 @@ ALTER TABLE `sessions`
 -- Index pour la table `soumissions`
 --
 ALTER TABLE `soumissions`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `soumissionsbackup`
+--
+ALTER TABLE `soumissionsbackup`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `soumissions_exercice_id_foreign` (`exercice_id`),
-  ADD KEY `soumissions_user_id_foreign` (`user_id`);
+  ADD KEY `soumissionsbackup_exercice_id_foreign` (`exercice_id`),
+  ADD KEY `soumissionsbackup_user_id_foreign` (`user_id`);
 
 --
 -- Index pour la table `users`
@@ -643,7 +756,7 @@ ALTER TABLE `certificats`
 -- AUTO_INCREMENT pour la table `cours`
 --
 ALTER TABLE `cours`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `exercices`
@@ -667,13 +780,19 @@ ALTER TABLE `favoris`
 -- AUTO_INCREMENT pour la table `inscriptions`
 --
 ALTER TABLE `inscriptions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT pour la table `inscription_instrument`
+--
+ALTER TABLE `inscription_instrument`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `instruments`
 --
 ALTER TABLE `instruments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `jobs`
@@ -685,19 +804,25 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT pour la table `lessons`
 --
 ALTER TABLE `lessons`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT pour la table `lessonsbackup`
+--
+ALTER TABLE `lessonsbackup`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pour la table `levels`
 --
 ALTER TABLE `levels`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT pour la table `paiements`
@@ -706,16 +831,22 @@ ALTER TABLE `paiements`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT pour la table `paiementsbackup`
+--
+ALTER TABLE `paiementsbackup`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT pour la table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT pour la table `resources`
 --
 ALTER TABLE `resources`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT pour la table `roles`
@@ -730,10 +861,16 @@ ALTER TABLE `soumissions`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT pour la table `soumissionsbackup`
+--
+ALTER TABLE `soumissionsbackup`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Contraintes pour les tables déchargées
@@ -751,6 +888,7 @@ ALTER TABLE `certificats`
 --
 ALTER TABLE `cours`
   ADD CONSTRAINT `cours_instrument_id_foreign` FOREIGN KEY (`instrument_id`) REFERENCES `instruments` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `cours_niveau_id_foreign` FOREIGN KEY (`niveau_id`) REFERENCES `levels` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `cours_prof_id_foreign` FOREIGN KEY (`prof_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
@@ -770,20 +908,27 @@ ALTER TABLE `favoris`
 -- Contraintes pour la table `inscriptions`
 --
 ALTER TABLE `inscriptions`
-  ADD CONSTRAINT `inscriptions_cour_id_foreign` FOREIGN KEY (`cour_id`) REFERENCES `cours` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `inscriptions_niveau_id_foreign` FOREIGN KEY (`niveau_id`) REFERENCES `levels` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `inscriptions_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Contraintes pour la table `lessons`
+-- Contraintes pour la table `inscription_instrument`
 --
-ALTER TABLE `lessons`
-  ADD CONSTRAINT `lessons_cour_id_foreign` FOREIGN KEY (`cour_id`) REFERENCES `cours` (`id`) ON DELETE CASCADE;
+ALTER TABLE `inscription_instrument`
+  ADD CONSTRAINT `inscription_instrument_inscription_id_foreign` FOREIGN KEY (`inscription_id`) REFERENCES `inscriptions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `inscription_instrument_instrument_id_foreign` FOREIGN KEY (`instrument_id`) REFERENCES `instruments` (`id`) ON DELETE CASCADE;
 
 --
--- Contraintes pour la table `paiements`
+-- Contraintes pour la table `lessonsbackup`
 --
-ALTER TABLE `paiements`
-  ADD CONSTRAINT `paiements_inscription_id_foreign` FOREIGN KEY (`inscription_id`) REFERENCES `inscriptions` (`id`) ON DELETE CASCADE;
+ALTER TABLE `lessonsbackup`
+  ADD CONSTRAINT `lessonsbackup_cour_id_foreign` FOREIGN KEY (`cour_id`) REFERENCES `cours` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `paiementsbackup`
+--
+ALTER TABLE `paiementsbackup`
+  ADD CONSTRAINT `paiementsbackup_inscription_id_foreign` FOREIGN KEY (`inscription_id`) REFERENCES `inscriptions` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `resources`
@@ -792,11 +937,11 @@ ALTER TABLE `resources`
   ADD CONSTRAINT `resources_lesson_id_foreign` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE;
 
 --
--- Contraintes pour la table `soumissions`
+-- Contraintes pour la table `soumissionsbackup`
 --
-ALTER TABLE `soumissions`
-  ADD CONSTRAINT `soumissions_exercice_id_foreign` FOREIGN KEY (`exercice_id`) REFERENCES `exercices` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `soumissions_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+ALTER TABLE `soumissionsbackup`
+  ADD CONSTRAINT `soumissionsbackup_exercice_id_foreign` FOREIGN KEY (`exercice_id`) REFERENCES `exercices` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `soumissionsbackup_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `users`

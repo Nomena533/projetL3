@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lessons', function (Blueprint $table) {
+        Schema::create('paiementsBackup', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('cour_id')->constrained('cours')->onDelete('cascade');
-            $table->string('titre');
-            $table->longText('description');
-            $table->string('duree');
+            $table->foreignId("inscription_id")->constrained("inscriptions")->cascadeOnDelete();
+            $table->decimal("montant");
+            $table->string("mode_paiement");
+            $table->enum("statut",["pending","successful","failed"])->default("pending");
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lessons');
+        Schema::dropIfExists('paiements');
     }
 };
