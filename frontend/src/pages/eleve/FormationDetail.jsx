@@ -32,7 +32,7 @@ export default function FormationDetail() {
   const { userListInscription, fetchUserListInscription } =
     useUserInscription();
 
-  const { cours, setCours, fetchCours } = useGetCour();
+  const { courPublie, setCours, fetchCours } = useGetCour();
 
   useEffect(() => {
     if (user) {
@@ -40,7 +40,7 @@ export default function FormationDetail() {
     }
   }, [user]);
   console.log("userListInscription : ", userListInscription);
-  console.log("cours : ", cours);
+  console.log("courPublie : ", courPublie);
 
   const formation = userListInscription.find(
     (inscription) => inscription.level.name === niveauName,
@@ -50,24 +50,9 @@ export default function FormationDetail() {
 
   let instruments = null;
 
-  if (formation && cours) {
+  if (formation && courPublie) {
     instruments = formation.instruments;
   }
-
-  let cour;
-
-  if (cours && instruments != null) {
-    instruments.map((instrument) => {
-      cour = cours.filter(
-        (cour) =>
-          cour.niveau_id === formation.level.id &&
-          cour.instrument_id === instrument.id,
-      );
-    });
-  }
-
-  console.log("Instruments : ", instruments);
-  console.log("Cour : ", cour);
 
   if (!formation) {
     return (
@@ -206,7 +191,7 @@ export default function FormationDetail() {
         {instruments &&
           instruments.map((instrument, i) => {
             // let courFormation;
-            const courFormation = cours.filter(
+            const courFormation = courPublie.filter(
               (cour) =>
                 cour.level.id === formation.niveau_id &&
                 cour.instrument.id === instrument.id,
@@ -223,7 +208,7 @@ export default function FormationDetail() {
                   <div className="flex items-center gap-4">
                     <div className="grid h-14 w-14 shrink-0 place-items-center rounded-xl text-2xl bg-amber">
                       <span className="opacity-90">
-                        <HiMusicNote/>
+                        <HiMusicNote />
                       </span>
                     </div>
                     <div>
@@ -240,13 +225,20 @@ export default function FormationDetail() {
                       Cours suivis
                     </h4>
                     <div className="divide-y divide-ivory-dark overflow-hidden rounded-xl border border-ivory-dark bg-ivory/40">
-                      {courFormation.map((c) => (
-                        <Link
-                          key={c.id}
-                          to={`/eleve/cours/${c.id}`}
-                          className="flex items-center gap-2.5 px-4 py-3 transition-colors duration-200 hover:bg-ivory-dark/40"
-                        >
-                          {/* {c.statut === "Terminé" ? (
+                      {courFormation.length === 0 ? (
+                        <div className="flex items-center justify-center gap-2.5 px-4 py-3 transition-colors duration-200 bg-amber-100 hover:bg-amber-200">
+                          <span className="font-body text-sm text-ink text-center">
+                            Aucune cour publiée pour l'instant
+                          </span>
+                        </div>
+                      ) : (
+                        courFormation.map((c) => (
+                          <Link
+                            key={c.id}
+                            to={`/eleve/cours/${c.id}`}
+                            className="flex items-center gap-2.5 px-4 py-3 transition-colors duration-200 hover:bg-ivory-dark/40"
+                          >
+                            {/* {c.statut === "Terminé" ? (
                         <HiOutlineCheckCircle
                           size={16}
                           className="shrink-0 text-coral-dark"
@@ -257,22 +249,23 @@ export default function FormationDetail() {
                         className="shrink-0 text-ink-soft"
                         />
                       )} */}
-                          <HiOutlineCheckCircle
-                            size={16}
-                            className="shrink-0 text-coral-dark"
-                          />
-                          <HiOutlinePlayCircle
-                            size={16}
-                            className="shrink-0 text-ink-soft"
-                          />
-                          <span className="flex-1 font-body text-sm text-ink">
-                            {capitalize(c.titre)}
-                          </span>
-                          <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                            STATUT(TERMINE OU en cours)
-                          </span>
-                        </Link>
-                      ))}
+                            <HiOutlineCheckCircle
+                              size={16}
+                              className="shrink-0 text-coral-dark"
+                            />
+                            <HiOutlinePlayCircle
+                              size={16}
+                              className="shrink-0 text-ink-soft"
+                            />
+                            <span className="flex-1 font-body text-sm text-ink">
+                              {capitalize(c.titre)}
+                            </span>
+                            <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+                              STATUT(TERMINE OU en cours)
+                            </span>
+                          </Link>
+                        ))
+                      )}
                     </div>
                   </div>
 

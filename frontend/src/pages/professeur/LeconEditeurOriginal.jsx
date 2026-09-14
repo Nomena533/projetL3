@@ -5,7 +5,7 @@ import AnimatedSection from "../../components/AnimatedSection";
 import FormField from "../../components/FormField";
 import { storeLesson, updateLesson } from "../../app/api/lessonApi";
 import {
-  getExerciceByLesson,
+  getExerciceByLecon,
   storeExercice,
   updateExercice,
 } from "../../app/api/exerciceApi";
@@ -28,11 +28,95 @@ function TextAreaField({ label, name, value, onChange }) {
   );
 }
 
-// Formulaire "affichage seul" pour l'exercice : il ne gère ni chargement ni
-// soumission lui-même. Son état (form / onChange) est piloté par le parent
-// pour pouvoir être enregistré en même temps que la leçon, en un seul clic,
-// tout en restant visuellement un formulaire à part.
-function ExerciceEditeur({ isEditing, form, onChange }) {
+// Section dédiée à la création/modification de l'exercice associé à une leçon.
+// Autonome : elle gère son propre chargement, son propre état de formulaire
+// et son propre enregistrement, comme le fait le reste de la page pour la leçon.
+function ExerciceEditeur({ lessonId }) {
+  const [exercice, setExercice] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  const [form, setForm] = useState({
+    titre: "",
+    description: "",
+  });
+
+  useEffect(() => {
+    const fetchExercice = async () => {
+      try {
+        const response = await getExerciceByLecon(lessonId);
+        // On part du principe qu'un seul exercice est rattaché à la leçon.
+        const found = Array.isArray(response.data)
+          ? response.data[0]
+          : response.data;
+
+        if (found) {
+          setExercice(found);
+          setForm({
+            titre: found.titre || "",
+            description: found.description || "",
+          });
+        }
+      } catch (err) {
+        console.error(
+          "Erreur lors de la récupération de l'exercice :",
+          err.response?.data,
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchExercice();
+  }, [lessonId]);
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+    setSaving(true);
+
+    try {
+      let response;
+      if (exercice) {
+        response = await updateExercice(exercice.id, form);
+      } else {
+        response = await storeExercice(lessonId, form);
+      }
+
+      setExercice(response.data?.exercice || response.data);
+      setSuccess(
+        exercice
+          ? "L'exercice a été modifié avec succès !"
+          : "L'exercice a été créé avec succès !",
+      );
+    } catch (err) {
+      console.error(
+        "Erreur lors de l'enregistrement de l'exercice :",
+        err.response?.data,
+      );
+      setError("Une erreur est survenue lors de l'enregistrement de l'exercice.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <p className="font-body text-sm text-ink-soft">
+        Chargement de l'exercice…
+      </p>
+    );
+  }
+
   return (
     <AnimatedSection
       delay={120}
@@ -43,12 +127,8 @@ function ExerciceEditeur({ isEditing, form, onChange }) {
           Exercice
         </span>
         <h3 className="mt-1 font-display text-lg font-semibold text-ink">
-          {isEditing ? "Modifier l'exercice" : "Ajouter un exercice"}
+          {exercice ? "Modifier l'exercice" : "Ajouter un exercice"}
         </h3>
-        <p className="mt-1 font-body text-xs text-ink-soft">
-          Facultatif : laisse les champs vides si cette leçon n'a pas d'exercice
-          à corriger.
-        </p>
       </div>
 
       <FormField
@@ -56,15 +136,29 @@ function ExerciceEditeur({ isEditing, form, onChange }) {
         placeholder="Ex. Rejoue la mélodie du morceau"
         name="titre"
         value={form.titre}
-        onChange={onChange}
+        onChange={handleChange}
       />
 
       <TextAreaField
         label="Description"
         name="description"
         value={form.description}
-        onChange={onChange}
+        onChange={handleChange}
       />
+
+      {error && <p className="font-body text-sm text-brick">{error}</p>}
+      {success && (
+        <p className="font-body text-sm text-emerald-600">{success}</p>
+      )}
+
+      <button
+        onClick={handleSubmit}
+        disabled={saving}
+        className="flex items-center gap-2 rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <HiOutlineCheckCircle size={16} />
+        {saving ? "Enregistrement…" : "Enregistrer l'exercice"}
+      </button>
     </AnimatedSection>
   );
 }
@@ -83,10 +177,11 @@ export default function ProfLeconEditeur() {
     titre: "",
     description: "",
     duree: "",
+    // cour_id: "",
   });
 
   useEffect(() => {
-    if (lessonId && lessonDetail) {
+    if (lessonDetail) {
       setForm({
         titre: lessonDetail.lesson.titre,
         description: lessonDetail.lesson.description,
@@ -96,139 +191,60 @@ export default function ProfLeconEditeur() {
     }
   }, [lessonDetail]);
 
-  const [exerciceForm, setExerciceForm] = useState({
-    titre: "",
-    description: "",
-  });
-
-  // id de l'exercice existant, s'il y en a déjà un pour cette leçon
-  // (permet de choisir entre storeExercice et updateExercice).
-  const [existingExerciceId, setExistingExerciceId] = useState(null);
-
-  useEffect(() => {
-    if (!lessonId) return;
-
-    const fetchExercice = async () => {
-      try {
-        const response = await getExerciceByLesson(lessonId);
-
-        const exercice = response.data[0];
-
-        if (exercice) {
-          setExistingExerciceId(exercice.id);
-          setExerciceForm({
-            titre: exercice.titre || "",
-            description: exercice.description || "",
-          });
-        }
-      } catch (err) {
-        console.error(
-          "Erreur lors de la récupération de l'exercice :",
-          err.response?.data,
-        );
-      }
-    };
-    fetchExercice();
-  }, [lessonId]);
-
-  const handleChangeExercice = (e) => {
-    setExerciceForm({
-      ...exerciceForm,
-      [e.target.name]: e.target.value,
-    });
-  };
-
   const [error, setError] = useState(null);
-  const [saving, setSaving] = useState(false);
 
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value,  
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setSaving(true);
 
     try {
       const data = {
         ...form,
+        // cour_id: courId,
       };
 
-      // console.log("data : ", data);
-      // return;
+      let response;
 
-      // enregistrement de la lesson
-      let lessonResponse;
       if (lessonId) {
-        lessonResponse = await updateLesson(lessonId, data);
+        response = await updateLesson(lessonId, data);
       } else {
-        lessonResponse = await storeLesson(courId, data);
+        response = await storeLesson(courId, data);
       }
 
-      const finalLessonId = lessonResponse.data.lesson.id;
+      console.log("Opération réussie", response.data);
 
-      // 2. Enregistrer l'exercice avec ce même id_lecon, seulement si le
-      //    professeur a renseigné au moins un titre (l'exercice est facultatif).
-      // if (finalLessonId && exerciceForm.titre.trim() !== "") {
-      //   if (existingExerciceId) {
-      //     await updateExercice(existingExerciceId, exerciceForm);
-      //   } else {
-      //     await storeExercice(finalLessonId, exerciceForm);
-      //   }
-      // }
+      // Récupère l'id de la leçon créée/modifiée pour rediriger vers sa
+      // page de détail, où on peut désormais ajouter/gérer ses ressources.
+      const newLessonId = lessonId ?? response.data?.id ?? response.data?.lecon?.id;
 
-      console.log("exerciceForm : " , exerciceForm);
-      // enregistrement de l'exercice
-      if (existingExerciceId) {
-        await updateExercice(existingExerciceId, exerciceForm);
-      } else {
-        await storeExercice(finalLessonId, exerciceForm);
-      }
-
-      console.log("Opération réussie", lessonResponse.data);
-
-      navigate(
-        `/professeur/cours/${courId}/lecons/${finalLessonId}/details`,
-        {
+      if (newLessonId) {
+        navigate(`/professeur/cours/${courId}/lecons/${newLessonId}/details`, {
           state: {
             success: lessonId
               ? "La leçon a été modifiée avec succès !"
-              : "La leçon (et son exercice) a été créée avec succès !",
+              : "La leçon a été créée. Ajoute maintenant ses ressources.",
           },
-        },
-      );
-
-      // if (finalLessonId) {
-      //   navigate(
-      //     `/professeur/cours/${courId}/lecons/${finalLessonId}/details`,
-      //     {
-      //       state: {
-      //         success: lessonId
-      //           ? "La leçon a été modifiée avec succès !"
-      //           : "La leçon (et son exercice) a été créée avec succès !",
-      //       },
-      //     },
-      //   );
-      // } else {
-      //   // Repli si l'id de la nouvelle leçon n'est pas disponible dans la réponse.
-      //   navigate(`/professeur/cours/${courId}/details`, {
-      //     state: {
-      //       success: lessonId
-      //         ? "La leçon a été modifiée avec succès !"
-      //         : "La leçon a été ajoutée avec succès !",
-      //     },
-      //   });
-      // }
-
+        });
+      } else {
+        // Repli si l'id de la nouvelle leçon n'est pas disponible dans la réponse.
+        navigate(`/professeur/cours/${courId}/details`, {
+          state: {
+            success: lessonId
+              ? "La leçon a été modifiée avec succès !"
+              : "La leçon a été ajoutée avec succès !",
+          },
+        });
+      }
     } catch (err) {
       console.error("Erreur lors de l'opération", err.response?.data);
       setError("Une erreur est survenue lors de l'enregistrement de la leçon.");
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -264,20 +280,10 @@ export default function ProfLeconEditeur() {
         </AnimatedSection>
       )}
 
-      {/* Formulaire 1 : la leçon */}
       <AnimatedSection
         delay={60}
         className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7"
       >
-        <div>
-          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-            Leçon
-          </span>
-          <h3 className="mt-1 font-display text-lg font-semibold text-ink">
-            Informations de la leçon
-          </h3>
-        </div>
-
         <FormField
           label="Titre de la leçon"
           placeholder="Ex. Accorder son valiha"
@@ -313,23 +319,12 @@ export default function ProfLeconEditeur() {
         {error && <p className="font-body text-sm text-brick">{error}</p>}
       </AnimatedSection>
 
-      {/* Formulaire 2 : l'exercice rattaché à cette leçon.
-          Toujours visible (même en création) : il est enregistré en même
-          temps que la leçon lors du clic sur "Enregistrer". */}
-      <ExerciceEditeur
-        isEditing={!!existingExerciceId}
-        form={exerciceForm}
-        onChange={handleChangeExercice}
-      />
-
-      <AnimatedSection delay={140} className="flex flex-wrap gap-3">
+      <AnimatedSection delay={100} className="flex flex-wrap gap-3">
         <button
           onClick={handleSubmit}
-          disabled={saving}
-          className="flex items-center gap-2 rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex items-center gap-2 rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
         >
-          <HiOutlineCheckCircle size={16} />
-          {saving ? "Enregistrement…" : "Enregistrer la leçon et l'exercice"}
+          <HiOutlineCheckCircle size={16} /> Enregistrer la leçon
         </button>
         <button
           onClick={() => navigate(`/professeur/cours/${courId}/details`)}
@@ -338,6 +333,10 @@ export default function ProfLeconEditeur() {
           Annuler
         </button>
       </AnimatedSection>
+
+      {/* L'exercice est rattaché à une leçon existante (clé étrangère id_lecon),
+          donc cette section n'a de sens qu'une fois la leçon créée. */}
+      {lessonId && <ExerciceEditeur lessonId={lessonId} />}
     </div>
   );
 }

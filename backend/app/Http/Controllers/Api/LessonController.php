@@ -16,7 +16,7 @@ class LessonController extends Controller
      */
     public function index()
     {
-        $lesson = Lesson::all();
+        $lesson = Lesson::orderBy("created_at","ASC")->get();
 
         return response()->json($lesson);
     }
@@ -51,7 +51,7 @@ class LessonController extends Controller
 
         return response()->json([
             'message' => "Lesson crée avec succès",
-            'lesson' => new LessonResource($lesson)
+            'lesson' => $lesson
         ], 201);
     }
 
@@ -91,12 +91,6 @@ class LessonController extends Controller
     {
         $lesson = Lesson::find($id);
 
-        $request->validate([
-            "titre" => "required|string",
-            "description" => "required|string",
-            "duree" => "required",
-        ]);
-
         $lesson->titre = $request->titre;
         $lesson->description = $request->description;
         $lesson->duree = $request->duree;
@@ -105,7 +99,7 @@ class LessonController extends Controller
 
         return response()->json([
             'message' => 'Leçon modifié avec succès',
-            'lesson' => new LessonResource($lesson)
+            'lesson' => $lesson
         ], 201);
 
     }

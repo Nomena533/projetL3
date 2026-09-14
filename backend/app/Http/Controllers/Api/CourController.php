@@ -18,10 +18,12 @@ class CourController extends Controller
     {
         $cour = Cour::with('instrument')->with('level')->with('prof')->get();
         $courBrouillon = Cour::with('instrument')->with('level')->with('prof')->where("statut", "brouillon")->get();
+        $courPublié = Cour::with('instrument')->with('level')->with('prof')->where("statut", "publié")->get();
 
         return response()->json([
             "all" => $cour, 
-            "brouillon"=> $courBrouillon
+            "brouillon" => $courBrouillon,
+            "publie" => $courPublié
         ]);
     }
 

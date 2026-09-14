@@ -4,8 +4,9 @@ import { CourContext } from "../context/CourContext";
 
 function CourProvider({ children }) {
   const [cours, setCours] = useState([]);
-  const [courBrouillon, setCourBrouillon] = useState([]);
   const [cour, setCourDetail] = useState(null);
+  const [courBrouillon, setCourBrouillon] = useState([]);
+  const [courPublie, setCourPublie] = useState([]);
 
   useEffect(() => {
     fetchCours();
@@ -16,6 +17,7 @@ function CourProvider({ children }) {
       const response = await getCour();
       setCours(response.data.all);
       setCourBrouillon(response.data.brouillon);
+      setCourPublie(response.data.publie);
 
       console.log("Cours sélectionnés avec succès");
     } catch (error) {
@@ -48,7 +50,7 @@ function CourProvider({ children }) {
 
   return (
     <CourContext.Provider
-      value={{ cours, courBrouillon, cour, fetchCours, fetchCourDetail, setCours, setCourBrouillon }}
+      value={{ cours, courBrouillon, courPublie, cour, fetchCours, fetchCourDetail, setCours, setCourBrouillon, setCourPublie }}
     >
       {children}
     </CourContext.Provider>

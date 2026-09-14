@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : lun. 14 sep. 2026 à 12:28
+-- Généré le : lun. 14 sep. 2026 à 22:15
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -85,7 +85,7 @@ CREATE TABLE `cours` (
 
 INSERT INTO `cours` (`id`, `prof_id`, `instrument_id`, `niveau_id`, `titre`, `description`, `image`, `duree`, `statut`, `created_at`, `updated_at`) VALUES
 (1, 3, 2, 1, 'Cour test', 'test 2', 'cours/tFXp7DDFUPiwXMRpChm6ZlbURyvlVsuMfhYqW4qB.jpg', '12 min', 'publié', '2026-09-14 05:41:42', '2026-09-14 06:15:45'),
-(2, 3, 1, 1, 'Cour test 2', 'test 2', 'cours/N3uvA4gZNbX76CXREAXQtljhPr2CJ1vWZzZX5dZ9.png', '2 heures', 'brouillon', '2026-09-14 05:50:14', '2026-09-14 05:50:14');
+(2, 3, 1, 1, 'Cour test 2', 'test 2', 'cours/N3uvA4gZNbX76CXREAXQtljhPr2CJ1vWZzZX5dZ9.png', '2 heures', 'publié', '2026-09-14 05:50:14', '2026-09-14 17:02:26');
 
 -- --------------------------------------------------------
 
@@ -101,6 +101,13 @@ CREATE TABLE `exercices` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `exercices`
+--
+
+INSERT INTO `exercices` (`id`, `lesson_id`, `titre`, `description`, `created_at`, `updated_at`) VALUES
+(3, 10, 'Test exo modifié', 'Exo modifié', '2026-09-14 14:54:51', '2026-09-14 15:56:07');
 
 -- --------------------------------------------------------
 
@@ -261,7 +268,8 @@ CREATE TABLE `lessons` (
 
 INSERT INTO `lessons` (`id`, `cour_id`, `titre`, `description`, `duree`, `created_at`, `updated_at`) VALUES
 (1, 1, 'Leçon 1', 'Test', '12 min', '2026-09-14 05:45:12', '2026-09-14 05:45:12'),
-(2, 2, 'Leçon 1', 'test', '10 min', '2026-09-14 05:50:36', '2026-09-14 05:50:36');
+(2, 2, 'Leçon 1', 'test', '10 min', '2026-09-14 05:50:36', '2026-09-14 05:50:36'),
+(10, 1, 'Leçon 2 modifié2', 'Test modifié2', '13 min', '2026-09-14 14:54:50', '2026-09-14 15:56:07');
 
 -- --------------------------------------------------------
 
@@ -421,7 +429,11 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (3, 'App\\Models\\User', 2, 'react-app', '228bb392f95e8d03467d09853b4afaa63dda65946d74a5c01bec585ea061d2af', '[\"*\"]', NULL, NULL, '2026-09-14 05:33:00', '2026-09-14 05:33:00'),
 (6, 'App\\Models\\User', 3, 'react-app', '1e48bd02eefe1da3552694c12556c44f785f25aeb2bb1ea23657a2aecc9da125', '[\"*\"]', NULL, NULL, '2026-09-14 05:36:09', '2026-09-14 05:36:09'),
 (10, 'App\\Models\\User', 4, 'react-app', '7373f4a04941e288cf462bb436954cbe24afb4ddfe1d24c0323460d9a990bcc0', '[\"*\"]', NULL, NULL, '2026-09-14 06:21:53', '2026-09-14 06:21:53'),
-(13, 'App\\Models\\User', 3, 'react-app', '418d2b311c5a5a67137dd8688ced93d61adf3c0beb74b35ea7666678c465a1f0', '[\"*\"]', NULL, NULL, '2026-09-14 06:40:39', '2026-09-14 06:40:39');
+(15, 'App\\Models\\User', 3, 'react-app', 'a63229db68ed2ee438dba6d97ff824e40eed4424662b66d9e9a69087744d2a1e', '[\"*\"]', NULL, NULL, '2026-09-14 08:17:09', '2026-09-14 08:17:09'),
+(16, 'App\\Models\\User', 4, 'react-app', '032008d7e0554acd5f65068ab4e95ffa1355fa0261c7347f6e9e565094c93430', '[\"*\"]', NULL, NULL, '2026-09-14 08:20:51', '2026-09-14 08:20:51'),
+(17, 'App\\Models\\User', 3, 'react-app', '1ce6b83ae6503406123202bb97a97677dfade7b94965f691a594686ccab82e80', '[\"*\"]', NULL, NULL, '2026-09-14 13:08:02', '2026-09-14 13:08:02'),
+(18, 'App\\Models\\User', 4, 'react-app', 'adc993a1a1ec2ab1fa8cefdcb0551539a1f1f8ae8479cba3335520b5041d299f', '[\"*\"]', NULL, NULL, '2026-09-14 16:01:36', '2026-09-14 16:01:36'),
+(19, 'App\\Models\\User', 2, 'react-app', '1ea1ab471fd5845599a01b69edcbcc1bc210a5e6468ad475ce8e61aaf5de0cbd', '[\"*\"]', NULL, NULL, '2026-09-14 16:43:12', '2026-09-14 16:43:12');
 
 -- --------------------------------------------------------
 
@@ -444,7 +456,6 @@ CREATE TABLE `resources` (
 --
 
 INSERT INTO `resources` (`id`, `lesson_id`, `titre`, `type`, `fichier`, `created_at`, `updated_at`) VALUES
-(1, 1, 'Les Bases du FingerPicking pour les DÉBUTANTS !', 'video', 'ressources/LlQq4LqE1lWw8cVsptCSfJ6JR1Ao19FeDG5m5GMs.mkv', '2026-09-14 05:48:17', '2026-09-14 05:48:17'),
 (2, 1, 'Canva projet', 'pdf', 'ressources/bY82n1kOFRyy9OCgKxXAArS2fK97xWTgrRsBZgaA.pdf', '2026-09-14 05:48:17', '2026-09-14 05:48:17'),
 (3, 2, 'PLAN-DAFFAIRE-IM', 'pdf', 'ressources/DdOPGJdnJzXYCuAYMQqimdQfpDy2in1ihghuBoI3.pdf', '2026-09-14 05:52:03', '2026-09-14 05:52:03'),
 (4, 2, 'Créer un flyer', 'pdf', 'ressources/d11FWozW9f8x5TdvJbzyJKv3hDtlPKf9kP6kANqR.pdf', '2026-09-14 05:52:03', '2026-09-14 05:52:03'),
@@ -762,7 +773,7 @@ ALTER TABLE `cours`
 -- AUTO_INCREMENT pour la table `exercices`
 --
 ALTER TABLE `exercices`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `failed_jobs`
@@ -804,7 +815,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT pour la table `lessons`
 --
 ALTER TABLE `lessons`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT pour la table `lessonsbackup`
@@ -840,7 +851,7 @@ ALTER TABLE `paiementsbackup`
 -- AUTO_INCREMENT pour la table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT pour la table `resources`

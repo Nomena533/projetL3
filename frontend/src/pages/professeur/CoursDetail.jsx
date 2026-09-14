@@ -108,6 +108,8 @@ export default function ProfCoursDetail() {
   }, [alert]);
 
   const handleDeleteLecon = async (leconId) => {
+    console.log("leconId", leconId);
+    // return;
     try {
       await deleteLesson(leconId);
 
@@ -218,7 +220,7 @@ export default function ProfCoursDetail() {
 
             {cours.cour.description && (
               <p className="font-body text-sm leading-relaxed text-ink-soft">
-                {cours.cour.description}
+                {capitalize(cours.cour.description)}
               </p>
             )}
 
@@ -226,12 +228,6 @@ export default function ProfCoursDetail() {
               <span>
                 <strong className="text-ink">Durée : </strong>
                 {cours.cour.duree || "—"}
-              </span>
-              <span>
-                <strong className="text-ink">Prix : </strong>
-                {cours.cour.prix
-                  ? `${Number(cours.cour.prix).toLocaleString("fr-FR")} Ar`
-                  : "—"}
               </span>
               <span>
                 <strong className="text-ink">Leçons : </strong>

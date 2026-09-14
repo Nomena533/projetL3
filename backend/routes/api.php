@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CourController;
+use App\Http\Controllers\Api\ExerciceController;
 use App\Http\Controllers\Api\InscriptionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\InstrumentController;
@@ -60,6 +61,13 @@ Route::get('/getLessonByCour/{courId}', [LessonController::class, 'getByCour']);
 Route::get('/getLessonDetail/{id}', [LessonController::class, 'show']);
 Route::put('/updateLesson/{id}', [LessonController::class, 'update']);
 Route::delete('/deleteLesson/{id}', [LessonController::class, 'destroy']);
+
+Route::post('/lesson/{lessonId}/storeExercice', [ExerciceController::class, 'store']);
+// Route::get('/getLesson', [LessonController::class, 'index']);
+Route::get('/getExerciceByLesson/{lessonId}', [ExerciceController::class, 'getByLesson']);
+// Route::get('/getLessonDetail/{id}', [LessonController::class, 'show']);
+Route::put('/updateExercice/{id}', [ExerciceController::class, 'update']);
+// Route::delete('/deleteLesson/{id}', [LessonController::class, 'destroy']);
 
 Route::post('/lesson/{lessonId}/storeResource', [ResourceController::class, 'store']);
 Route::get('/getResource', [ResourceController::class, 'index']);

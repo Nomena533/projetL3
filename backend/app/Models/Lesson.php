@@ -13,11 +13,18 @@ class Lesson extends Model
         "cour_id"
     ];
 
-    public function cour () {
+    public function cour()
+    {
         return $this->belongsTo(Cour::class);
     }
 
-    public function resource () {
+    public function resource()
+    {
         return $this->hasMany(Resource::class);
+    }
+
+    public function exrecice()
+    {
+        return $this->belongsTo(Lesson::class);
     }
 }
