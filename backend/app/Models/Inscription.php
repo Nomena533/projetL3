@@ -29,7 +29,13 @@ class Inscription extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function level() {
+    public function level()
+    {
         return $this->belongsTo(Level::class, "niveau_id");
+    }
+
+    public function paiement()
+    {
+        return $this->hasMany(Paiement::class);
     }
 }

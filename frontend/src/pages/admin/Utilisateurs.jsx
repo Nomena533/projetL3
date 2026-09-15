@@ -5,11 +5,17 @@ import Modal from "../../components/Modal";
 import Pill from "../../components/Pill";
 import { Th, Td } from "../../components/Table";
 import { UTILISATEURS } from "../../lib/mockAdminData";
+import { useUser } from "../../app/hooks/useUser";
+import { capitalize } from "../../lib/formatFunction";
 
 export default function AdminUtilisateurs() {
   const [users, setUsers] = useState(UTILISATEURS);
   const [q, setQ] = useState("");
   const [toDelete, setToDelete] = useState(null);
+
+  const {userList} = useUser();
+
+  console.log("userList : ", userList)
 
   const filtered = users.filter(
     (u) => u.nom.toLowerCase().includes(q.toLowerCase()) || u.email.toLowerCase().includes(q.toLowerCase())
@@ -17,6 +23,12 @@ export default function AdminUtilisateurs() {
 
   function toggleStatut(id) {
     setUsers(users.map((u) => (u.id === id ? { ...u, statut: u.statut === "Actif" ? "Suspendu" : "Actif" } : u)));
+  }
+
+  if (userList.length === 0) {
+    return (
+      <p className="font-body text-sm text-ink-soft">Chargement …</p>
+    );
   }
 
   return (
@@ -49,10 +61,10 @@ export default function AdminUtilisateurs() {
               </tr>
             </thead>
             <tbody className="divide-y divide-ivory-dark">
-              {filtered.map((u) => (
+              {userList.map((u) => (
                 <tr key={u.id} className="transition-colors duration-200 hover:bg-ivory-dark/30">
-                  <Td className="font-semibold text-ink">{u.nom}</Td>
-                  <Td>{u.role}</Td>
+                  <Td className="font-semibold text-ink">{u.name}</Td>
+                  <Td>{capitalize(u.role.name)}</Td>
                   <Td className="text-ink-soft">{u.email}</Td>
                   <Td>
                     <Pill>{u.statut}</Pill>

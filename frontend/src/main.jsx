@@ -22,12 +22,12 @@ import CourProvider from "./app/provider/CourProvider";
 import LessonProvider from "./app/provider/LessonProvider";
 import LevelProvider from "./app/provider/LevelProvider";
 import InstrumentProvider from "./app/provider/InstrumentProvider";
-import UserInscriptionProvider from "./app/provider/UserInscriptionProvider";
+import UserProvider from "./app/provider/UserProvider";
 // import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <UserInscriptionProvider>
+    <UserProvider>
       <InstrumentProvider>
         <LevelProvider>
           <LessonProvider>
@@ -42,6 +42,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           </LessonProvider>
         </LevelProvider>
       </InstrumentProvider>
-    </UserInscriptionProvider>
+    </UserProvider>
   </React.StrictMode>,
 );

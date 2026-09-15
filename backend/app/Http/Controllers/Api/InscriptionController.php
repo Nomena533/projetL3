@@ -62,7 +62,7 @@ class InscriptionController extends Controller
 
         return response()->json([
             'message' => 'Inscription réussi avec succès',
-            'cour' => $inscription
+            'inscription' => $inscription
         ], 201);
     }
 
@@ -110,7 +110,7 @@ class InscriptionController extends Controller
 
         return response()->json([
             'message' => "Statut de l'inscription modifié avec succès",
-            'cour' => $inscription
+            'inscription' => $inscription
         ], 201);
     }
 

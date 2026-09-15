@@ -1,4 +1,4 @@
-import { LayoutDashboard, BookOpen, Award, Heart, MessageCircle, User, Settings } from "./icons";
+import { LayoutDashboard, BookOpen, Award, Heart, MessageCircle, User, Settings, Wallet } from "./icons";
 
 // src/lib/mockStudentData.js
 // Données factices pour l'espace Élève — à remplacer par les appels à l'API Laravel
@@ -167,4 +167,5 @@ export const NAV = [
   { path: "/eleve/messages", label: "Messages", icon: MessageCircle },
   { path: "/eleve/profil", label: "Mon profil", icon: User },
   { path: "/eleve/parametres", label: "Parametres", icon: Settings },
+  { path: "/eleve/paiement", label: "Paiements", icon: Wallet },
 ];

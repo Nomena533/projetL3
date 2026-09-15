@@ -8,7 +8,7 @@ import {
 import AnimatedSection from "../../components/AnimatedSection";
 import { NIVEAUX_PARCOURS } from "../../lib/mockFormationData";
 import { useLevel } from "../../app/hooks/useLevel";
-import { useUserInscription } from "../../app/hooks/useUserInscription";
+import { useUser } from "../../app/hooks/useUser";
 import { useEffect } from "react";
 import { useAuth } from "../../app/hooks/useAuth";
 
@@ -17,7 +17,7 @@ export default function FormationPublique() {
   const { user } = useAuth();
 
   const { userListInscription, fetchUserListInscription } =
-    useUserInscription();
+    useUser();
 
   useEffect(() => {
     if (user) {

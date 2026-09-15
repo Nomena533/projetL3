@@ -12,7 +12,7 @@ import SettingsSection from "../../components/SettingsSection";
 import FormField from "../../components/FormField";
 import { useAuth } from "../../app/hooks/useAuth";
 
-export default function ProfilAdmin() {
+export default function AdminProfil() {
   const { user } = useAuth();
   const [saved, setSaved] = useState(false);
 
@@ -24,7 +24,7 @@ export default function ProfilAdmin() {
   }
 
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="space-y-8">
       <AnimatedSection>
         <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">Mon compte</span>
         <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">Mon profil</h2>

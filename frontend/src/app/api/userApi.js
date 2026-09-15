@@ -2,7 +2,11 @@
 
 import API from "./api";
 
-export const getUser = () => {
+export const getUsers = () => {
+    return API.get("/getUsers");
+};
+
+export const getUserProfile = () => {
     return API.get("/profile");
 };
 

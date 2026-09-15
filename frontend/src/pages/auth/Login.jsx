@@ -25,7 +25,7 @@ import FormField from "../../components/FormField";
 import Modal from "../../components/Modal";
 import { login } from "../../app/api/authApi";
 import { useAuth } from "../../app/hooks/useAuth";
-import { useUserInscription } from "../../app/hooks/useUserInscription";
+import { useUser } from "../../app/hooks/useUser";
 import { LogoBlanc } from "../../components/Logo";
 
 export default function Login() {
@@ -34,7 +34,7 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { fetchUserListInscription } = useUserInscription();
+  const { fetchUserListInscription } = useUser();
 
   const [form, setForm] = useState({
     email: "",

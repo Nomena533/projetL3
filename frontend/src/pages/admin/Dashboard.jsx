@@ -17,12 +17,12 @@ const MOIS = ["Mars", "Avr", "Mai", "Juin", "Juil", "Août"];
 const VALEURS = [40, 55, 48, 70, 65, 82];
 
 const QUICK_LINKS = [
-  { to: "/admin/utilisateurs", label: "Utilisateurs", icon: HiOutlineUsers },
-  { to: "/admin/validation", label: "Validation des cours", icon: HiOutlineClipboardDocumentCheck },
-  { to: "/admin/paiements", label: "Paiements", icon: HiOutlineBanknotes },
-  { to: "/admin/avis", label: "Avis", icon: HiOutlineStar },
-  { to: "/admin/referentiels", label: "Référentiels", icon: HiOutlineBookOpen },
-  { to: "/admin/parametres", label: "Paramètres du site", icon: HiOutlineAdjustmentsHorizontal },
+  { to: "/administrateur/utilisateurs", label: "Utilisateurs", icon: HiOutlineUsers },
+  { to: "/administrateur/validation", label: "Validation des cours", icon: HiOutlineClipboardDocumentCheck },
+  { to: "/administrateur/paiements", label: "Paiements", icon: HiOutlineBanknotes },
+  { to: "/administrateur/avis", label: "Avis", icon: HiOutlineStar },
+  { to: "/administrateur/referentiels", label: "Référentiels", icon: HiOutlineBookOpen },
+  { to: "/administrateur/parametres", label: "Paramètres du site", icon: HiOutlineAdjustmentsHorizontal },
 ];
 
 export default function AdminDashboard() {

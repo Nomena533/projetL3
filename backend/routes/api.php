@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\InstrumentController;
 use App\Http\Controllers\Api\LessonController;
 use App\Http\Controllers\Api\LevelController;
+use App\Http\Controllers\Api\PaiementController;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\UserController;
 
@@ -33,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Récupérer le profil de l'utilisateur connecté
     Route::get('/profile', [AuthController::class, 'profile']);
+
     Route::post('/logout', [AuthController::class, 'logout']);
     
     Route::post('/storeCour', [CourController::class, 'store']);
@@ -40,6 +42,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/niveau/{niveauId}/storeInscription', [InscriptionController::class, 'store']);
 
     });
+
+
+Route::get('/getUsers', [UserController::class, 'index']);
     
 Route::get('/getRole', [RoleController::class, 'index']);
 
@@ -77,7 +82,14 @@ Route::put('/updateResource/{id}', [ResourceController::class, 'update']);
 Route::delete('/deleteResource/{id}', [ResourceController::class, 'destroy']);
 
 Route::get('/user/{userId}/userListInscription', [UserController::class, 'userListInscription']);
+
 Route::get('/getInscription', [InscriptionController::class, 'index']);
 Route::get('/getInscriptionDetail/{id}', [InscriptionController::class, 'show']);
 Route::put('/updateStatutInscription/{id}', [InscriptionController::class, 'updateStatut']);
 
+Route::post('/inscription/{inscriptionId}/storePaiement', [PaiementController::class, 'store']);
+Route::get('/getPaiement', [PaiementController::class, 'index']);
+Route::get('/getPaimentDetail/{id}', [PaiementController::class, 'show']);
+Route::put('/updateStatutPaiement/{id}', [PaiementController::class, 'updateStatut']);
+// Route::put('/updateResource/{id}', [ResourceController::class, 'update']);
+// Route::delete('/deleteResource/{id}', [ResourceController::class, 'destroy']);

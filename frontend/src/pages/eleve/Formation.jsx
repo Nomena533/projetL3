@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { getUserListInscription } from "../../app/api/userApi";
 import { useAuth } from "../../app/hooks/useAuth";
 import { formatDate } from "../../lib/formatFunction";
-import { useUserInscription } from "../../app/hooks/useUserInscription";
+import { useUser } from "../../app/hooks/useUser";
 
 const NIVEAUX_TERMINES = NIVEAUX_PARCOURS.filter(
   (n) => n.inscrit && n.progression >= 100,
@@ -28,7 +28,7 @@ const NIVEAUX_INSCRITS = NIVEAUX_PARCOURS.filter((n) => n.inscrit).length;
 export default function Formation() {
   const { levels } = useLevel();
   const { user } = useAuth();
-  const { userListInscription, fetchUserListInscription } = useUserInscription();
+  const { userListInscription, fetchUserListInscription } = useUser();
 
   useEffect(() => {
     fetchUserListInscription(user.id);

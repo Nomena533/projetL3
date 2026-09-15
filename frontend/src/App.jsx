@@ -67,6 +67,7 @@ import FormationDetail from "./pages/eleve/FormationDetail";
 import FormationPublique from "./pages/home/FormationPublique";
 import PaiementPublic from "./pages/home/PaiementPublic";
 import Paiement from "./pages/eleve/Paiement";
+import AdminProfil from "./pages/admin/Profil";
 
 /** Remonte en haut de page à chaque changement de route */
 function ScrollToTop() {
@@ -198,6 +199,7 @@ export default function App() {
         <Route path="paiements" element={<AdminPaiements />} />
         <Route path="avis" element={<AdminAvis />} />
         <Route path="parametres" element={<AdminParametres />} />
+        <Route path="profil" element={<AdminProfil />} />
       </Route>
     </Routes>
     // {/* </BrowserRouter> */}

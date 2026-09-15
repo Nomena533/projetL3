@@ -12,7 +12,7 @@ import {
   FORMATIONS_PAR_NIVEAU,
 } from "../../lib/mockFormationData";
 import { useAuth } from "../../app/hooks/useAuth";
-import { useUserInscription } from "../../app/hooks/useUserInscription";
+import { useUser } from "../../app/hooks/useUser";
 import { useEffect } from "react";
 import useGetCour from "../../app/hooks/useGetCour";
 import { HiMusicNote } from "react-icons/hi";
@@ -30,7 +30,7 @@ export default function FormationDetail() {
   const { user } = useAuth();
 
   const { userListInscription, fetchUserListInscription } =
-    useUserInscription();
+    useUser();
 
   const { courPublie, setCours, fetchCours } = useGetCour();
 

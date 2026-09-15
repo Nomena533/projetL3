@@ -11,7 +11,8 @@ import { useLevel } from "../../app/hooks/useLevel";
 import { useInstrument } from "../../app/hooks/useInstrument";
 import { storeInscription } from "../../app/api/inscriptionApi";
 import { getUserListInscription } from "../../app/api/userApi";
-import { useUserInscription } from "../../app/hooks/useUserInscription";
+import { useUser } from "../../app/hooks/useUser";
+import { FaMoneyBill, FaMoneyBillAlt, FaMoneyBillWave, FaMoneyCheck } from "react-icons/fa";
 
 function formatAriary(n) {
   return new Intl.NumberFormat("fr-MG").format(n) + " Ar";
@@ -23,17 +24,18 @@ export default function Inscription() {
   const navigate = useNavigate();
   const isInitiation = niveauName === "initiation";
   const [niveau, setNiveau] = useState(null);
+  const [inscriptionId, setInscriptionId] = useState(0);
 
   const handlePaiement = () => {
     navigate(
-      `/paiement?niveau=${niveau.name}&instruments=${instrumentsParam}`,{replace:true}
+      `/paiement?inscriptionId=${inscriptionId}&niveau=${niveau.name}&instruments=${instrumentsParam}`,{replace:true}
     );
   }
 
   const { user } = useAuth();
 
   const { userListInscription, fetchUserListInscription } =
-    useUserInscription();
+    useUser();
 
   useEffect(() => {
     fetchUserListInscription(user.id);
@@ -47,6 +49,7 @@ export default function Inscription() {
   });
 
   const { levels } = useLevel();
+  
   // "instruments" = catalogue complet récupéré depuis la BDD (via le Provider).
   // Ne pas confondre avec la sélection de l'utilisateur, qui est gérée séparément.
   const { instruments } = useInstrument();
@@ -76,6 +79,7 @@ export default function Inscription() {
   );
 
   console.log("inscriptionInitiation : ", inscriptionInitiation);
+
   // Remplissage automatique de selectedInstruments avec les ids des intruments de l'inscription sur le niveau initation
   useEffect(() => {
     // Cherche l'inscription du niveau initiation
@@ -96,17 +100,6 @@ export default function Inscription() {
       setSelectedInstruments(instruments);
     }
   }, [userListInscription]);
-  console.log("azkjhealzheak : ", selectedInstruments);
-
-  // A expliquer
-  // const toggleInstrument = (id, name) => {
-  //   setSelectedInstruments((list) =>
-  //     // Méthode include() permet de rechercher une valeur dans un tableau en la passant entre les (),
-  //     // retourne true si existe sinon false
-  //     // n'accepte qu'un tableau
-  //     list.includes(id) ? list.filter((x) => x !== id) : [...list, id],
-  //   );
-  // };
 
   const toggleInstrument = (id, name) => {
     setSelectedInstruments((list) => {
@@ -126,7 +119,7 @@ export default function Inscription() {
 
   // Montant = nombre d'instruments sélectionnés × prix mensuel du niveau
   const montantTotal = useMemo(
-    () => nombreInstruments * (niveau?.prix_mensuel || 0),
+    () => (nombreInstruments * (niveau?.prix_mensuel || 0)) + parseFloat(niveau?.droit_inscription),
     [nombreInstruments, niveau],
   );
 
@@ -141,18 +134,18 @@ export default function Inscription() {
         instruments: selectedInstruments.map((instrument) => instrument.id),
       };
 
-      // console.log("data : ", data);
-      // return;
 
       const response = await storeInscription(niveau.id, data);
-
+      
       console.log("Inscription réussie", response.data);
+
+      setInscriptionId(response.data.inscription.id);
 
       // (nom, prenom, email, telephone, niveau: niveau.id, instruments: selectedInstruments)
       setSent(true);
     } catch (err) {
       console.error("Erreur lors de l'inscription", err.response?.data);
-      setError("Une erreur est survenue lors de l'enregistrement de la leçon.");
+      setError("Une erreur est survenue lors de l'inscription.");
     }
   };
 
@@ -211,6 +204,19 @@ export default function Inscription() {
               <div>
                 <p className="font-body text-sm font-semibold text-ink">
                   Durée : {niveau.duree}
+                </p>
+                {/* <p className="font-body text-xs text-ink-soft">
+                  {formatAriary(niveau.prix_mensuel)} par mois par instrument
+                </p> */}
+              </div>
+            </div>
+            <div className="flex items-center gap-3.5">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-coral/10 text-coral-dark">
+                <FaMoneyBillWave size={19} />
+              </span>
+              <div>
+                <p className="font-body text-sm font-semibold text-ink">
+                  Droit d'inscription : {formatAriary(niveau.droit_inscription)}
                 </p>
                 <p className="font-body text-xs text-ink-soft">
                   {formatAriary(niveau.prix_mensuel)} par mois par instrument
@@ -370,7 +376,7 @@ export default function Inscription() {
                 </div>
                 <div className="text-right">
                   <p className="font-mono text-[11px] uppercase tracking-wide text-ivory/70">
-                    Montant total
+                    Montant total(Ecolage + droit d'inscription)
                   </p>
                   <p className="font-display text-lg font-semibold">
                     {formatAriary(montantTotal)}

@@ -59,7 +59,7 @@ export default function AdminParametres() {
   }
 
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="space-y-8">
       <AnimatedSection>
         <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">Administration</span>
         <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">Paramètres du site</h2>
@@ -123,7 +123,7 @@ export default function AdminParametres() {
           />
         </SettingsSection>
 
-        <ProfilLinkCard to="/admin/profil" delay={260} />
+        <ProfilLinkCard to="/administrateur/profil" delay={260} />
       </div>
 
       <AnimatedSection delay={300}>
