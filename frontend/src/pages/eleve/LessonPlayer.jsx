@@ -42,6 +42,7 @@ export default function LessonPlayer() {
   const [lesson, setLesson] = useState(null);
   const [lessons, setLessons] = useState([]);
   const [exercice, setExercice] = useState(null);
+  console.log("courId : ", courId);
 
   // Ressource actuellement affichée dans la vue principale.
   // null => on affiche le lecteur "par défaut" de la leçon.
@@ -82,6 +83,8 @@ export default function LessonPlayer() {
     fetchExercice();
   }, [id]);
 
+  console.log("exercice : ", exercice);
+
   useEffect(() => {
     fetchLessonDetail(id);
   }, [id]);
@@ -120,7 +123,7 @@ export default function LessonPlayer() {
     console.log("indexOf : ", lessons.indexOf(lesson));
   }
 
-  if (!lesson || !resource || !lessons || !exercice) {
+  if (!lesson || !resource || !lessons ) {
     return (
       <p className="font-body text-sm text-ink-soft">Chargement du cours…</p>
     );
@@ -227,27 +230,37 @@ export default function LessonPlayer() {
           </button>
         </AnimatedSection>
 
-        <AnimatedSection
-          delay={140}
-          className="rounded-2xl border border-ivory-dark bg-white/60 p-6"
-        >
-          <h3 className="mb-2 font-display text-base font-semibold text-ink">
-            Exercice : {exercice.titre}
-          </h3>
-          <p className="mb-4 font-body text-sm leading-relaxed text-ink-soft">
-            {/* Enregistre-toi en train de jouer la mélodie, puis envoie ton fichier
+        {exercice === null || exercice === undefined ? (
+          <AnimatedSection
+            delay={140}
+            className="rounded-2xl border border-ivory-dark bg-white/60 p-6"
+          >
+            <h3 className="mb-2 font-display text-base font-semibold text-ink">
+              Exercice
+            </h3>
+            <p className="mb-4 font-body text-sm leading-relaxed text-ink-soft">
+              Pas d'exercice disponible pour cette leçcon
+            </p>
+          </AnimatedSection>
+        ) : (
+          <AnimatedSection
+            delay={140}
+            className="rounded-2xl border border-ivory-dark bg-white/60 p-6"
+          >
+            <h3 className="mb-2 font-display text-base font-semibold text-ink">
+              Exercice : {exercice?.titre}
+            </h3>
+            <p className="mb-4 font-body text-sm leading-relaxed text-ink-soft">
+              {/* Enregistre-toi en train de jouer la mélodie, puis envoie ton fichier
             pour correction par ton professeur. */}
-            {exercice.description}
-          </p>
-          <button className="rounded-full bg-coral px-5 py-2.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark">
-            Déposer mon fichier
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-            />
-          </button>
-        </AnimatedSection>
+              {exercice?.description}
+            </p>
+            <button className="rounded-full bg-coral px-5 py-2.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark">
+              Déposer mon fichier
+              <input type="file" accept="image/*" className="hidden" />
+            </button>
+          </AnimatedSection>
+        )}
 
         {/* Ressources de la leçon — même logique/infos que LeconDetail.jsx */}
         <AnimatedSection
@@ -321,10 +334,10 @@ export default function LessonPlayer() {
           Plan du cours
         </p>
         <div className="space-y-1">
-          {lessons.map((l) => (
+          {lessons && lessons.map((l) => (
             <Link
               key={l.id}
-              to="/eleve/lecon"
+              to={`/eleve/lecon/${l.id}?courId=${l.cour_id}`}
               className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left font-body text-sm transition-colors duration-200 ${
                 l.id === CURRENT.id
                   ? "bg-coral/10 text-coral-dark"

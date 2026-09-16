@@ -141,8 +141,10 @@ class ResourceController extends Controller
                 Storage::disk("public")->delete($resource->fichier);
             }
 
+            $filename = uniqid("oeuvre_", true) . "." . $request->file("fichier")->getClientOriginalExtension();
+
             // Store le fichier dans Storage/app/public/ressources
-            $path = $request->file('fichier')->store("ressources", "public");
+            $path = $request->file('fichier')->storeAs("ressources", $filename, "public");
 
             $resource->fichier = $path;
         }

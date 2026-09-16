@@ -13,30 +13,22 @@ import {
 } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import StatCard from "../../components/StatCard";
-import {
-  NIVEAUX_PARCOURS,
-  MODES_PAIEMENT,
-  MOIS_PAYES_PAR_NIVEAU,
-} from "../../lib/mockFormationData";
+import { NIVEAUX_PARCOURS, MODES_PAIEMENT } from "../../lib/mockFormationData";
 import { useLevel } from "../../app/hooks/useLevel";
 import { useEffect, useState } from "react";
-import { getUserListInscription } from "../../app/api/userApi";
 import { useAuth } from "../../app/hooks/useAuth";
-import { formatDate } from "../../lib/formatFunction";
+import { capitalize, formatDate } from "../../lib/formatFunction";
 import { useUser } from "../../app/hooks/useUser";
-
-// TODO: remplacer par l'appel API réel, ex. paiementApi.creerPaiement(payload)
-async function envoyerPaiement(payload) {
-  console.log("Paiement envoyé à la BDD :", payload);
-  return new Promise((resolve) => setTimeout(resolve, 700));
-}
+import usePaiement from "../../app/hooks/usePaiement";
+import { storePaiement } from "../../app/api/paiementApi";
 
 // Modal de paiement pour un niveau donné, ouvert depuis la liste des niveaux.
 // Reprend la logique de eleve/paiement.jsx (sélection de mois + mode de paiement)
 // avec une règle en plus : les mois doivent être payés successivement.
 function ModalPaiementNiveau({
-  niveau,
-  moisPayes,
+  niveauModal,
+  moisPayer,
+  moisRestant,
   onClose,
   onConfirmerPaiement,
 }) {
@@ -44,11 +36,24 @@ function ModalPaiementNiveau({
   const [mode, setMode] = useState(null);
   const [enCours, setEnCours] = useState(false);
   const [confirme, setConfirme] = useState(false);
+  const [moisRestants, setMoisRestants] = useState([]);
 
-  const moisRestants = Array.from(
-    { length: niveau.dureeMois },
-    (_, idx) => idx + 1,
-  ).filter((m) => !moisPayes.includes(m));
+  // Expliquer
+
+  // moisPayer et moisRestant sont désormais des nombres (ex. moisPayer = 3
+  // signifie que les mois 1, 2 et 3 sont payés, successivement).
+  // Les mois restants sont donc simplement les mois moisPayer+1 à dureeMois.
+  // const moisRestants = Array.from(
+  //   { length: moisRestant },
+  //   (_, idx) => moisPayer + idx + 1,
+  // );
+
+  const moisRest = Array.from(
+    { length: moisRestant },
+    (_, idx) => moisPayer + idx + 1,
+  );
+
+  setMoisRestants(moisRest);
 
   console.log("moisRestants : ", moisRestants);
 
@@ -71,16 +76,19 @@ function ModalPaiementNiveau({
     });
   }
 
-  const total = moisSelectionnes.length * niveau.montantMensuel;
+  const total = moisSelectionnes.length * niveauModal.montantMensuel;
+
   const modesMobileMoney = MODES_PAIEMENT.filter(
     (m) => m.groupe === "mobile_money",
   );
+
   const modeCarte = MODES_PAIEMENT.find((m) => m.groupe === "carte");
 
+  // A expliquer
   async function handlePayer() {
     if (moisSelectionnes.length === 0 || !mode) return;
     setEnCours(true);
-    await onConfirmerPaiement(moisSelectionnes, mode);
+    await onConfirmerPaiement(total, moisSelectionnes.length, mode);
     setEnCours(false);
     setMoisSelectionnes([]);
     setMode(null);
@@ -94,7 +102,7 @@ function ModalPaiementNiveau({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-2xl border border-ivory-dark bg-white p-6 shadow-xl"
+        className="w-full max-w-xl rounded-2xl border border-ivory-dark bg-white p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3">
@@ -103,7 +111,7 @@ function ModalPaiementNiveau({
               Paiement
             </span>
             <h3 className="mt-1 font-display text-lg font-semibold text-ink">
-              {niveau.nom}
+              {capitalize(niveauModal.nom)}
             </h3>
           </div>
           <button
@@ -117,8 +125,9 @@ function ModalPaiementNiveau({
         </div>
 
         <p className="mt-2 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-          <HiOutlineClock size={13} /> {moisPayes.length} / {niveau.dureeMois}{" "}
-          mois payés · {niveau.montantMensuel.toLocaleString("fr-MG")} Ar / mois
+          <HiOutlineClock size={13} /> {moisPayer} / {niveauModal.dureeMois}{" "}
+          mois payés · {niveauModal.montantMensuel.toLocaleString("fr-MG")} Ar /
+          mois
         </p>
 
         {confirme && (
@@ -127,32 +136,32 @@ function ModalPaiementNiveau({
           </p>
         )}
 
-        {/* {moisRestants.length === 0 ? (
+        {moisRestant === 0 ? (
           <p className="mt-4 font-body text-sm text-ink-soft">
-            Tous les mois de ce niveau sont payés. 🎉
+            Tous les mois de ce niveau sont payés.
           </p>
         ) : (
           <>
             <p className="mt-4 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-              Mois restants ({moisRestants.length} / {niveau.dureeMois})
+              Mois restants ({moisRestant} / {niveauModal.dureeMois})
             </p>
             <p className="mt-1 font-body text-[11px] text-ink-soft/80">
               Les mois se paient dans l'ordre : sélectionner un mois inclut les
               mois précédents non payés.
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {moisRestants.map((m) => (
+              {moisRestants.map((nombreMois) => (
                 <button
-                  key={m}
+                  key={nombreMois}
                   type="button"
-                  onClick={() => toggleMois(m)}
+                  onClick={() => toggleMois(nombreMois)}
                   className={`rounded-full border px-3.5 py-1.5 font-body text-sm font-medium transition-colors duration-200 ${
-                    moisSelectionnes.includes(m)
+                    moisSelectionnes.includes(nombreMois)
                       ? "border-coral bg-coral text-ivory"
                       : "border-ivory-dark bg-white text-ink-soft hover:border-coral hover:text-coral-dark"
                   }`}
                 >
-                  Mois {m}
+                  Mois {nombreMois}
                 </button>
               ))}
             </div>
@@ -187,8 +196,8 @@ function ModalPaiementNiveau({
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-ivory-dark/30 px-4 py-3">
                   <p className="flex items-center gap-1.5 font-body text-sm text-ink">
                     <HiOutlineBanknotes size={16} />
-                    {moisSelectionnes.length} mois × {niveau.montantMensuel.toLocaleString("fr-MG")}{" "}
-                    Ar ={" "}
+                    {moisSelectionnes.length} mois ×{" "}
+                    {niveauModal.montantMensuel.toLocaleString("fr-MG")} Ar ={" "}
                     <span className="font-semibold text-coral-dark">
                       {total.toLocaleString("fr-MG")} Ar
                     </span>
@@ -211,89 +220,7 @@ function ModalPaiementNiveau({
               </>
             )}
           </>
-        )} */}
-        <p className="mt-4 font-body text-sm text-ink-soft">
-          Tous les mois de ce niveau sont payés. 🎉
-        </p>
-        <div>
-          <p className="mt-4 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-            Mois restants ({moisRestants.length} / {niveau.dureeMois})
-          </p>
-          <p className="mt-1 font-body text-[11px] text-ink-soft/80">
-            Les mois se paient dans l'ordre : sélectionner un mois inclut les
-            mois précédents non payés.
-          </p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {moisRestants.map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => toggleMois(m)}
-                className={`rounded-full border px-3.5 py-1.5 font-body text-sm font-medium transition-colors duration-200 ${
-                  moisSelectionnes.includes(m)
-                    ? "border-coral bg-coral text-ivory"
-                    : "border-ivory-dark bg-white text-ink-soft hover:border-coral hover:text-coral-dark"
-                }`}
-              >
-                Mois {m}
-              </button>
-            ))}
-          </div>
-
-          {moisSelectionnes.length > 0 && (
-            <>
-              <p className="mt-5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                Mode de paiement
-              </p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {[...modesMobileMoney, modeCarte].map((m) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => setMode(m.id)}
-                    className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-body text-sm font-medium transition-colors duration-200 ${
-                      mode === m.id
-                        ? "border-coral bg-coral text-ivory"
-                        : "border-ivory-dark bg-white text-ink-soft hover:border-coral hover:text-coral-dark"
-                    }`}
-                  >
-                    {m.groupe === "carte" ? (
-                      <HiOutlineCreditCard size={13} />
-                    ) : (
-                      <HiOutlineDevicePhoneMobile size={13} />
-                    )}
-                    {m.nom}
-                  </button>
-                ))}
-              </div>
-
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-ivory-dark/30 px-4 py-3">
-                <p className="flex items-center gap-1.5 font-body text-sm text-ink">
-                  <HiOutlineBanknotes size={16} />
-                  {moisSelectionnes.length} mois ×{" "}
-                  {niveau.montantMensuel.toLocaleString("fr-MG")} Ar ={" "}
-                  <span className="font-semibold text-coral-dark">
-                    {total.toLocaleString("fr-MG")} Ar
-                  </span>
-                </p>
-                <button
-                  type="button"
-                  onClick={handlePayer}
-                  disabled={!mode || enCours}
-                  className="group inline-flex items-center gap-1.5 rounded-full bg-coral px-4 py-2 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick disabled:opacity-60"
-                >
-                  {enCours ? "Traitement…" : "Payer"}
-                  {!enCours && (
-                    <HiOutlineArrowRight
-                      size={14}
-                      className="transition-transform duration-300 group-hover:translate-x-1"
-                    />
-                  )}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
@@ -305,18 +232,13 @@ const NIVEAUX_TERMINES = NIVEAUX_PARCOURS.filter(
 const NIVEAU_ACTUEL = NIVEAUX_PARCOURS.find(
   (n) => n.inscrit && n.progression < 100,
 );
-const NIVEAUX_INSCRITS = NIVEAUX_PARCOURS.filter((n) => n.inscrit).length;
 
 export default function Formation() {
   const { levels } = useLevel();
   const { user } = useAuth();
   const { userListInscription, fetchUserListInscription } = useUser();
+  const { paiementList } = usePaiement();
 
-  // Copie locale mutable du mock des mois payés ; à remplacer par l'état
-  // renvoyé par l'API une fois le paiement branché sur le backend.
-  const [moisPayesParNiveau, setMoisPayesParNiveau] = useState(() => ({
-    ...MOIS_PAYES_PAR_NIVEAU,
-  }));
   // Niveau pour lequel le modal de paiement est ouvert (objet fusionné
   // id / nom / dureeMois / montantMensuel), ou null si fermé.
   const [niveauPaiementOuvert, setNiveauPaiementOuvert] = useState(null);
@@ -325,33 +247,29 @@ export default function Formation() {
     fetchUserListInscription(user.id);
   }, [user]);
 
-  async function handleConfirmerPaiement(niveauId, moisSelectionnes, mode) {
-    await envoyerPaiement({
-      niveau: niveauId,
-      mois: moisSelectionnes,
-      modePaiement: mode,
-    });
-    setMoisPayesParNiveau((prev) => ({
-      ...prev,
-      [niveauId]: [...(prev[niveauId] || []), ...moisSelectionnes].sort(
-        (a, b) => a - b,
-      ),
-    }));
-  }
+  const handleConfirmPaiement = async (
+    inscriptionId,
+    total,
+    moisSelectionnes,
+    mode
+  ) => {
+    try {
+      const data = {
+        nombre_mois: moisSelectionnes,
+        montant: total,
+        mode_paiement: mode,
+      };
 
-  console.log("userListInscription : ", userListInscription);
-  // return;
+      console.log("inscriptionId : ", inscriptionId);
+      console.log("data : ", data);
 
-  // Un niveau est ouvert à l'inscription si c'est le premier de la liste,
-  // ou si le niveau précédent est terminé (inscrit + progression 100%).
-  /*
-  const peutSinscrire = (index) => {
-    if (index === 0) return true;
-    const precedent = levels[index - 1];
-    console.log("precedent : ", precedent);
-    return Boolean(precedent?.inscrit && precedent.progression >= 100);
+      const response = await storePaiement(inscriptionId, data);
+      console.log("Paiement effectué avec succès : ", response.data);
+    } catch (err) {
+      console.error("Erreur lors du paiement", err.response?.data);
+      setErreur("Une erreur est survenue lors du paiement");
+    }
   };
-  */
 
   return (
     <div className="space-y-10">
@@ -405,26 +323,32 @@ export default function Formation() {
 
         <div className="space-y-5">
           {levels.map((n, i) => {
-            const inscription = userListInscription.filter(
+            const inscription = userListInscription.find(
               (inscription) => inscription.niveau_id === n.id,
             );
-            const inscrit = inscription.length === 1;
-            const nouveau = inscription.length === 0;
+            const inscrit = inscription;
 
-            // Informations de paiement du niveau (durée / tarif) issues du mock
-            // formation le temps que l'API de paiement soit branchée sur les
-            // vrais niveaux (voir CHANGEMENTS_formation_paiement.md).
-            const niveauFinance = NIVEAUX_PARCOURS.find((np) => np.id === n.id);
-            const moisPayes = moisPayesParNiveau[n.id] || [];
-            const dureeMoisNiveau = niveauFinance?.dureeMois ?? null;
-            // const moisRestantsCount =
-            //   dureeMoisNiveau != null
-            //     ? Math.max(dureeMoisNiveau - moisPayes.length, 0)
-            //     : null;
+            console.log("inscription : ", inscription);
 
-            // const termine = n.inscrit && n.progression >= 100;
-            // const enCours = n.inscrit && n.progression < 100;
-            // const accessible = peutSinscrire(i);
+            let paiementNiveau;
+            let moisPayer;
+            let moisRestant;
+
+            if (inscription) {
+              paiementNiveau = paiementList.filter(
+                (pl) => pl.inscription_id === inscription.id,
+              );
+
+              // reduce : permet de parcourir un tableau et de donner un résultat finale en une seul valeur => ici somme des nombre de mois
+              // somme : stocke les éléments parcourus => ici nombre_mois
+              moisPayer = paiementNiveau.reduce(
+                (somme, paiement) => somme + parseInt(paiement.nombre_mois),
+                0,
+              );
+
+              moisRestant =
+                parseInt(inscription.level.duree.split(" ")[0]) - moisPayer;
+            }
 
             return (
               <>
@@ -462,7 +386,6 @@ export default function Formation() {
                   </div>
 
                   {/* carte niveau */}
-                  {/* Blocs pour afficher l'état du niveau : inscrit ou non  */}
                   <div
                     className={`flex-1 rounded-2xl border p-5 transition-all duration-300 sm:p-6 ${
                       inscrit
@@ -481,13 +404,7 @@ export default function Formation() {
                         <div>
                           <div className="flex items-center gap-2">
                             <h3 className="font-display text-lg font-semibold text-ink">
-                              {n.name === "initiation"
-                                ? "Initiation"
-                                : n.name === "debutant"
-                                  ? "Débutant"
-                                  : n.name === "intermediaire"
-                                    ? "Intermédiaire"
-                                    : "Avancé"}
+                              {capitalize(n.name)}
                             </h3>
                             {/* Bloc pour présenter l'état du niveau : termine / enCours / aucunDesDeux */}
                             {/* <span
@@ -511,59 +428,16 @@ export default function Formation() {
                           </p>
                           <p className="mt-2 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
                             <HiOutlineClock size={13} /> Durée : {n.duree}
-                            {inscription.map((ins) => (
+                            {inscription && (
                               <span className="ml-2">
-                                · Inscrit le {formatDate(ins.created_at)}{" "}
+                                · Inscrit le{" "}
+                                {formatDate(inscription.created_at)}{" "}
                               </span>
-                            ))}
+                            )}
                           </p>
                         </div>
                       </div>
 
-                      {/* Bar de progression pour les niveaux si inscrit */}
-                      {/* {n.inscrit && (
-                    <div className="mt-4">
-                      <div className="h-1.5 w-full rounded-full bg-ivory-dark">
-                        <div
-                          className="h-1.5 rounded-full bg-coral transition-all duration-500"
-                          style={{ width: `${n.progression}%` }}
-                        />
-                      </div>
-                      <p className="mt-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                        {n.progression}% terminé
-                      </p>
-                    </div>
-                  )} */}
-
-                      {/* Bloc pour afficher le lien en fonction de l'état du niveau : inscrit ou non */}
-                      {/* {inscrit ? (
-                    <Link
-                      to={`/eleve/formation/${n.id}`}
-                      className="group mt-4 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark transition-colors duration-300 hover:text-brick"
-                    >
-                      Voir le détail de ma formation
-                      <HiOutlineArrowRight
-                        size={14}
-                        className="transition-transform duration-300 group-hover:translate-x-1"
-                      />
-                    </Link>
-                  ) : accessible ? (
-                    <Link
-                      to={`/inscription?niveau=${n.id}`}
-                      className="group mt-4 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:text-coral-dark"
-                    >
-                      S'inscrire à ce niveau
-                      <HiOutlineArrowRight
-                        size={14}
-                        className="transition-transform duration-300 group-hover:translate-x-1"
-                      />
-                    </Link>
-                    ) : (
-                      <span className="mt-4 inline-flex items-center gap-1.5 font-body text-sm font-medium text-ink-soft/70">
-                      <HiOutlineLockClosed size={14} />
-                      Termine le niveau précédent pour débloquer l'inscription
-                      </span>
-                      )} */}
                       {inscrit ? (
                         <Link
                           to={`/eleve/formation/${n.name}`}
@@ -598,48 +472,31 @@ export default function Formation() {
                       {inscrit && (
                         <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-ivory-dark/60 pt-3">
                           <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                            {moisPayes.length} / {dureeMoisNiveau} mois payés
+                            {moisPayer} / {n.duree} mois payés
                           </span>
-                          {/* {moisRestantsCount > 0 ? (
+                          {moisRestant > 0 ? (
                             <button
                               type="button"
                               onClick={() =>
                                 setNiveauPaiementOuvert({
-                                  id: n.id,
-                                  nom: niveauFinance?.nom ?? n.name,
-                                  dureeMois: dureeMoisNiveau,
-                                  montantMensuel: niveauFinance?.montantMensuel ?? 0,
+                                  inscriptionId: inscription.id,
+                                  nom: n.name,
+                                  dureeMois: n.duree,
+                                  montantMensuel: n.prix_mensuel,
+                                  moisPayer,
+                                  moisRestant,
                                 })
                               }
                               className="font-body text-xs font-medium text-ink-soft underline decoration-dotted underline-offset-2 transition-colors duration-200 hover:text-coral-dark"
                             >
-                              {moisRestantsCount} mois restant
-                              {moisRestantsCount > 1 ? "s" : ""} · payer
+                              {moisRestant} mois restant
+                              {moisRestant > 1 ? "s" : ""} · payer
                             </button>
                           ) : (
                             <span className="flex items-center gap-1 font-body text-xs font-medium text-coral-dark">
                               <HiOutlineCheckCircle size={12} /> À jour
                             </span>
-                          )} */}
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setNiveauPaiementOuvert({
-                                id: n.id,
-                                nom: niveauFinance?.nom ?? n.name,
-                                dureeMois: dureeMoisNiveau,
-                                montantMensuel:
-                                  niveauFinance?.montantMensuel ?? 0,
-                              })
-                            }
-                            className="font-body text-xs font-medium text-ink-soft underline decoration-dotted underline-offset-2 transition-colors duration-200 hover:text-coral-dark"
-                          >
-                            [moisRestantsCount] mois restant [moisRestantsCount
-                            à payer] · payer
-                          </button>
-                          <span className="flex items-center gap-1 font-body text-xs font-medium text-coral-dark">
-                            <HiOutlineCheckCircle size={12} /> À jour
-                          </span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -653,12 +510,14 @@ export default function Formation() {
 
       {niveauPaiementOuvert && (
         <ModalPaiementNiveau
-          niveau={niveauPaiementOuvert}
-          moisPayes={moisPayesParNiveau[niveauPaiementOuvert.id] || []}
+          niveauModal={niveauPaiementOuvert}
+          moisPayer={niveauPaiementOuvert.moisPayer}
+          moisRestant={niveauPaiementOuvert.moisRestant}
           onClose={() => setNiveauPaiementOuvert(null)}
-          onConfirmerPaiement={(moisSelectionnes, mode) =>
-            handleConfirmerPaiement(
-              niveauPaiementOuvert.id,
+          onConfirmerPaiement={(total, moisSelectionnes, mode) =>
+            handleConfirmPaiement(
+              niveauPaiementOuvert.inscriptionId,
+              total,
               moisSelectionnes,
               mode,
             )

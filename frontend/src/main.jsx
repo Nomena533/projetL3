@@ -23,25 +23,28 @@ import LessonProvider from "./app/provider/LessonProvider";
 import LevelProvider from "./app/provider/LevelProvider";
 import InstrumentProvider from "./app/provider/InstrumentProvider";
 import UserProvider from "./app/provider/UserProvider";
+import PaiementProvider from "./app/provider/PaiementProvider";
 // import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <UserProvider>
-      <InstrumentProvider>
-        <LevelProvider>
-          <LessonProvider>
-            <CourProvider>
-              <BrowserRouter>
-                {/* AuthProvider englobe toute l'application, tous les composants enfants peuvent accéder à user, logout, setUser */}
-                <AuthProvider>
-                  <App />
-                </AuthProvider>
-              </BrowserRouter>
-            </CourProvider>
-          </LessonProvider>
-        </LevelProvider>
-      </InstrumentProvider>
-    </UserProvider>
+    <PaiementProvider>
+      <UserProvider>
+        <InstrumentProvider>
+          <LevelProvider>
+            <LessonProvider>
+              <CourProvider>
+                <BrowserRouter>
+                  {/* AuthProvider englobe toute l'application, tous les composants enfants peuvent accéder à user, logout, setUser */}
+                  <AuthProvider>
+                    <App />
+                  </AuthProvider>
+                </BrowserRouter>
+              </CourProvider>
+            </LessonProvider>
+          </LevelProvider>
+        </InstrumentProvider>
+      </UserProvider>
+    </PaiementProvider>
   </React.StrictMode>,
 );

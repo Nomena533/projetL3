@@ -8,6 +8,10 @@ export const updateStatutPaiement = (id, data) => {
     return API.put(`/updateStatutPaiement/${id}`, data);
 } 
 
+export const getPaiement = () => {
+    return API.get(`/getPaiement`);
+} 
+
 export const getPaiementDetail = (id) => {
     return API.get(`/getPaiementDetail/${id}`);
 } 

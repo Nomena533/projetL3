@@ -31,10 +31,21 @@ export default function Paiement() {
     [moisPayesParNiveau]
   );
 
-  function toggleMois(niveauId, mois) {
+  // Règle : l'écolage se paie mois par mois, dans l'ordre.
+  // Cliquer sur un mois sélectionne automatiquement ce mois ET tous les mois
+  // restants qui le précèdent (s'ils ne sont pas déjà sélectionnés).
+  // Décliquer un mois retire ce mois ET tous ceux qui le suivent dans la sélection,
+  // pour qu'on ne puisse jamais avoir un "trou" (ex. payer le mois 4 sans le mois 2 et 3).
+  function toggleMois(niveauId, mois, moisRestants) {
     setSelections((prev) => {
       const courant = prev[niveauId]?.mois || [];
-      const nouveauxMois = courant.includes(mois) ? courant.filter((m) => m !== mois) : [...courant, mois];
+      let nouveauxMois;
+      if (courant.includes(mois)) {
+        nouveauxMois = courant.filter((m) => m < mois);
+      } else {
+        const index = moisRestants.indexOf(mois);
+        nouveauxMois = moisRestants.slice(0, index + 1);
+      }
       return { ...prev, [niveauId]: { ...prev[niveauId], mois: nouveauxMois } };
     });
   }
@@ -116,12 +127,15 @@ export default function Paiement() {
                 <p className="mt-4 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
                   Mois restants à payer ({moisRestants.length} / {niveau.dureeMois})
                 </p>
+                <p className="mt-1 font-body text-[11px] text-ink-soft/80">
+                  Les mois se paient dans l'ordre : sélectionner un mois inclut automatiquement les mois précédents non payés.
+                </p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {moisRestants.map((m) => (
                     <button
                       key={m}
                       type="button"
-                      onClick={() => toggleMois(niveau.id, m)}
+                      onClick={() => toggleMois(niveau.id, m, moisRestants)}
                       className={`rounded-full border px-3.5 py-1.5 font-body text-sm font-medium transition-colors duration-200 ${
                         selection.mois.includes(m)
                           ? "border-coral bg-coral text-ivory"

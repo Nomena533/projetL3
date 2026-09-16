@@ -113,9 +113,9 @@ export default function ProfCoursDetail() {
     try {
       await deleteLesson(leconId);
 
-      d((c) => ({
+      setCoursDetail((c) => ({
         ...c,
-        lesson: c.lesson.filter((l) => l.id !== toDelete.id),
+        lesson: c.lesson.filter((l) => l.id !== leconId),
       }));
 
       setAlert("La leçon a été supprimé avec succès !");
