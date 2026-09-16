@@ -6,16 +6,298 @@ import {
   HiOutlineClock,
   HiOutlineAcademicCap,
   HiOutlineMusicalNote,
+  HiOutlineXMark,
+  HiOutlineCreditCard,
+  HiOutlineDevicePhoneMobile,
+  HiOutlineBanknotes,
 } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import StatCard from "../../components/StatCard";
-import { NIVEAUX_PARCOURS } from "../../lib/mockFormationData";
+import {
+  NIVEAUX_PARCOURS,
+  MODES_PAIEMENT,
+  MOIS_PAYES_PAR_NIVEAU,
+} from "../../lib/mockFormationData";
 import { useLevel } from "../../app/hooks/useLevel";
 import { useEffect, useState } from "react";
 import { getUserListInscription } from "../../app/api/userApi";
 import { useAuth } from "../../app/hooks/useAuth";
 import { formatDate } from "../../lib/formatFunction";
 import { useUser } from "../../app/hooks/useUser";
+
+// TODO: remplacer par l'appel API réel, ex. paiementApi.creerPaiement(payload)
+async function envoyerPaiement(payload) {
+  console.log("Paiement envoyé à la BDD :", payload);
+  return new Promise((resolve) => setTimeout(resolve, 700));
+}
+
+// Modal de paiement pour un niveau donné, ouvert depuis la liste des niveaux.
+// Reprend la logique de eleve/paiement.jsx (sélection de mois + mode de paiement)
+// avec une règle en plus : les mois doivent être payés successivement.
+function ModalPaiementNiveau({
+  niveau,
+  moisPayes,
+  onClose,
+  onConfirmerPaiement,
+}) {
+  const [moisSelectionnes, setMoisSelectionnes] = useState([]);
+  const [mode, setMode] = useState(null);
+  const [enCours, setEnCours] = useState(false);
+  const [confirme, setConfirme] = useState(false);
+
+  const moisRestants = Array.from(
+    { length: niveau.dureeMois },
+    (_, idx) => idx + 1,
+  ).filter((m) => !moisPayes.includes(m));
+
+  console.log("moisRestants : ", moisRestants);
+
+  useEffect(() => {
+    function onKeyDown(e) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  // Même règle de succession que dans Paiement.jsx : cliquer sur un mois
+  // sélectionne aussi tous les mois restants qui le précèdent ; le désélectionner
+  // retire aussi ceux qui le suivent dans la sélection en cours.
+  function toggleMois(mois) {
+    setMoisSelectionnes((prev) => {
+      if (prev.includes(mois)) return prev.filter((m) => m < mois);
+      const index = moisRestants.indexOf(mois);
+      return moisRestants.slice(0, index + 1);
+    });
+  }
+
+  const total = moisSelectionnes.length * niveau.montantMensuel;
+  const modesMobileMoney = MODES_PAIEMENT.filter(
+    (m) => m.groupe === "mobile_money",
+  );
+  const modeCarte = MODES_PAIEMENT.find((m) => m.groupe === "carte");
+
+  async function handlePayer() {
+    if (moisSelectionnes.length === 0 || !mode) return;
+    setEnCours(true);
+    await onConfirmerPaiement(moisSelectionnes, mode);
+    setEnCours(false);
+    setMoisSelectionnes([]);
+    setMode(null);
+    setConfirme(true);
+    setTimeout(() => setConfirme(false), 2000);
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-2xl border border-ivory-dark bg-white p-6 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
+              Paiement
+            </span>
+            <h3 className="mt-1 font-display text-lg font-semibold text-ink">
+              {niveau.nom}
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-1 text-ink-soft transition-colors duration-200 hover:bg-ivory-dark/50 hover:text-ink"
+            aria-label="Fermer"
+          >
+            <HiOutlineXMark size={18} />
+          </button>
+        </div>
+
+        <p className="mt-2 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+          <HiOutlineClock size={13} /> {moisPayes.length} / {niveau.dureeMois}{" "}
+          mois payés · {niveau.montantMensuel.toLocaleString("fr-MG")} Ar / mois
+        </p>
+
+        {confirme && (
+          <p className="mt-2 flex items-center gap-1.5 font-body text-xs font-medium text-coral-dark">
+            <HiOutlineCheckCircle size={14} /> Paiement enregistré.
+          </p>
+        )}
+
+        {/* {moisRestants.length === 0 ? (
+          <p className="mt-4 font-body text-sm text-ink-soft">
+            Tous les mois de ce niveau sont payés. 🎉
+          </p>
+        ) : (
+          <>
+            <p className="mt-4 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+              Mois restants ({moisRestants.length} / {niveau.dureeMois})
+            </p>
+            <p className="mt-1 font-body text-[11px] text-ink-soft/80">
+              Les mois se paient dans l'ordre : sélectionner un mois inclut les
+              mois précédents non payés.
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {moisRestants.map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => toggleMois(m)}
+                  className={`rounded-full border px-3.5 py-1.5 font-body text-sm font-medium transition-colors duration-200 ${
+                    moisSelectionnes.includes(m)
+                      ? "border-coral bg-coral text-ivory"
+                      : "border-ivory-dark bg-white text-ink-soft hover:border-coral hover:text-coral-dark"
+                  }`}
+                >
+                  Mois {m}
+                </button>
+              ))}
+            </div>
+
+            {moisSelectionnes.length > 0 && (
+              <>
+                <p className="mt-5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+                  Mode de paiement
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {[...modesMobileMoney, modeCarte].map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setMode(m.id)}
+                      className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-body text-sm font-medium transition-colors duration-200 ${
+                        mode === m.id
+                          ? "border-coral bg-coral text-ivory"
+                          : "border-ivory-dark bg-white text-ink-soft hover:border-coral hover:text-coral-dark"
+                      }`}
+                    >
+                      {m.groupe === "carte" ? (
+                        <HiOutlineCreditCard size={13} />
+                      ) : (
+                        <HiOutlineDevicePhoneMobile size={13} />
+                      )}
+                      {m.nom}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-ivory-dark/30 px-4 py-3">
+                  <p className="flex items-center gap-1.5 font-body text-sm text-ink">
+                    <HiOutlineBanknotes size={16} />
+                    {moisSelectionnes.length} mois × {niveau.montantMensuel.toLocaleString("fr-MG")}{" "}
+                    Ar ={" "}
+                    <span className="font-semibold text-coral-dark">
+                      {total.toLocaleString("fr-MG")} Ar
+                    </span>
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handlePayer}
+                    disabled={!mode || enCours}
+                    className="group inline-flex items-center gap-1.5 rounded-full bg-coral px-4 py-2 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick disabled:opacity-60"
+                  >
+                    {enCours ? "Traitement…" : "Payer"}
+                    {!enCours && (
+                      <HiOutlineArrowRight
+                        size={14}
+                        className="transition-transform duration-300 group-hover:translate-x-1"
+                      />
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
+          </>
+        )} */}
+        <p className="mt-4 font-body text-sm text-ink-soft">
+          Tous les mois de ce niveau sont payés. 🎉
+        </p>
+        <div>
+          <p className="mt-4 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+            Mois restants ({moisRestants.length} / {niveau.dureeMois})
+          </p>
+          <p className="mt-1 font-body text-[11px] text-ink-soft/80">
+            Les mois se paient dans l'ordre : sélectionner un mois inclut les
+            mois précédents non payés.
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {moisRestants.map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => toggleMois(m)}
+                className={`rounded-full border px-3.5 py-1.5 font-body text-sm font-medium transition-colors duration-200 ${
+                  moisSelectionnes.includes(m)
+                    ? "border-coral bg-coral text-ivory"
+                    : "border-ivory-dark bg-white text-ink-soft hover:border-coral hover:text-coral-dark"
+                }`}
+              >
+                Mois {m}
+              </button>
+            ))}
+          </div>
+
+          {moisSelectionnes.length > 0 && (
+            <>
+              <p className="mt-5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+                Mode de paiement
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {[...modesMobileMoney, modeCarte].map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => setMode(m.id)}
+                    className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-body text-sm font-medium transition-colors duration-200 ${
+                      mode === m.id
+                        ? "border-coral bg-coral text-ivory"
+                        : "border-ivory-dark bg-white text-ink-soft hover:border-coral hover:text-coral-dark"
+                    }`}
+                  >
+                    {m.groupe === "carte" ? (
+                      <HiOutlineCreditCard size={13} />
+                    ) : (
+                      <HiOutlineDevicePhoneMobile size={13} />
+                    )}
+                    {m.nom}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-ivory-dark/30 px-4 py-3">
+                <p className="flex items-center gap-1.5 font-body text-sm text-ink">
+                  <HiOutlineBanknotes size={16} />
+                  {moisSelectionnes.length} mois ×{" "}
+                  {niveau.montantMensuel.toLocaleString("fr-MG")} Ar ={" "}
+                  <span className="font-semibold text-coral-dark">
+                    {total.toLocaleString("fr-MG")} Ar
+                  </span>
+                </p>
+                <button
+                  type="button"
+                  onClick={handlePayer}
+                  disabled={!mode || enCours}
+                  className="group inline-flex items-center gap-1.5 rounded-full bg-coral px-4 py-2 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick disabled:opacity-60"
+                >
+                  {enCours ? "Traitement…" : "Payer"}
+                  {!enCours && (
+                    <HiOutlineArrowRight
+                      size={14}
+                      className="transition-transform duration-300 group-hover:translate-x-1"
+                    />
+                  )}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const NIVEAUX_TERMINES = NIVEAUX_PARCOURS.filter(
   (n) => n.inscrit && n.progression >= 100,
@@ -30,9 +312,32 @@ export default function Formation() {
   const { user } = useAuth();
   const { userListInscription, fetchUserListInscription } = useUser();
 
+  // Copie locale mutable du mock des mois payés ; à remplacer par l'état
+  // renvoyé par l'API une fois le paiement branché sur le backend.
+  const [moisPayesParNiveau, setMoisPayesParNiveau] = useState(() => ({
+    ...MOIS_PAYES_PAR_NIVEAU,
+  }));
+  // Niveau pour lequel le modal de paiement est ouvert (objet fusionné
+  // id / nom / dureeMois / montantMensuel), ou null si fermé.
+  const [niveauPaiementOuvert, setNiveauPaiementOuvert] = useState(null);
+
   useEffect(() => {
     fetchUserListInscription(user.id);
   }, [user]);
+
+  async function handleConfirmerPaiement(niveauId, moisSelectionnes, mode) {
+    await envoyerPaiement({
+      niveau: niveauId,
+      mois: moisSelectionnes,
+      modePaiement: mode,
+    });
+    setMoisPayesParNiveau((prev) => ({
+      ...prev,
+      [niveauId]: [...(prev[niveauId] || []), ...moisSelectionnes].sort(
+        (a, b) => a - b,
+      ),
+    }));
+  }
 
   console.log("userListInscription : ", userListInscription);
   // return;
@@ -105,6 +410,17 @@ export default function Formation() {
             );
             const inscrit = inscription.length === 1;
             const nouveau = inscription.length === 0;
+
+            // Informations de paiement du niveau (durée / tarif) issues du mock
+            // formation le temps que l'API de paiement soit branchée sur les
+            // vrais niveaux (voir CHANGEMENTS_formation_paiement.md).
+            const niveauFinance = NIVEAUX_PARCOURS.find((np) => np.id === n.id);
+            const moisPayes = moisPayesParNiveau[n.id] || [];
+            const dureeMoisNiveau = niveauFinance?.dureeMois ?? null;
+            // const moisRestantsCount =
+            //   dureeMoisNiveau != null
+            //     ? Math.max(dureeMoisNiveau - moisPayes.length, 0)
+            //     : null;
 
             // const termine = n.inscrit && n.progression >= 100;
             // const enCours = n.inscrit && n.progression < 100;
@@ -277,6 +593,55 @@ export default function Formation() {
                           l'inscription
                         </span>
                       )}
+
+                      {/* Statut de paiement du niveau + lien discret vers le modal de paiement */}
+                      {inscrit && (
+                        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-ivory-dark/60 pt-3">
+                          <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+                            {moisPayes.length} / {dureeMoisNiveau} mois payés
+                          </span>
+                          {/* {moisRestantsCount > 0 ? (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setNiveauPaiementOuvert({
+                                  id: n.id,
+                                  nom: niveauFinance?.nom ?? n.name,
+                                  dureeMois: dureeMoisNiveau,
+                                  montantMensuel: niveauFinance?.montantMensuel ?? 0,
+                                })
+                              }
+                              className="font-body text-xs font-medium text-ink-soft underline decoration-dotted underline-offset-2 transition-colors duration-200 hover:text-coral-dark"
+                            >
+                              {moisRestantsCount} mois restant
+                              {moisRestantsCount > 1 ? "s" : ""} · payer
+                            </button>
+                          ) : (
+                            <span className="flex items-center gap-1 font-body text-xs font-medium text-coral-dark">
+                              <HiOutlineCheckCircle size={12} /> À jour
+                            </span>
+                          )} */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setNiveauPaiementOuvert({
+                                id: n.id,
+                                nom: niveauFinance?.nom ?? n.name,
+                                dureeMois: dureeMoisNiveau,
+                                montantMensuel:
+                                  niveauFinance?.montantMensuel ?? 0,
+                              })
+                            }
+                            className="font-body text-xs font-medium text-ink-soft underline decoration-dotted underline-offset-2 transition-colors duration-200 hover:text-coral-dark"
+                          >
+                            [moisRestantsCount] mois restant [moisRestantsCount
+                            à payer] · payer
+                          </button>
+                          <span className="flex items-center gap-1 font-body text-xs font-medium text-coral-dark">
+                            <HiOutlineCheckCircle size={12} /> À jour
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </AnimatedSection>
@@ -285,6 +650,21 @@ export default function Formation() {
           })}
         </div>
       </section>
+
+      {niveauPaiementOuvert && (
+        <ModalPaiementNiveau
+          niveau={niveauPaiementOuvert}
+          moisPayes={moisPayesParNiveau[niveauPaiementOuvert.id] || []}
+          onClose={() => setNiveauPaiementOuvert(null)}
+          onConfirmerPaiement={(moisSelectionnes, mode) =>
+            handleConfirmerPaiement(
+              niveauPaiementOuvert.id,
+              moisSelectionnes,
+              mode,
+            )
+          }
+        />
+      )}
     </div>
   );
 }
