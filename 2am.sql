@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Sep 16, 2026 at 10:37 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Hôte : 127.0.0.1
+-- Généré le : jeu. 17 sep. 2026 à 13:18
+-- Version du serveur : 10.4.32-MariaDB
+-- Version de PHP : 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `2am`
+-- Base de données : `2am`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cache`
+-- Structure de la table `cache`
 --
 
 CREATE TABLE `cache` (
@@ -36,7 +36,7 @@ CREATE TABLE `cache` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cache_locks`
+-- Structure de la table `cache_locks`
 --
 
 CREATE TABLE `cache_locks` (
@@ -48,7 +48,7 @@ CREATE TABLE `cache_locks` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `certificats`
+-- Structure de la table `certificats`
 --
 
 CREATE TABLE `certificats` (
@@ -62,7 +62,7 @@ CREATE TABLE `certificats` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cours`
+-- Structure de la table `cours`
 --
 
 CREATE TABLE `cours` (
@@ -80,7 +80,7 @@ CREATE TABLE `cours` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `cours`
+-- Déchargement des données de la table `cours`
 --
 
 INSERT INTO `cours` (`id`, `prof_id`, `instrument_id`, `niveau_id`, `titre`, `description`, `image`, `duree`, `statut`, `created_at`, `updated_at`) VALUES
@@ -90,7 +90,7 @@ INSERT INTO `cours` (`id`, `prof_id`, `instrument_id`, `niveau_id`, `titre`, `de
 -- --------------------------------------------------------
 
 --
--- Table structure for table `exercices`
+-- Structure de la table `exercices`
 --
 
 CREATE TABLE `exercices` (
@@ -105,7 +105,7 @@ CREATE TABLE `exercices` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `failed_jobs`
+-- Structure de la table `failed_jobs`
 --
 
 CREATE TABLE `failed_jobs` (
@@ -121,7 +121,7 @@ CREATE TABLE `failed_jobs` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `favoris`
+-- Structure de la table `favoris`
 --
 
 CREATE TABLE `favoris` (
@@ -135,7 +135,7 @@ CREATE TABLE `favoris` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inscriptions`
+-- Structure de la table `inscriptions`
 --
 
 CREATE TABLE `inscriptions` (
@@ -149,7 +149,7 @@ CREATE TABLE `inscriptions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `inscriptions`
+-- Déchargement des données de la table `inscriptions`
 --
 
 INSERT INTO `inscriptions` (`id`, `niveau_id`, `user_id`, `montant`, `statut`, `created_at`, `updated_at`) VALUES
@@ -161,7 +161,7 @@ INSERT INTO `inscriptions` (`id`, `niveau_id`, `user_id`, `montant`, `statut`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inscription_instrument`
+-- Structure de la table `inscription_instrument`
 --
 
 CREATE TABLE `inscription_instrument` (
@@ -173,7 +173,7 @@ CREATE TABLE `inscription_instrument` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `inscription_instrument`
+-- Déchargement des données de la table `inscription_instrument`
 --
 
 INSERT INTO `inscription_instrument` (`id`, `inscription_id`, `instrument_id`, `created_at`, `updated_at`) VALUES
@@ -189,7 +189,7 @@ INSERT INTO `inscription_instrument` (`id`, `inscription_id`, `instrument_id`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `instruments`
+-- Structure de la table `instruments`
 --
 
 CREATE TABLE `instruments` (
@@ -202,7 +202,7 @@ CREATE TABLE `instruments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `instruments`
+-- Déchargement des données de la table `instruments`
 --
 
 INSERT INTO `instruments` (`id`, `name`, `description`, `image`, `created_at`, `updated_at`) VALUES
@@ -213,7 +213,7 @@ INSERT INTO `instruments` (`id`, `name`, `description`, `image`, `created_at`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `jobs`
+-- Structure de la table `jobs`
 --
 
 CREATE TABLE `jobs` (
@@ -229,7 +229,7 @@ CREATE TABLE `jobs` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `job_batches`
+-- Structure de la table `job_batches`
 --
 
 CREATE TABLE `job_batches` (
@@ -248,7 +248,7 @@ CREATE TABLE `job_batches` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `lessons`
+-- Structure de la table `lessons`
 --
 
 CREATE TABLE `lessons` (
@@ -262,7 +262,7 @@ CREATE TABLE `lessons` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `lessons`
+-- Déchargement des données de la table `lessons`
 --
 
 INSERT INTO `lessons` (`id`, `cour_id`, `titre`, `description`, `duree`, `created_at`, `updated_at`) VALUES
@@ -272,7 +272,7 @@ INSERT INTO `lessons` (`id`, `cour_id`, `titre`, `description`, `duree`, `create
 -- --------------------------------------------------------
 
 --
--- Table structure for table `lessonsbackup`
+-- Structure de la table `lessonsbackup`
 --
 
 CREATE TABLE `lessonsbackup` (
@@ -288,7 +288,7 @@ CREATE TABLE `lessonsbackup` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `levels`
+-- Structure de la table `levels`
 --
 
 CREATE TABLE `levels` (
@@ -303,7 +303,7 @@ CREATE TABLE `levels` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `levels`
+-- Déchargement des données de la table `levels`
 --
 
 INSERT INTO `levels` (`id`, `name`, `description`, `duree`, `prix_mensuel`, `droit_inscription`, `created_at`, `updated_at`) VALUES
@@ -315,7 +315,23 @@ INSERT INTO `levels` (`id`, `name`, `description`, `duree`, `prix_mensuel`, `dro
 -- --------------------------------------------------------
 
 --
--- Table structure for table `migrations`
+-- Structure de la table `messages`
+--
+
+CREATE TABLE `messages` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `sender_id` bigint(20) UNSIGNED NOT NULL,
+  `receiver_id` bigint(20) UNSIGNED NOT NULL,
+  `content` text NOT NULL,
+  `is_read` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `migrations`
 --
 
 CREATE TABLE `migrations` (
@@ -325,7 +341,7 @@ CREATE TABLE `migrations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `migrations`
+-- Déchargement des données de la table `migrations`
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
@@ -354,12 +370,13 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (23, '2026_09_08_135303_add_prix_to_levels_table', 5),
 (24, '2026_09_09_115636_create_paiements_table', 6),
 (25, '2026_09_09_162359_add_droit_inscription_to_levels_table', 7),
-(26, '2026_09_15_194517_add_nombre_mois_to_paiements_table', 8);
+(26, '2026_09_15_194517_add_nombre_mois_to_paiements_table', 8),
+(27, '2026_09_17_095211_create_messages_table', 9);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `paiements`
+-- Structure de la table `paiements`
 --
 
 CREATE TABLE `paiements` (
@@ -374,19 +391,18 @@ CREATE TABLE `paiements` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `paiements`
+-- Déchargement des données de la table `paiements`
 --
 
 INSERT INTO `paiements` (`id`, `inscription_id`, `nombre_mois`, `montant`, `mode_paiement`, `statut`, `created_at`, `updated_at`) VALUES
 (1, 15, '3', 250000.00, 'orange_money', 'pending', '2026-09-15 18:20:55', '2026-09-15 18:20:55'),
 (3, 15, '2', 100000.00, 'orange_money', 'pending', '2026-09-16 15:55:18', '2026-09-16 15:55:18'),
-(5, 15, '1', 50000.00, 'orange_money', 'pending', '2026-09-16 16:48:09', '2026-09-16 16:48:09'),
-(6, 15, '1', 50000.00, 'orange_money', 'pending', '2026-09-16 16:58:49', '2026-09-16 16:58:49');
+(8, 15, '1', 50000.00, 'orange_money', 'pending', '2026-09-17 06:30:36', '2026-09-17 06:30:36');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `paiementsbackup`
+-- Structure de la table `paiementsbackup`
 --
 
 CREATE TABLE `paiementsbackup` (
@@ -402,7 +418,7 @@ CREATE TABLE `paiementsbackup` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `password_reset_tokens`
+-- Structure de la table `password_reset_tokens`
 --
 
 CREATE TABLE `password_reset_tokens` (
@@ -414,7 +430,7 @@ CREATE TABLE `password_reset_tokens` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `personal_access_tokens`
+-- Structure de la table `personal_access_tokens`
 --
 
 CREATE TABLE `personal_access_tokens` (
@@ -431,7 +447,7 @@ CREATE TABLE `personal_access_tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `personal_access_tokens`
+-- Déchargement des données de la table `personal_access_tokens`
 --
 
 INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `last_used_at`, `expires_at`, `created_at`, `updated_at`) VALUES
@@ -444,14 +460,15 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (19, 'App\\Models\\User', 2, 'react-app', '1ea1ab471fd5845599a01b69edcbcc1bc210a5e6468ad475ce8e61aaf5de0cbd', '[\"*\"]', NULL, NULL, '2026-09-14 16:43:12', '2026-09-14 16:43:12'),
 (22, 'App\\Models\\User', 5, 'react-app', '0eacc9f6c961c0dc1fcf979094ca9b5dbe633d433b3b540ba73107935ab657c8', '[\"*\"]', NULL, NULL, '2026-09-15 13:50:52', '2026-09-15 13:50:52'),
 (25, 'App\\Models\\User', 6, 'react-app', '01c5d384e99e15093f2913d6c6ac2329a9f328847da191c14e32f28b7edd74a2', '[\"*\"]', NULL, NULL, '2026-09-15 17:24:32', '2026-09-15 17:24:32'),
-(28, 'App\\Models\\User', 6, 'react-app', 'c3832bb368e4750dd95b9f73a2f4235e94ab6ada872f0fb003d9d85504c03854', '[\"*\"]', '2026-09-16 09:07:55', NULL, '2026-09-16 04:33:03', '2026-09-16 09:07:55'),
-(29, 'App\\Models\\User', 3, 'react-app', '37eee621c95e5bbacf2c586afbe8ba567a0d07d4bc517e7307a453234e4d34d5', '[\"*\"]', NULL, NULL, '2026-09-16 16:25:54', '2026-09-16 16:25:54'),
-(30, 'App\\Models\\User', 2, 'react-app', '66dfe7cfa609c0dc391c6d8cf90b1145563739d670a233893424bd38e795695f', '[\"*\"]', NULL, NULL, '2026-09-16 16:44:16', '2026-09-16 16:44:16');
+(30, 'App\\Models\\User', 2, 'react-app', '66dfe7cfa609c0dc391c6d8cf90b1145563739d670a233893424bd38e795695f', '[\"*\"]', NULL, NULL, '2026-09-16 16:44:16', '2026-09-16 16:44:16'),
+(32, 'App\\Models\\User', 7, 'react-app', '4795c2a8734dd2a577b26fa8796b1889f69b5a73f8e3bea90e10ffec39fe2161', '[\"*\"]', NULL, NULL, '2026-09-17 07:36:45', '2026-09-17 07:36:45'),
+(33, 'App\\Models\\User', 7, 'react-app', 'f8f9ef5314d65ddf54f98d067c18738b87d270287570a09a67fd197fa3d7b998', '[\"*\"]', NULL, NULL, '2026-09-17 07:36:51', '2026-09-17 07:36:51'),
+(34, 'App\\Models\\User', 4, 'react-app', '8bb0ac40573d72eab4283c5de3bb53306d1ac5e1fa0dc9cd5623a0bfc29b936d', '[\"*\"]', '2026-09-17 08:08:34', NULL, '2026-09-17 07:38:00', '2026-09-17 08:08:34');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `resources`
+-- Structure de la table `resources`
 --
 
 CREATE TABLE `resources` (
@@ -465,7 +482,7 @@ CREATE TABLE `resources` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `resources`
+-- Déchargement des données de la table `resources`
 --
 
 INSERT INTO `resources` (`id`, `lesson_id`, `titre`, `type`, `fichier`, `created_at`, `updated_at`) VALUES
@@ -478,7 +495,7 @@ INSERT INTO `resources` (`id`, `lesson_id`, `titre`, `type`, `fichier`, `created
 -- --------------------------------------------------------
 
 --
--- Table structure for table `roles`
+-- Structure de la table `roles`
 --
 
 CREATE TABLE `roles` (
@@ -490,7 +507,7 @@ CREATE TABLE `roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `roles`
+-- Déchargement des données de la table `roles`
 --
 
 INSERT INTO `roles` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES
@@ -501,7 +518,7 @@ INSERT INTO `roles` (`id`, `name`, `description`, `created_at`, `updated_at`) VA
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sessions`
+-- Structure de la table `sessions`
 --
 
 CREATE TABLE `sessions` (
@@ -516,7 +533,7 @@ CREATE TABLE `sessions` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `soumissions`
+-- Structure de la table `soumissions`
 --
 
 CREATE TABLE `soumissions` (
@@ -533,7 +550,7 @@ CREATE TABLE `soumissions` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `soumissionsbackup`
+-- Structure de la table `soumissionsbackup`
 --
 
 CREATE TABLE `soumissionsbackup` (
@@ -550,7 +567,7 @@ CREATE TABLE `soumissionsbackup` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Structure de la table `users`
 --
 
 CREATE TABLE `users` (
@@ -570,7 +587,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `users`
+-- Déchargement des données de la table `users`
 --
 
 INSERT INTO `users` (`id`, `name`, `firstname`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `photo`, `telephone`, `statut`, `role_id`) VALUES
@@ -579,28 +596,29 @@ INSERT INTO `users` (`id`, `name`, `firstname`, `email`, `email_verified_at`, `p
 (3, 'Razafindralambo', 'Heriniaina', 'heriniaina@gmail.com', NULL, '$2y$12$qbNpO6AcoN4MJ45H4.8mw.HWmWfx1yEwurSlxESza17uCclissf0e', NULL, '2026-09-14 05:36:09', '2026-09-14 05:36:09', NULL, NULL, 'actif', 3),
 (4, 'Razafindralambo', 'Nono', 'nono@gmail.com', NULL, '$2y$12$GXJoO82hDtF8xVrMZMbwOOPytszj5yQ3wlevACzQEVjCSqFU2D2ma', NULL, '2026-09-14 06:21:53', '2026-09-14 06:25:20', NULL, '0383456734', 'actif', 2),
 (5, 'Razafiarison', 'Harena', 'harenarazafiarison@gmail.com', NULL, '$2y$12$35XThGLjFShVm8A2P9eOHOLOpVNOOmf6QNBNEQooqAoiZ4c4APnXm', NULL, '2026-09-15 13:50:52', '2026-09-15 14:12:46', NULL, '0326746200', 'actif', 2),
-(6, 'Razafiarison', 'Sarobidy', 'sarobidyrazafiarison@gmail.com', NULL, '$2y$12$rdLDuwL8y59cMEdXSVP4pOAC3m6.DQfcgPayhOgU/cpMXx3RXgVQm', NULL, '2026-09-15 17:24:32', '2026-09-16 09:07:56', NULL, '0326746200', 'actif', 2);
+(6, 'Razafiarison', 'Sarobidy', 'sarobidyrazafiarison@gmail.com', NULL, '$2y$12$rdLDuwL8y59cMEdXSVP4pOAC3m6.DQfcgPayhOgU/cpMXx3RXgVQm', NULL, '2026-09-15 17:24:32', '2026-09-16 09:07:56', NULL, '0326746200', 'actif', 2),
+(7, 'Razafindralambo', 'Anysia', 'anysiarazafindralamabi@gmail.com', NULL, '$2y$12$4poD01Df5QpfofpN4a7K6uDGAQVibQiKDhXfg3duCaEK0vTJnE.h.', NULL, '2026-09-17 07:36:45', '2026-09-17 07:36:45', NULL, NULL, 'actif', 3);
 
 --
--- Indexes for dumped tables
+-- Index pour les tables déchargées
 --
 
 --
--- Indexes for table `cache`
+-- Index pour la table `cache`
 --
 ALTER TABLE `cache`
   ADD PRIMARY KEY (`key`),
   ADD KEY `cache_expiration_index` (`expiration`);
 
 --
--- Indexes for table `cache_locks`
+-- Index pour la table `cache_locks`
 --
 ALTER TABLE `cache_locks`
   ADD PRIMARY KEY (`key`),
   ADD KEY `cache_locks_expiration_index` (`expiration`);
 
 --
--- Indexes for table `certificats`
+-- Index pour la table `certificats`
 --
 ALTER TABLE `certificats`
   ADD PRIMARY KEY (`id`),
@@ -608,7 +626,7 @@ ALTER TABLE `certificats`
   ADD KEY `certificats_cour_id_foreign` (`cour_id`);
 
 --
--- Indexes for table `cours`
+-- Index pour la table `cours`
 --
 ALTER TABLE `cours`
   ADD PRIMARY KEY (`id`),
@@ -617,21 +635,21 @@ ALTER TABLE `cours`
   ADD KEY `cours_niveau_id_foreign` (`niveau_id`);
 
 --
--- Indexes for table `exercices`
+-- Index pour la table `exercices`
 --
 ALTER TABLE `exercices`
   ADD PRIMARY KEY (`id`),
   ADD KEY `exercices_lesson_id_foreign` (`lesson_id`);
 
 --
--- Indexes for table `failed_jobs`
+-- Index pour la table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
 
 --
--- Indexes for table `favoris`
+-- Index pour la table `favoris`
 --
 ALTER TABLE `favoris`
   ADD PRIMARY KEY (`id`),
@@ -639,7 +657,7 @@ ALTER TABLE `favoris`
   ADD KEY `favoris_cour_id_foreign` (`cour_id`);
 
 --
--- Indexes for table `inscriptions`
+-- Index pour la table `inscriptions`
 --
 ALTER TABLE `inscriptions`
   ADD PRIMARY KEY (`id`),
@@ -647,7 +665,7 @@ ALTER TABLE `inscriptions`
   ADD KEY `inscriptions_user_id_foreign` (`user_id`);
 
 --
--- Indexes for table `inscription_instrument`
+-- Index pour la table `inscription_instrument`
 --
 ALTER TABLE `inscription_instrument`
   ADD PRIMARY KEY (`id`),
@@ -655,70 +673,78 @@ ALTER TABLE `inscription_instrument`
   ADD KEY `inscription_instrument_instrument_id_foreign` (`instrument_id`);
 
 --
--- Indexes for table `instruments`
+-- Index pour la table `instruments`
 --
 ALTER TABLE `instruments`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `jobs`
+-- Index pour la table `jobs`
 --
 ALTER TABLE `jobs`
   ADD PRIMARY KEY (`id`),
   ADD KEY `jobs_queue_index` (`queue`);
 
 --
--- Indexes for table `job_batches`
+-- Index pour la table `job_batches`
 --
 ALTER TABLE `job_batches`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `lessons`
+-- Index pour la table `lessons`
 --
 ALTER TABLE `lessons`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `lessonsbackup`
+-- Index pour la table `lessonsbackup`
 --
 ALTER TABLE `lessonsbackup`
   ADD PRIMARY KEY (`id`),
   ADD KEY `lessonsbackup_cour_id_foreign` (`cour_id`);
 
 --
--- Indexes for table `levels`
+-- Index pour la table `levels`
 --
 ALTER TABLE `levels`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `migrations`
+-- Index pour la table `messages`
+--
+ALTER TABLE `messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `messages_sender_id_foreign` (`sender_id`),
+  ADD KEY `messages_receiver_id_foreign` (`receiver_id`);
+
+--
+-- Index pour la table `migrations`
 --
 ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `paiements`
+-- Index pour la table `paiements`
 --
 ALTER TABLE `paiements`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `paiementsbackup`
+-- Index pour la table `paiementsbackup`
 --
 ALTER TABLE `paiementsbackup`
   ADD PRIMARY KEY (`id`),
   ADD KEY `paiementsbackup_inscription_id_foreign` (`inscription_id`);
 
 --
--- Indexes for table `password_reset_tokens`
+-- Index pour la table `password_reset_tokens`
 --
 ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
 
 --
--- Indexes for table `personal_access_tokens`
+-- Index pour la table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
   ADD PRIMARY KEY (`id`),
@@ -727,20 +753,20 @@ ALTER TABLE `personal_access_tokens`
   ADD KEY `personal_access_tokens_expires_at_index` (`expires_at`);
 
 --
--- Indexes for table `resources`
+-- Index pour la table `resources`
 --
 ALTER TABLE `resources`
   ADD PRIMARY KEY (`id`),
   ADD KEY `resources_lesson_id_foreign` (`lesson_id`);
 
 --
--- Indexes for table `roles`
+-- Index pour la table `roles`
 --
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `sessions`
+-- Index pour la table `sessions`
 --
 ALTER TABLE `sessions`
   ADD PRIMARY KEY (`id`),
@@ -748,13 +774,13 @@ ALTER TABLE `sessions`
   ADD KEY `sessions_last_activity_index` (`last_activity`);
 
 --
--- Indexes for table `soumissions`
+-- Index pour la table `soumissions`
 --
 ALTER TABLE `soumissions`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `soumissionsbackup`
+-- Index pour la table `soumissionsbackup`
 --
 ALTER TABLE `soumissionsbackup`
   ADD PRIMARY KEY (`id`),
@@ -762,7 +788,7 @@ ALTER TABLE `soumissionsbackup`
   ADD KEY `soumissionsbackup_user_id_foreign` (`user_id`);
 
 --
--- Indexes for table `users`
+-- Index pour la table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
@@ -770,148 +796,154 @@ ALTER TABLE `users`
   ADD KEY `users_role_id_foreign` (`role_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT pour les tables déchargées
 --
 
 --
--- AUTO_INCREMENT for table `certificats`
+-- AUTO_INCREMENT pour la table `certificats`
 --
 ALTER TABLE `certificats`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `cours`
+-- AUTO_INCREMENT pour la table `cours`
 --
 ALTER TABLE `cours`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `exercices`
+-- AUTO_INCREMENT pour la table `exercices`
 --
 ALTER TABLE `exercices`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `failed_jobs`
+-- AUTO_INCREMENT pour la table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `favoris`
+-- AUTO_INCREMENT pour la table `favoris`
 --
 ALTER TABLE `favoris`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `inscriptions`
+-- AUTO_INCREMENT pour la table `inscriptions`
 --
 ALTER TABLE `inscriptions`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT for table `inscription_instrument`
+-- AUTO_INCREMENT pour la table `inscription_instrument`
 --
 ALTER TABLE `inscription_instrument`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT for table `instruments`
+-- AUTO_INCREMENT pour la table `instruments`
 --
 ALTER TABLE `instruments`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `jobs`
+-- AUTO_INCREMENT pour la table `jobs`
 --
 ALTER TABLE `jobs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `lessons`
+-- AUTO_INCREMENT pour la table `lessons`
 --
 ALTER TABLE `lessons`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `lessonsbackup`
+-- AUTO_INCREMENT pour la table `lessonsbackup`
 --
 ALTER TABLE `lessonsbackup`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `levels`
+-- AUTO_INCREMENT pour la table `levels`
 --
 ALTER TABLE `levels`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `migrations`
+-- AUTO_INCREMENT pour la table `messages`
+--
+ALTER TABLE `messages`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
--- AUTO_INCREMENT for table `paiements`
+-- AUTO_INCREMENT pour la table `paiements`
 --
 ALTER TABLE `paiements`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT for table `paiementsbackup`
+-- AUTO_INCREMENT pour la table `paiementsbackup`
 --
 ALTER TABLE `paiementsbackup`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `personal_access_tokens`
+-- AUTO_INCREMENT pour la table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
--- AUTO_INCREMENT for table `resources`
+-- AUTO_INCREMENT pour la table `resources`
 --
 ALTER TABLE `resources`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `roles`
+-- AUTO_INCREMENT pour la table `roles`
 --
 ALTER TABLE `roles`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `soumissions`
+-- AUTO_INCREMENT pour la table `soumissions`
 --
 ALTER TABLE `soumissions`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `soumissionsbackup`
+-- AUTO_INCREMENT pour la table `soumissionsbackup`
 --
 ALTER TABLE `soumissionsbackup`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- Constraints for dumped tables
+-- Contraintes pour les tables déchargées
 --
 
 --
--- Constraints for table `certificats`
+-- Contraintes pour la table `certificats`
 --
 ALTER TABLE `certificats`
   ADD CONSTRAINT `certificats_cour_id_foreign` FOREIGN KEY (`cour_id`) REFERENCES `cours` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `certificats_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `cours`
+-- Contraintes pour la table `cours`
 --
 ALTER TABLE `cours`
   ADD CONSTRAINT `cours_instrument_id_foreign` FOREIGN KEY (`instrument_id`) REFERENCES `instruments` (`id`) ON DELETE CASCADE,
@@ -919,59 +951,66 @@ ALTER TABLE `cours`
   ADD CONSTRAINT `cours_prof_id_foreign` FOREIGN KEY (`prof_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `exercices`
+-- Contraintes pour la table `exercices`
 --
 ALTER TABLE `exercices`
   ADD CONSTRAINT `exercices_lesson_id_foreign` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `favoris`
+-- Contraintes pour la table `favoris`
 --
 ALTER TABLE `favoris`
   ADD CONSTRAINT `favoris_cour_id_foreign` FOREIGN KEY (`cour_id`) REFERENCES `cours` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `favoris_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `inscriptions`
+-- Contraintes pour la table `inscriptions`
 --
 ALTER TABLE `inscriptions`
   ADD CONSTRAINT `inscriptions_niveau_id_foreign` FOREIGN KEY (`niveau_id`) REFERENCES `levels` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `inscriptions_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `inscription_instrument`
+-- Contraintes pour la table `inscription_instrument`
 --
 ALTER TABLE `inscription_instrument`
   ADD CONSTRAINT `inscription_instrument_inscription_id_foreign` FOREIGN KEY (`inscription_id`) REFERENCES `inscriptions` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `inscription_instrument_instrument_id_foreign` FOREIGN KEY (`instrument_id`) REFERENCES `instruments` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `lessonsbackup`
+-- Contraintes pour la table `lessonsbackup`
 --
 ALTER TABLE `lessonsbackup`
   ADD CONSTRAINT `lessonsbackup_cour_id_foreign` FOREIGN KEY (`cour_id`) REFERENCES `cours` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `paiementsbackup`
+-- Contraintes pour la table `messages`
+--
+ALTER TABLE `messages`
+  ADD CONSTRAINT `messages_receiver_id_foreign` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `messages_sender_id_foreign` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `paiementsbackup`
 --
 ALTER TABLE `paiementsbackup`
   ADD CONSTRAINT `paiementsbackup_inscription_id_foreign` FOREIGN KEY (`inscription_id`) REFERENCES `inscriptions` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `resources`
+-- Contraintes pour la table `resources`
 --
 ALTER TABLE `resources`
   ADD CONSTRAINT `resources_lesson_id_foreign` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `soumissionsbackup`
+-- Contraintes pour la table `soumissionsbackup`
 --
 ALTER TABLE `soumissionsbackup`
   ADD CONSTRAINT `soumissionsbackup_exercice_id_foreign` FOREIGN KEY (`exercice_id`) REFERENCES `exercices` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `soumissionsbackup_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `users`
+-- Contraintes pour la table `users`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
