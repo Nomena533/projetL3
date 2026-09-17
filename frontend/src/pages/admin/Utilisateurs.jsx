@@ -63,7 +63,7 @@ export default function AdminUtilisateurs() {
             <tbody className="divide-y divide-ivory-dark">
               {userList.map((u) => (
                 <tr key={u.id} className="transition-colors duration-200 hover:bg-ivory-dark/30">
-                  <Td className="font-semibold text-ink">{u.name}</Td>
+                  <Td className="font-semibold text-ink">{u.name} {u.firstname}</Td>
                   <Td>{capitalize(u.role.name)}</Td>
                   <Td className="text-ink-soft">{u.email}</Td>
                   <Td>

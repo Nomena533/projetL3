@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Messages;
 use Illuminate\Http\Request;
 
@@ -32,7 +33,7 @@ class MessagesController extends Controller
 
                 return [
                     'id' => $lastMessage->id,
-                    'profId' => $otherUser->id,
+                    'otherUserId' => $otherUser->id,
                     'prof' => trim($otherUser->name . ' ' . $otherUser->firstname),
                     'instrument' => 'Accompagnement personnalisé',
                     'extrait' => $lastMessage->content,
@@ -64,7 +65,7 @@ class MessagesController extends Controller
         ]);
 
         $validate['sender_id'] = $request->user()->id;
-        
+
         $message = Messages::create($validate);
         return response()->json($message, 201);
     }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\LessonResource;
 use App\Models\Cour;
 use App\Models\Lesson;
 use App\Models\Resource;
@@ -16,7 +15,7 @@ class LessonController extends Controller
      */
     public function index()
     {
-        $lesson = Lesson::orderBy("created_at","ASC")->get();
+        $lesson = Lesson::latest()->get();
 
         return response()->json($lesson);
     }

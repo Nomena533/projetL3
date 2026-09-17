@@ -107,6 +107,6 @@ export const NAV_PROF = [
   { path: "/professeur/mescours", label: "Mes cours", icon: BookOpen },
   { path: "/professeur/corrections", label: "Corrections", icon: ClipboardCheck },
   { path: "/professeur/eleves", label: "Élèves & progression", icon: Users },
-  { path: "/professeur/messages", label: "Messages", icon: MessageCircle },
-  { path: "/professeur/parametres", label: "Parametres", icon: Settings },
+  // { path: "/professeur/messages", label: "Messages", icon: MessageCircle },
+  // { path: "/professeur/parametres", label: "Parametres", icon: Settings },
 ];

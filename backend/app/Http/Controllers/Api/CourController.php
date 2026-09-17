@@ -16,9 +16,9 @@ class CourController extends Controller
      */
     public function index()
     {
-        $cour = Cour::with('instrument')->with('level')->with('prof')->get();
-        $courBrouillon = Cour::with('instrument')->with('level')->with('prof')->where("statut", "brouillon")->get();
-        $courPublié = Cour::with('instrument')->with('level')->with('prof')->where("statut", "publié")->get();
+        $cour = Cour::with(['instrument', 'level','prof'])->get();
+        $courBrouillon = Cour::with(['instrument','level','prof'])->where("statut", "brouillon")->get();
+        $courPublié = Cour::with('instrument')->with(['level','prof'])->where("statut", "publié")->get();
 
         return response()->json([
             "all" => $cour, 

@@ -270,12 +270,22 @@ export default function Formation() {
       await fetchPaiement();
 
       // Mise à jour immédiate du modal
+      /*
       setNiveauPaiementOuvert((prev) => ({
         ...prev,
         moisPayer: prev.moisPayer + moisSelectionnes,
         moisRestant: prev.moisRestant - moisSelectionnes,
       }));
-      
+      */
+      // Même résultat
+      setNiveauPaiementOuvert({
+        inscriptionId: niveauPaiementOuvert.inscriptionId,
+        nom: niveauPaiementOuvert.nom,
+        dureeMois: niveauPaiementOuvert.dureeMois,
+        montantMensuel: niveauPaiementOuvert.montantMensuel,
+        moisPayer: niveauPaiementOuvert.moisPayer + moisSelectionnes,
+        moisRestant: niveauPaiementOuvert.moisRestant - moisSelectionnes,
+      });
     } catch (err) {
       console.error("Erreur lors du paiement", err.response?.data);
       setErreur("Une erreur est survenue lors du paiement");

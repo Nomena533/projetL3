@@ -12,7 +12,7 @@ use App\Http\Controllers\Api\LevelController;
 use App\Http\Controllers\Api\PaiementController;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\MessagesController;
+use App\Http\Controllers\Api\MessagesController;
 
 /*
 |--------------------------------------------------------------------------

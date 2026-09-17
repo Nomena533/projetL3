@@ -24,30 +24,33 @@ import LevelProvider from "./app/provider/LevelProvider";
 import InstrumentProvider from "./app/provider/InstrumentProvider";
 import UserProvider from "./app/provider/UserProvider";
 import PaiementProvider from "./app/provider/PaiementProvider";
+import MessageProvider from "./app/provider/MessageProvider";
 import { LangProvider } from "./app/provider/LangProvider";
 // import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <LangProvider>
-      <PaiementProvider>
-        <UserProvider>
-          <InstrumentProvider>
-            <LevelProvider>
-              <LessonProvider>
-                <CourProvider>
-                  <BrowserRouter>
-                    {/* AuthProvider englobe toute l'application, tous les composants enfants peuvent accéder à user, logout, setUser */}
-                    <AuthProvider>
-                      <App />
-                    </AuthProvider>
-                  </BrowserRouter>
-                </CourProvider>
-              </LessonProvider>
-            </LevelProvider>
-          </InstrumentProvider>
-        </UserProvider>
-      </PaiementProvider>
+      <MessageProvider>
+        <PaiementProvider>
+          <UserProvider>
+            <InstrumentProvider>
+              <LevelProvider>
+                <LessonProvider>
+                  <CourProvider>
+                    <BrowserRouter>
+                      {/* AuthProvider englobe toute l'application, tous les composants enfants peuvent accéder à user, logout, setUser */}
+                      <AuthProvider>
+                        <App />
+                      </AuthProvider>
+                    </BrowserRouter>
+                  </CourProvider>
+                </LessonProvider>
+              </LevelProvider>
+            </InstrumentProvider>
+          </UserProvider>
+        </PaiementProvider>
+      </MessageProvider>
     </LangProvider>
   </React.StrictMode>,
 );
