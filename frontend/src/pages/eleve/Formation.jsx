@@ -21,6 +21,7 @@ import { capitalize, formatDate } from "../../lib/formatFunction";
 import { useUser } from "../../app/hooks/useUser";
 import usePaiement from "../../app/hooks/usePaiement";
 import { storePaiement } from "../../app/api/paiementApi";
+import { Guitar } from "../../lib/icons";
 
 // Modal de paiement pour un niveau donné, ouvert depuis la liste des niveaux.
 // Reprend la logique de eleve/paiement.jsx (sélection de mois + mode de paiement)
@@ -36,24 +37,24 @@ function ModalPaiementNiveau({
   const [mode, setMode] = useState(null);
   const [enCours, setEnCours] = useState(false);
   const [confirme, setConfirme] = useState(false);
-  const [moisRestants, setMoisRestants] = useState([]);
+  // const [moisRestants, setMoisRestants] = useState([]);
 
   // Expliquer
 
   // moisPayer et moisRestant sont désormais des nombres (ex. moisPayer = 3
   // signifie que les mois 1, 2 et 3 sont payés, successivement).
   // Les mois restants sont donc simplement les mois moisPayer+1 à dureeMois.
-  // const moisRestants = Array.from(
-  //   { length: moisRestant },
-  //   (_, idx) => moisPayer + idx + 1,
-  // );
-
-  const moisRest = Array.from(
+  const moisRestants = Array.from(
     { length: moisRestant },
     (_, idx) => moisPayer + idx + 1,
   );
 
-  setMoisRestants(moisRest);
+  // const moisRest = Array.from(
+  //   { length: moisRestant },
+  //   (_, idx) => moisPayer + idx + 1,
+  // );
+
+  // setMoisRestants(moisRest);
 
   console.log("moisRestants : ", moisRestants);
 
@@ -237,7 +238,7 @@ export default function Formation() {
   const { levels } = useLevel();
   const { user } = useAuth();
   const { userListInscription, fetchUserListInscription } = useUser();
-  const { paiementList } = usePaiement();
+  const { paiementList, fetchPaiement } = usePaiement();
 
   // Niveau pour lequel le modal de paiement est ouvert (objet fusionné
   // id / nom / dureeMois / montantMensuel), ou null si fermé.
@@ -251,7 +252,7 @@ export default function Formation() {
     inscriptionId,
     total,
     moisSelectionnes,
-    mode
+    mode,
   ) => {
     try {
       const data = {
@@ -265,6 +266,16 @@ export default function Formation() {
 
       const response = await storePaiement(inscriptionId, data);
       console.log("Paiement effectué avec succès : ", response.data);
+
+      await fetchPaiement();
+
+      // Mise à jour immédiate du modal
+      setNiveauPaiementOuvert((prev) => ({
+        ...prev,
+        moisPayer: prev.moisPayer + moisSelectionnes,
+        moisRestant: prev.moisRestant - moisSelectionnes,
+      }));
+      
     } catch (err) {
       console.error("Erreur lors du paiement", err.response?.data);
       setErreur("Une erreur est survenue lors du paiement");
@@ -306,7 +317,7 @@ export default function Formation() {
           delay={160}
         />
         <StatCard
-          icon={HiOutlineMusicalNote}
+          icon={Guitar}
           label="Instrument à apprendre"
           value={null}
           delay={160}

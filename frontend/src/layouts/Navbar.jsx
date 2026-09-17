@@ -3,7 +3,20 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import { LogoVert } from "../components/Logo";
 import { useAuth } from "../app/hooks/useAuth";
-import { LogOut } from "../lib/icons";
+import { LogOut, Sun, Moon, Grid, Settings, User } from "../lib/icons";
+import UserMenu from "../components/UserMenu";
+import LanguageMenu from "../components/LanguageMenu";
+import useDarkMode from "../app/hooks/useDarkMode";
+
+// Fait correspondre le rôle de l'utilisateur connecté à la base des routes
+// de son espace privé. ⚠️ À vérifier : les valeurs exactes renvoyées par
+// useAuth().user.role dans votre implémentation (ici on suppose
+// "eleve" / "professeur" / "admin").
+const SPACE_BASE_PATH = {
+  eleve: "/eleve",
+  professeur: "/professeur",
+  admin: "/admin",
+};
 
 const LINKS = [
   { to: "/", label: "Accueil" },
@@ -34,6 +47,7 @@ export default function Navbar() {
   }, [location.pathname]);
 
   const { user, logout } = useAuth();
+  const [isDark, toggleDark] = useDarkMode();
 
   const handleLogout = async () => {
     await logout();
@@ -43,6 +57,13 @@ export default function Navbar() {
   const initials = user
     ? `${user.firstname?.[0] || ""}${user.name?.[0] || ""}`.toUpperCase()
     : "?";
+
+  const spaceBase = user ? SPACE_BASE_PATH[user.role] || "/eleve" : "/eleve";
+  const userMenuItems = [
+    { to: spaceBase, label: "Mon espace", icon: Grid },
+    { to: `${spaceBase}/profil`, label: "Profil", icon: User },
+    { to: `${spaceBase}/parametres`, label: "Paramètres", icon: Settings },
+  ];
 
   const linkClass = ({ isActive }) =>
     `relative px-1 py-2 font-body text-sm font-medium transition-colors duration-200 ${
@@ -78,35 +99,44 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {user ? (
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-amber-200 flex items-center justify-center font-display text-teal-950 text-sm">
-              {initials}
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
+          <LanguageMenu />
+
+          <button
+            type="button"
+            onClick={toggleDark}
+            title={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
+            aria-label={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
+            className="grid h-10 w-10 place-items-center rounded-full text-ink transition-colors hover:bg-ivory-dark"
+          >
+            {isDark ? <Sun size={19} /> : <Moon size={19} />}
+          </button>
+
+          {user ? (
+            <UserMenu
+              initials={initials}
+              displayName={`${user?.firstname || ""} ${user?.name || ""}`.trim()}
+              subLabel={user?.email}
+              items={userMenuItems}
+              onLogout={handleLogout}
+            />
+          ) : (
+            <div className="hidden items-center gap-3 lg:flex">
+              <NavLink
+                to="/connexionCompte"
+                className="font-body text-sm font-medium text-ink-soft transition-colors hover:text-ink"
+              >
+                Se connecter
+              </NavLink>
+              <NavLink
+                to="/inscriptionCompte"
+                className="rounded-full bg-coral px-5 py-2.5 font-body text-sm font-semibold text-ivory shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark hover:shadow-lg hover:shadow-coral/30"
+              >
+                Commencer
+              </NavLink>
             </div>
-            <button
-              onClick={handleLogout}
-              title="Déconnexion"
-              className="w-9 h-9 rounded-full flex items-center justify-center text-stone-500 hover:bg-stone-100 hover:text-teal-950 transition-colors"
-            >
-              <LogOut size={18} />
-            </button>
-          </div>
-        ) : (
-          <div className="hidden items-center gap-3 lg:flex">
-            <NavLink
-              to="/connexionCompte"
-              className="font-body text-sm font-medium text-ink-soft transition-colors hover:text-ink"
-            >
-              Se connecter
-            </NavLink>
-            <NavLink
-              to="/inscriptionCompte"
-              className="rounded-full bg-coral px-5 py-2.5 font-body text-sm font-semibold text-ivory shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark hover:shadow-lg hover:shadow-coral/30"
-            >
-              Commencer
-            </NavLink>
-          </div>
-        )}
+          )}
+        </div>
 
         <button
           type="button"
@@ -146,20 +176,43 @@ export default function Navbar() {
                 {l.label}
               </NavLink>
             ))}
-            <div className="mt-2 flex flex-col gap-2 border-t border-ivory-dark pt-3">
-              <NavLink
-                to="/connexion"
-                className="rounded-lg px-3 py-2.5 text-center font-body text-sm font-medium text-ink-soft hover:bg-ivory-dark"
-              >
-                Se connecter
-              </NavLink>
-              <NavLink
-                to="/inscription"
-                className="rounded-full bg-coral px-3 py-2.5 text-center font-body text-sm font-semibold text-ivory"
-              >
-                Commencer
-              </NavLink>
-            </div>
+            {user ? (
+              <div className="mt-2 flex flex-col gap-1 border-t border-ivory-dark pt-3">
+                {userMenuItems.map(({ to, label, icon: Icon }) => (
+                  <NavLink
+                    key={to}
+                    to={to}
+                    className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 font-body text-sm font-medium text-ink-soft hover:bg-ivory-dark"
+                  >
+                    <Icon size={16} className="text-ink-soft/70" />
+                    {label}
+                  </NavLink>
+                ))}
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-left font-body text-sm font-medium text-red-500 hover:bg-red-50"
+                >
+                  <LogOut size={16} />
+                  Déconnexion
+                </button>
+              </div>
+            ) : (
+              <div className="mt-2 flex flex-col gap-2 border-t border-ivory-dark pt-3">
+                <NavLink
+                  to="/connexionCompte"
+                  className="rounded-lg px-3 py-2.5 text-center font-body text-sm font-medium text-ink-soft hover:bg-ivory-dark"
+                >
+                  Se connecter
+                </NavLink>
+                <NavLink
+                  to="/inscriptionCompte"
+                  className="rounded-full bg-coral px-3 py-2.5 text-center font-body text-sm font-semibold text-ivory"
+                >
+                  Commencer
+                </NavLink>
+              </div>
+            )}
           </nav>
         </div>
       </div>

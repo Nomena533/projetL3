@@ -9,6 +9,14 @@
  * Feather sont complétées par le set "Heroicons 2" (react-icons/hi2).
  */
 import {
+  FiMoon as Moon,
+  FiSun as Sun,
+  FiGrid as Grid,
+  FiBell as Bell,
+  FiGlobe as Globe,
+  FiCheck as Check,
+  FiChevronUp as ChevronUp,
+  FiChevronLeft as ChevronLeft,
   FiLogIn as LogIn,
   FiLogOut as LogOut,
   FiUserPlus as UserPlus,
@@ -24,7 +32,6 @@ import {
   FiX as X,
   FiSearch as Search,
   FiChevronRight as ChevronRight,
-  FiChevronLeft as ChevronLeft,
   FiClock as Clock,
   FiTrendingUp as TrendingUp,
   FiCheckCircle as CheckCircle2,
@@ -47,6 +54,7 @@ import {
   FiUserCheck as UserCheck,
   FiBarChart2 as BarChart3,
   FiSettings as Settings,
+  FiChevronsDown as ChevronDown,
 } from "react-icons/fi";
 import { 
   HiOutlineAcademicCap as GraduationCap,
@@ -61,9 +69,15 @@ import {
   HiOutlineDevicePhoneMobile,
   HiOutlineCreditCard,
   HiOutlineExclamationCircle,
+  HiOutlineMusicalNote,
+  HiOutlineShieldCheck
 } from "react-icons/hi2";
+import {
+  FaGuitar as Guitar,
+} from "react-icons/fa";
 
 export {
+  Guitar,
   HiOutlineClock,
   HiOutlineArrowRight,
   HiOutlineLockClosed,
@@ -72,6 +86,8 @@ export {
   HiOutlineDevicePhoneMobile,
   HiOutlineCreditCard,
   HiOutlineExclamationCircle,
+  HiOutlineMusicalNote,
+  HiOutlineShieldCheck,
   LogIn,
   LogOut,
   UserPlus,
@@ -114,4 +130,12 @@ export {
   Wallet,
   ShieldCheck,
   Settings,
+  ChevronDown,
+  Bell,
+  Globe,
+  Check,
+  ChevronUp,
+  Moon,
+  Sun,
+  Grid,
 };

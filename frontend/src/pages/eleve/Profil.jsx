@@ -40,13 +40,14 @@ export default function Profil() {
                 {initials}
               </div>
               <div className="flex flex-col gap-2">
-                <button
-                  type="button"
+                <label
+                  htmlFor="eleve-profile-photo"
                   className="inline-flex items-center gap-2 rounded-full border border-ivory-dark px-4 py-2 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:border-coral/40"
                 >
                   <HiOutlineCamera size={16} />
                   Changer la photo
-                </button>
+                </label>
+                <input id="eleve-profile-photo" type="file" accept="image/*" className="sr-only" />
                 <button type="button" className="font-body text-xs font-medium text-ink-soft transition-colors hover:text-brick">
                   Supprimer la photo
                 </button>

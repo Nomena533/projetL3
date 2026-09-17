@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import { NavLink, useLocation, useNavigate, Outlet } from "react-router-dom";
-import { Music, Menu, X, Search, LogOut, Mail, Settings, User } from "../lib/icons";
+import { Music, Menu, X, Search, LogOut } from "../lib/icons";
 import ValihaStrings from "../components/ValihaStrings";
 import { NAV } from "../lib/mockStudentData";
 import { useAuth } from "../app/hooks/useAuth";
 import { LogoBlanc } from "../components/Logo";
-import UserMenu from "../components/UserMenu";
-import IconLinkBadge from "../components/IconLinkBadge";
-import NotificationBell from "../components/NotificationBell";
-import useUnreadCounts from "../app/hooks/useUnreadCounts";
 
 export default function LayoutStudent() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -20,8 +16,6 @@ export default function LayoutStudent() {
 
   // Récupération de l'user + fonction de déconnexion depuis le context global
   const { user, logout } = useAuth();
-  const { unreadMessages, unreadNotifications, notifications } =
-    useUnreadCounts();
 
   const handleLogout = async () => {
     await logout();
@@ -38,7 +32,7 @@ export default function LayoutStudent() {
       {/* Sidebar */}
       <aside
         className={`
-        fixed z-30 inset-y-0 left-0 h-screen w-64 overflow-y-auto bg-teal-950 text-stone-200 flex flex-col
+        fixed md:static z-30 inset-y-0 left-0 w-64 bg-teal-950 text-stone-200 flex flex-col
         transform transition-transform ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0
       `}
       >
@@ -110,7 +104,7 @@ export default function LayoutStudent() {
       )}
 
       {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0 md:ml-64">
+      <div className="flex-1 flex flex-col min-w-0">
         <header className="bg-stone-50 border-b border-stone-200 px-4 md:px-8 py-4 flex items-center gap-4">
           <button
             className="md:hidden text-teal-950"
@@ -121,27 +115,20 @@ export default function LayoutStudent() {
           <h1 className="font-display text-xl text-teal-950">
             {current?.label || "Kalon'ny"}
           </h1>
-          <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
+          <div className="ml-auto flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 bg-stone-100 rounded-sm px-3 py-1.5 text-sm text-stone-500">
               <Search size={14} /> Rechercher…
             </div>
-            <IconLinkBadge
-              to="/eleve/messages"
-              icon={Mail}
-              count={unreadMessages}
-              label="Messages"
-            />
-            <NotificationBell count={unreadNotifications} items={notifications} />
-            <UserMenu
-              initials={initials}
-              displayName={`${user?.firstname || ""} ${user?.name || ""}`.trim() || "Élève"}
-              subLabel={user?.email || "Compte élève vérifié"}
-              items={[
-                { to: "/eleve/profil", label: "Profil", icon: User },
-                { to: "/eleve/parametres", label: "Paramètres", icon: Settings },
-              ]}
-              onLogout={handleLogout}
-            />
+            <div className="w-9 h-9 rounded-full bg-amber-200 flex items-center justify-center font-display text-teal-950 text-sm">
+              {initials}
+            </div>
+            <button
+              onClick={handleLogout}
+              title="Déconnexion"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-stone-500 hover:bg-stone-100 hover:text-teal-950 transition-colors"
+            >
+              <LogOut size={18} />
+            </button>
           </div>
         </header>
         <main className="flex-1 p-4 md:p-8">

@@ -164,8 +164,8 @@ export const NAV = [
   { path: "/eleve/formation", label: "Formations", icon: BookOpen },
   { path: "/eleve/progression", label: "Progression & certificats", icon: Award },
   { path: "/eleve/favoris", label: "Favoris", icon: Heart },
-  { path: "/eleve/messages", label: "Messages", icon: MessageCircle },
-  { path: "/eleve/profil", label: "Mon profil", icon: User },
-  { path: "/eleve/parametres", label: "Parametres", icon: Settings },
+  // { path: "/eleve/messages", label: "Messages", icon: MessageCircle },
+  // { path: "/eleve/profil", label: "Mon profil", icon: User },
+  // { path: "/eleve/parametres", label: "Parametres", icon: Settings },
   // { path: "/eleve/paiement", label: "Paiements", icon: Wallet },
 ];

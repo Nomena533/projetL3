@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\LevelController;
 use App\Http\Controllers\Api\PaiementController;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\MessagesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/storeCour', [CourController::class, 'store']);
     
     Route::post('/niveau/{niveauId}/storeInscription', [InscriptionController::class, 'store']);
+
+    Route::post("/storeMessage", [MessagesController::class, 'store']);
+    Route::get("/getMessage", [MessagesController::class, 'index']);
 
     });
 

@@ -64,7 +64,7 @@ export default function Dashboard() {
               className="group flex gap-4 rounded-2xl border border-ivory-dark bg-white/60 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-coral/40 hover:shadow-xl hover:shadow-coral/10"
             >
               <div className={`grid h-16 w-16 shrink-0 place-items-center rounded-xl text-2xl ${TONE_BG[c.tone]}`}>
-                <span className="opacity-90">{c.emoji}</span>
+                <span className="opacity-90"></span>
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate font-display text-base font-semibold text-ink group-hover:text-coral-dark">{c.titre}</p>
@@ -80,38 +80,7 @@ export default function Dashboard() {
       </section>
 
       {/* ---------- SUGGESTIONS ---------- */}
-      <section>
-        <AnimatedSection>
-          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">Pour continuer à progresser</span>
-          <h3 className="mt-2 font-display text-xl font-semibold text-ink">Cours suggérés pour toi</h3>
-        </AnimatedSection>
-
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {SUGGESTIONS.map((c, i) => (
-            <AnimatedSection
-              key={c.id}
-              delay={i * 90}
-              as={Link}
-              to={`/eleve/cours/${c.id}`}
-              className="group block overflow-hidden rounded-2xl border border-ivory-dark bg-white/70 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brick/10"
-            >
-              <div className={`flex h-28 items-center justify-center ${TONE_BG[c.tone]}`}>
-                <span className="font-display text-3xl text-ivory/90">{c.emoji}</span>
-              </div>
-              <div className="p-4">
-                <p className="font-mono text-[11px] uppercase tracking-wide text-coral-dark">{c.instrument}</p>
-                <h4 className="mt-1 font-display text-sm font-semibold text-ink group-hover:text-coral-dark">{c.titre}</h4>
-                <div className="mt-3 flex items-center justify-between border-t border-ivory-dark pt-3">
-                  <span className="flex items-center gap-1 font-body text-xs text-ink-soft">
-                    <HiStar className="text-amber" size={13} /> {c.note}
-                  </span>
-                  <span className="font-mono text-xs font-semibold text-ink">{formatAriary(c.prix)}</span>
-                </div>
-              </div>
-            </AnimatedSection>
-          ))}
-        </div>
-      </section>
+      
 
       {/* ---------- ACCÈS RAPIDES ---------- */}
       <section className="grid gap-4 sm:grid-cols-3">
