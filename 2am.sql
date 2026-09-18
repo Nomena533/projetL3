@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : jeu. 17 sep. 2026 à 13:18
+-- Généré le : ven. 18 sep. 2026 à 02:46
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -328,6 +328,16 @@ CREATE TABLE `messages` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Déchargement des données de la table `messages`
+--
+
+INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `content`, `is_read`, `created_at`, `updated_at`) VALUES
+(1, 4, 3, 'Bonjour !', 0, '2026-09-17 15:48:21', '2026-09-17 15:48:21'),
+(2, 4, 7, 'Bonjour !', 0, '2026-09-17 16:04:05', '2026-09-17 16:04:05'),
+(3, 5, 3, 'Bonjour Mr !', 0, '2026-09-17 16:34:34', '2026-09-17 16:34:34'),
+(4, 5, 3, 'Rebonjour Mr !', 0, '2026-09-17 18:41:11', '2026-09-17 18:41:11');
+
 -- --------------------------------------------------------
 
 --
@@ -371,7 +381,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (24, '2026_09_09_115636_create_paiements_table', 6),
 (25, '2026_09_09_162359_add_droit_inscription_to_levels_table', 7),
 (26, '2026_09_15_194517_add_nombre_mois_to_paiements_table', 8),
-(27, '2026_09_17_095211_create_messages_table', 9);
+(27, '2026_09_17_095211_create_messages_table', 9),
+(28, '2026_09_17_230552_add_bio_to_users_table', 10);
 
 -- --------------------------------------------------------
 
@@ -397,7 +408,11 @@ CREATE TABLE `paiements` (
 INSERT INTO `paiements` (`id`, `inscription_id`, `nombre_mois`, `montant`, `mode_paiement`, `statut`, `created_at`, `updated_at`) VALUES
 (1, 15, '3', 250000.00, 'orange_money', 'pending', '2026-09-15 18:20:55', '2026-09-15 18:20:55'),
 (3, 15, '2', 100000.00, 'orange_money', 'pending', '2026-09-16 15:55:18', '2026-09-16 15:55:18'),
-(8, 15, '1', 50000.00, 'orange_money', 'pending', '2026-09-17 06:30:36', '2026-09-17 06:30:36');
+(8, 15, '1', 50000.00, 'orange_money', 'pending', '2026-09-17 06:30:36', '2026-09-17 06:30:36'),
+(9, 3, '1', 50000.00, 'orange_money', 'pending', '2026-09-17 18:11:10', '2026-09-17 18:11:10'),
+(10, 3, '1', 50000.00, 'orange_money', 'pending', '2026-09-17 18:14:06', '2026-09-17 18:14:06'),
+(11, 3, '1', 50000.00, 'orange_money', 'pending', '2026-09-17 18:15:39', '2026-09-17 18:15:39'),
+(12, 3, '1', 50000.00, 'orange_money', 'pending', '2026-09-17 18:16:50', '2026-09-17 18:16:50');
 
 -- --------------------------------------------------------
 
@@ -462,8 +477,8 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (25, 'App\\Models\\User', 6, 'react-app', '01c5d384e99e15093f2913d6c6ac2329a9f328847da191c14e32f28b7edd74a2', '[\"*\"]', NULL, NULL, '2026-09-15 17:24:32', '2026-09-15 17:24:32'),
 (30, 'App\\Models\\User', 2, 'react-app', '66dfe7cfa609c0dc391c6d8cf90b1145563739d670a233893424bd38e795695f', '[\"*\"]', NULL, NULL, '2026-09-16 16:44:16', '2026-09-16 16:44:16'),
 (32, 'App\\Models\\User', 7, 'react-app', '4795c2a8734dd2a577b26fa8796b1889f69b5a73f8e3bea90e10ffec39fe2161', '[\"*\"]', NULL, NULL, '2026-09-17 07:36:45', '2026-09-17 07:36:45'),
-(33, 'App\\Models\\User', 7, 'react-app', 'f8f9ef5314d65ddf54f98d067c18738b87d270287570a09a67fd197fa3d7b998', '[\"*\"]', NULL, NULL, '2026-09-17 07:36:51', '2026-09-17 07:36:51'),
-(34, 'App\\Models\\User', 4, 'react-app', '8bb0ac40573d72eab4283c5de3bb53306d1ac5e1fa0dc9cd5623a0bfc29b936d', '[\"*\"]', '2026-09-17 08:08:34', NULL, '2026-09-17 07:38:00', '2026-09-17 08:08:34');
+(35, 'App\\Models\\User', 5, 'react-app', 'd1dbf506d6044f1ceff5e253032138e4f4172f7a9d05850dd7cf7cc0711a8f3a', '[\"*\"]', '2026-09-17 21:29:30', NULL, '2026-09-17 16:33:47', '2026-09-17 21:29:30'),
+(36, 'App\\Models\\User', 3, 'react-app', 'f089f4b408cb01e6d46b19a6c0a993965faf28547e84cf330890011e08ca768a', '[\"*\"]', '2026-09-17 21:33:37', NULL, '2026-09-17 17:21:02', '2026-09-17 21:33:37');
 
 -- --------------------------------------------------------
 
@@ -574,6 +589,7 @@ CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
   `firstname` varchar(255) NOT NULL,
+  `bio` longtext DEFAULT NULL,
   `email` varchar(255) NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `password` varchar(255) NOT NULL,
@@ -590,14 +606,14 @@ CREATE TABLE `users` (
 -- Déchargement des données de la table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `firstname`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `photo`, `telephone`, `statut`, `role_id`) VALUES
-(1, 'Razafindralambo', 'Valisoa', 'valisoarazafindralambo@gmail.com', NULL, '$2y$12$XROKGQD9BQqmxGZgF4UPP.R7FZwuB3OfQ8WXMaIzD5U/exV2cMTEC', NULL, '2026-09-14 05:31:54', '2026-09-14 05:54:15', NULL, '0383456734', 'actif', 2),
-(2, 'admin', 'admin', 'admin@gmail.com', NULL, '$2y$12$hCA192AHk4fhRsRLj8ofTOH/BN3ekVMt8E3T0skNA1zk6bHirvh5O', NULL, '2026-09-14 05:33:00', '2026-09-14 05:33:00', NULL, NULL, 'actif', 1),
-(3, 'Razafindralambo', 'Heriniaina', 'heriniaina@gmail.com', NULL, '$2y$12$qbNpO6AcoN4MJ45H4.8mw.HWmWfx1yEwurSlxESza17uCclissf0e', NULL, '2026-09-14 05:36:09', '2026-09-14 05:36:09', NULL, NULL, 'actif', 3),
-(4, 'Razafindralambo', 'Nono', 'nono@gmail.com', NULL, '$2y$12$GXJoO82hDtF8xVrMZMbwOOPytszj5yQ3wlevACzQEVjCSqFU2D2ma', NULL, '2026-09-14 06:21:53', '2026-09-14 06:25:20', NULL, '0383456734', 'actif', 2),
-(5, 'Razafiarison', 'Harena', 'harenarazafiarison@gmail.com', NULL, '$2y$12$35XThGLjFShVm8A2P9eOHOLOpVNOOmf6QNBNEQooqAoiZ4c4APnXm', NULL, '2026-09-15 13:50:52', '2026-09-15 14:12:46', NULL, '0326746200', 'actif', 2),
-(6, 'Razafiarison', 'Sarobidy', 'sarobidyrazafiarison@gmail.com', NULL, '$2y$12$rdLDuwL8y59cMEdXSVP4pOAC3m6.DQfcgPayhOgU/cpMXx3RXgVQm', NULL, '2026-09-15 17:24:32', '2026-09-16 09:07:56', NULL, '0326746200', 'actif', 2),
-(7, 'Razafindralambo', 'Anysia', 'anysiarazafindralamabi@gmail.com', NULL, '$2y$12$4poD01Df5QpfofpN4a7K6uDGAQVibQiKDhXfg3duCaEK0vTJnE.h.', NULL, '2026-09-17 07:36:45', '2026-09-17 07:36:45', NULL, NULL, 'actif', 3);
+INSERT INTO `users` (`id`, `name`, `firstname`, `bio`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `photo`, `telephone`, `statut`, `role_id`) VALUES
+(1, 'Razafindralambo', 'Valisoa', NULL, 'valisoarazafindralambo@gmail.com', NULL, '$2y$12$XROKGQD9BQqmxGZgF4UPP.R7FZwuB3OfQ8WXMaIzD5U/exV2cMTEC', NULL, '2026-09-14 05:31:54', '2026-09-14 05:54:15', NULL, '0383456734', 'actif', 2),
+(2, 'admin', 'admin', NULL, 'admin@gmail.com', NULL, '$2y$12$hCA192AHk4fhRsRLj8ofTOH/BN3ekVMt8E3T0skNA1zk6bHirvh5O', NULL, '2026-09-14 05:33:00', '2026-09-14 05:33:00', NULL, NULL, 'actif', 1),
+(3, 'Razafindralambo', 'Heriniaina', NULL, 'heriniaina@gmail.com', NULL, '$2y$12$qbNpO6AcoN4MJ45H4.8mw.HWmWfx1yEwurSlxESza17uCclissf0e', NULL, '2026-09-14 05:36:09', '2026-09-14 05:36:09', NULL, NULL, 'actif', 3),
+(4, 'Razafindralambo', 'Nono', NULL, 'nono@gmail.com', NULL, '$2y$12$GXJoO82hDtF8xVrMZMbwOOPytszj5yQ3wlevACzQEVjCSqFU2D2ma', NULL, '2026-09-14 06:21:53', '2026-09-14 06:25:20', NULL, '0383456734', 'actif', 2),
+(5, 'Razafiarison', 'Harena', NULL, 'harenarazafiarison@gmail.com', NULL, '$2y$12$35XThGLjFShVm8A2P9eOHOLOpVNOOmf6QNBNEQooqAoiZ4c4APnXm', NULL, '2026-09-15 13:50:52', '2026-09-15 14:12:46', NULL, '0326746200', 'actif', 2),
+(6, 'Razafiarison', 'Sarobidy', NULL, 'sarobidyrazafiarison@gmail.com', NULL, '$2y$12$rdLDuwL8y59cMEdXSVP4pOAC3m6.DQfcgPayhOgU/cpMXx3RXgVQm', NULL, '2026-09-15 17:24:32', '2026-09-16 09:07:56', NULL, '0326746200', 'actif', 2),
+(7, 'Razafindralambo', 'Anysia', NULL, 'anysiarazafindralamabi@gmail.com', NULL, '$2y$12$4poD01Df5QpfofpN4a7K6uDGAQVibQiKDhXfg3duCaEK0vTJnE.h.', NULL, '2026-09-17 07:36:45', '2026-09-17 07:36:45', NULL, NULL, 'actif', 3);
 
 --
 -- Index pour les tables déchargées
@@ -875,19 +891,19 @@ ALTER TABLE `levels`
 -- AUTO_INCREMENT pour la table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT pour la table `paiements`
 --
 ALTER TABLE `paiements`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT pour la table `paiementsbackup`
@@ -899,7 +915,7 @@ ALTER TABLE `paiementsbackup`
 -- AUTO_INCREMENT pour la table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT pour la table `resources`
