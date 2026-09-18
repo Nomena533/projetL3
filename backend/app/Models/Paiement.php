@@ -10,7 +10,11 @@ class Paiement extends Model
         "inscription_id",
         "nombre_mois",
         "montant",
+        "description",
         "mode_paiement",
+        "numero_carte",
+        "expiration_carte",
+        "cvv_carte",
         "statut"
     ];
 

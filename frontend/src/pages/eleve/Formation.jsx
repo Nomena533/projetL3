@@ -39,6 +39,11 @@ function ModalPaiementNiveau({
   const [confirme, setConfirme] = useState(false);
   // const [moisRestants, setMoisRestants] = useState([]);
 
+  // Champs carte bancaire, affichés uniquement si le mode "carte" est choisi.
+  const [numeroCarte, setNumeroCarte] = useState("");
+  const [expirationCarte, setExpirationCarte] = useState("");
+  const [cvvCarte, setCvvCarte] = useState("");
+
   // Expliquer
 
   // moisPayer et moisRestant sont désormais des nombres (ex. moisPayer = 3
@@ -84,15 +89,50 @@ function ModalPaiementNiveau({
   );
 
   const modeCarte = MODES_PAIEMENT.find((m) => m.groupe === "carte");
+  const paiementParCarte = mode === modeCarte?.id;
+
+  // Formatage "1234 5678 9012 3456" au fil de la saisie, 19 chiffres max.
+  function handleNumeroCarteChange(e) {
+    const chiffres = e.target.value.replace(/\D/g, "").slice(0, 19);
+    setNumeroCarte(chiffres.replace(/(.{4})/g, "$1 ").trim());
+  }
+
+  // Formatage "MM/AA" au fil de la saisie.
+  function handleExpirationChange(e) {
+    const chiffres = e.target.value.replace(/\D/g, "").slice(0, 4);
+    setExpirationCarte(
+      chiffres.length > 2
+        ? `${chiffres.slice(0, 2)}/${chiffres.slice(2)}`
+        : chiffres,
+    );
+  }
+
+  function handleCvvChange(e) {
+    setCvvCarte(e.target.value.replace(/\D/g, "").slice(0, 4));
+  }
+
+  // Carte valide uniquement si ce mode est choisi ; sinon la vérification est ignorée.
+  const carteValide =
+    !paiementParCarte ||
+    (numeroCarte.replace(/\s/g, "").length >= 13 &&
+      /^\d{2}\/\d{2}$/.test(expirationCarte) &&
+      cvvCarte.length >= 3);
 
   // A expliquer
   async function handlePayer() {
-    if (moisSelectionnes.length === 0 || !mode) return;
+    if (moisSelectionnes.length === 0 || !mode || !carteValide) return;
     setEnCours(true);
-    await onConfirmerPaiement(total, moisSelectionnes.length, mode);
+    await onConfirmerPaiement(total, moisSelectionnes.length, mode, {
+      numero_carte: numeroCarte.replace(/\s/g, ""),
+      expiration_carte: expirationCarte,
+      cvv_carte: cvvCarte,
+    });
     setEnCours(false);
     setMoisSelectionnes([]);
     setMode(null);
+    setNumeroCarte("");
+    setExpirationCarte("");
+    setCvvCarte("");
     setConfirme(true);
     setTimeout(() => setConfirme(false), 2000);
   }
@@ -111,6 +151,7 @@ function ModalPaiementNiveau({
         className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-ivory-dark bg-white shadow-2xl shadow-ink/20"
         onClick={(e) => e.stopPropagation()}
       >
+        <input type="hidden" name="description" value="Paiement par tranche" readOnly />
         {/* ---------- EN-TÊTE ---------- */}
         <div className="flex items-start justify-between gap-3 px-6 pb-5 pt-6">
           <div>
@@ -162,7 +203,7 @@ function ModalPaiementNiveau({
           </div>
           <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-ivory-dark">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-amber to-coral transition-all duration-500"
+              className="h-full rounded-full bg-linear-to-r from-amber to-coral transition-all duration-500"
               style={{ width: `${pourcentagePaye}%` }}
             />
           </div>
@@ -239,6 +280,66 @@ function ModalPaiementNiveau({
                       </button>
                     ))}
                   </div>
+
+                  {/* Champs carte bancaire, affichés uniquement pour ce mode */}
+                  {paiementParCarte && (
+                    <div className="mt-4 grid gap-3 rounded-xl border border-ivory-dark bg-ivory-dark/20 p-4 sm:grid-cols-2">
+                      <div className="sm:col-span-2">
+                        <label
+                          className="block font-mono text-[11px] uppercase tracking-wide text-ink-soft"
+                          htmlFor="numeroCarteModal"
+                        >
+                          Numéro de carte
+                        </label>
+                        <input
+                          id="numeroCarteModal"
+                          type="text"
+                          inputMode="numeric"
+                          autoComplete="cc-number"
+                          placeholder="1234 5678 9012 3456"
+                          value={numeroCarte}
+                          onChange={handleNumeroCarteChange}
+                          className="mt-1.5 w-full rounded-lg border border-ivory-dark bg-white px-3 py-2 font-body text-sm text-ink focus:border-coral focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          className="block font-mono text-[11px] uppercase tracking-wide text-ink-soft"
+                          htmlFor="expirationCarteModal"
+                        >
+                          Expiration (MM/AA)
+                        </label>
+                        <input
+                          id="expirationCarteModal"
+                          type="text"
+                          inputMode="numeric"
+                          autoComplete="cc-exp"
+                          placeholder="MM/AA"
+                          value={expirationCarte}
+                          onChange={handleExpirationChange}
+                          className="mt-1.5 w-full rounded-lg border border-ivory-dark bg-white px-3 py-2 font-body text-sm text-ink focus:border-coral focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          className="block font-mono text-[11px] uppercase tracking-wide text-ink-soft"
+                          htmlFor="cvvCarteModal"
+                        >
+                          CVV
+                        </label>
+                        <input
+                          id="cvvCarteModal"
+                          type="password"
+                          inputMode="numeric"
+                          autoComplete="cc-csc"
+                          placeholder="•••"
+                          value={cvvCarte}
+                          onChange={handleCvvChange}
+                          className="mt-1.5 w-full rounded-lg border border-ivory-dark bg-white px-3 py-2 font-body text-sm text-ink focus:border-coral focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </>
             )}
@@ -259,7 +360,7 @@ function ModalPaiementNiveau({
                   <button
                     type="button"
                     onClick={handlePayer}
-                    disabled={!mode || enCours}
+                    disabled={!mode || enCours || !carteValide}
                     className="group inline-flex items-center gap-1.5 rounded-full bg-coral px-4 py-2 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick disabled:opacity-60"
                   >
                     {enCours ? "Traitement…" : "Payer"}
@@ -306,12 +407,15 @@ export default function Formation() {
     total,
     moisSelectionnes,
     mode,
+    donneesCarte,
   ) => {
     try {
       const data = {
         nombre_mois: moisSelectionnes,
         montant: total,
         mode_paiement: mode,
+        description: "Paiement par tranche",
+        ...(mode === "carte" ? donneesCarte : {}),
       };
 
       console.log("inscriptionId : ", inscriptionId);
@@ -412,6 +516,46 @@ export default function Formation() {
               enAttente = inscrit && inscription?.date_debut === null;
             }
 
+            // Paiement à jour : niveau en cours dont tous les mois sont payés.
+            const aJour = enCours && moisRestant === 0;
+
+            // Styles regroupés par statut, pour distinguer visuellement chaque
+            // niveau selon son état : en attente / en cours (à jour ou non) / verrouillé.
+            const statut = enAttente
+              ? {
+                  cle: "en_attente",
+                  label: "En attente",
+                  pastille: "bg-ink-soft text-ivory-dark",
+                  carte:
+                    "border-amber/50 bg-amber/5 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amber/10",
+                  badge: "bg-amber/20 text-ink",
+                }
+              : enCours
+                ? aJour
+                  ? {
+                      cle: "a_jour",
+                      label: "À jour",
+                      pastille: "bg-coral text-ivory ring-4 ring-coral/20",
+                      carte:
+                        "border-coral/50 bg-coral/5 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-coral/10",
+                      badge: "bg-coral/15 text-coral-dark",
+                    }
+                  : {
+                      cle: "en_cours",
+                      label: "En cours",
+                      pastille: "bg-amber text-ink",
+                      carte:
+                        "border-ivory-dark bg-white/70 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brick/10",
+                      badge: "bg-amber/20 text-ink",
+                    }
+                : {
+                    cle: "verrouille",
+                    label: "Non commencé",
+                    pastille: "bg-ivory-dark text-ink-soft",
+                    carte: "border-dashed border-ivory-dark bg-ivory-dark/20",
+                    badge: "bg-ivory-dark text-ink-soft",
+                  };
+
             return (
               <>
                 <AnimatedSection
@@ -438,18 +582,18 @@ export default function Formation() {
                   )}
                 </div> */}
                   <div
-                    className={`relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border-4 border-ivory font-display text-sm font-semibold shadow-md sm:h-14 sm:w-14 ${
-                      enAttente
-                        ? "text-ivory-dark bg-ink-soft"
-                        : enCours
-                          ? "bg-amber text-ink"
-                          : "bg-ivory-dark text-ink-soft"
+                    className={`relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border-4 border-ivory font-display text-sm font-semibold shadow-md transition-all duration-300 sm:h-14 sm:w-14 ${statut.pastille} ${
+                      enAttente ? "animate-pulse" : ""
                     }`}
                   >
                     {enAttente ? (
                       <HiOutlineLockClosed size={17} />
                     ) : enCours ? (
-                      n.id
+                      aJour ? (
+                        <HiOutlineCheckCircle size={20} />
+                      ) : (
+                        n.id
+                      )
                     ) : (
                       <HiOutlineLockClosed size={17} />
                     )}
@@ -457,13 +601,7 @@ export default function Formation() {
 
                   {/* carte niveau */}
                   <div
-                    className={`flex-1 rounded-2xl border p-5 transition-all duration-300 sm:p-6 ${
-                      enAttente
-                        ? "border-ivory-dark bg-white/70 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brick/10"
-                        : enCours
-                          ? "border-ivory-dark bg-white/70 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brick/10"
-                          : "border-dashed border-ivory-dark bg-ivory-dark/20"
-                    }`}
+                    className={`flex-1 rounded-2xl border p-5 transition-all duration-300 sm:p-6 ${statut.carte}`}
                   >
                     <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch">
                       {/* ---------- Colonne gauche : détails du niveau ---------- */}
@@ -474,19 +612,9 @@ export default function Formation() {
                           </h3>
                           {/* Bloc pour présenter l'état du niveau : termine / enCours / aucunDesDeux */}
                           <span
-                            className={`rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide ${
-                              enAttente
-                                ? "bg-coral/10 text-coral-dark"
-                                : enCours
-                                  ? "bg-amber/20 text-ink"
-                                  : "bg-ivory-dark text-ink-soft"
-                            }`}
+                            className={`rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide ${statut.badge}`}
                           >
-                            {enAttente
-                              ? "En attente"
-                              : enCours
-                                ? "En cours"
-                                : "Non commencé"}
+                            {statut.label}
                           </span>
                         </div>
                         <p className="mt-1 font-body text-sm text-ink-soft">
@@ -613,12 +741,18 @@ export default function Formation() {
           moisPayer={niveauPaiementOuvert.moisPayer}
           moisRestant={niveauPaiementOuvert.moisRestant}
           onClose={() => setNiveauPaiementOuvert(null)}
-          onConfirmerPaiement={(total, moisSelectionnes, mode) =>
+          onConfirmerPaiement={(
+            total,
+            moisSelectionnes,
+            mode,
+            donneesCarte,
+          ) =>
             handleConfirmPaiement(
               niveauPaiementOuvert.inscriptionId,
               total,
               moisSelectionnes,
               mode,
+              donneesCarte,
             )
           }
         />

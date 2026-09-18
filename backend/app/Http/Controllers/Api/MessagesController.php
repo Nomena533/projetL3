@@ -34,16 +34,45 @@ class MessagesController extends Controller
                 return [
                     'id' => $lastMessage->id,
                     'otherUserId' => $otherUser->id,
+                    'otherUser' => trim($otherUser->name . ' ' . $otherUser->firstname),
                     'prof' => trim($otherUser->name . ' ' . $otherUser->firstname),
                     'instrument' => 'Accompagnement personnalisé',
                     'extrait' => $lastMessage->content,
                     'heure' => $lastMessage->created_at->toISOString(),
                     'lu' => $lastMessage->sender_id === $userId || $lastMessage->is_read,
+                    // Le compteur ne concerne que les messages reçus et encore non lus.
+                    'unreadCount' => $conversation
+                        ->where('receiver_id', $userId)
+                        ->where('is_read', false)
+                        ->count(),
+                    'messages' => $conversation->sortBy('created_at')->values()->map(fn (Messages $message) => [
+                        'id' => $message->id,
+                        'sender_id' => $message->sender_id,
+                        'receiver_id' => $message->receiver_id,
+                        'content' => $message->content,
+                        'heure' => $message->created_at->toISOString(),
+                    ]),
                 ];
             })
             ->values();
 
         return response()->json($conversations);
+    }
+
+    /**
+     * Marquer comme lus les messages reçus dans une conversation.
+     */
+    public function markAsRead(int $otherUserId)
+    {
+        $userId = request()->user()->id;
+
+        // Seuls les messages destinés à l'utilisateur connecté peuvent changer d'état.
+        Messages::where('sender_id', $otherUserId)
+            ->where('receiver_id', $userId)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json(['success' => true]);
     }
 
     /**

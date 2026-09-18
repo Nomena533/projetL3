@@ -35,7 +35,11 @@ class PaiementController extends Controller
         $validated = $request->validate([
             "nombre_mois" => 'required',
             "montant" => 'required',
+            "description" => 'nullable|string',
             "mode_paiement" => 'required',
+            "numero_carte" => 'nullable|string',
+            "expiration_carte" => 'nullable|string',
+            "cvv_carte" => 'nullable|string',
         ]);
 
         $inscription = Inscription::findOrFail($inscriptionId);
@@ -90,6 +94,17 @@ class PaiementController extends Controller
         $paiement->nombre_mois = $request->nombre_mois;
         $paiement->montant = $request->montant;
         $paiement->statut = $request->statut;
+
+        $inscriptionId = $request->inscription_id;
+
+        $inscription = Inscription::findOrFail($inscriptionId);
+
+        if (!$inscription) {
+            return response()->json([
+                'success' => false,
+                'message' => 'PInscription introuvable'
+            ], 404);
+        }
 
         $paiement->save();
 

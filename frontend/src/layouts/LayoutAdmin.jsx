@@ -133,13 +133,6 @@ export default function LayoutAdmin() {
             <div className="hidden sm:flex items-center gap-2 bg-stone-100 rounded-sm px-3 py-1.5 text-sm text-stone-500">
               <Search size={14} /> Rechercher…
             </div>
-            {/* ⚠️ /admin/messages est à créer/confirmer côté routing */}
-            <IconLinkBadge
-              to="/administrateur/messages"
-              icon={Mail}
-              count={unreadMessages}
-              label="Messages"
-            />
             <NotificationBell count={unreadNotifications} items={notifications} />
             <UserMenu
               initials={initials}

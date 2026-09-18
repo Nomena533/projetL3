@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { HiOutlinePaperAirplane } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import { useMessage } from "../../app/hooks/useMessage";
@@ -13,15 +13,6 @@ export default function ProfMessages() {
   const [activeConversation, setActiveConversation] = useState(null);
   const { userList } = useUser();
   const eleves = userList.filter((user) => user.role?.name === "eleve");
-
-  const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    // Fait défiler la boîte de discussion vers le bas à chaque changement de
-    // conversation ou d'arrivée d'un nouveau message, pour que le dernier
-    // message envoyé ou reçu reste visible en bas.
-    messagesEndRef.current?.scrollIntoView({ block: "end" });
-  }, [activeConversation?.messages, activeConversation?.id]);
 
   useEffect(() => {
     if (conversations.length === 0) {
@@ -149,42 +140,20 @@ export default function ProfMessages() {
                   {activeConversation.otherUser}
                 </p>
               </div>
-              <div
-                className="flex-1 space-y-3 overflow-y-auto p-6"
-                style={{ maxHeight: "320px" }}
-              >
+              <div className="flex-1 space-y-3 p-6">
                 {activeConversation.messages?.length ? (
-                  <>
-                    {activeConversation.messages.map((message) => {
-                      const isRecu =
-                        message.sender_id === activeConversation.otherUserId;
-                      return (
-                        <div
-                          key={message.id}
-                          className={`flex flex-col ${isRecu ? "items-start" : "items-end"}`}
-                        >
-                          <div
-                            className={`max-w-xs rounded-2xl px-4 py-2.5 font-body text-sm shadow-sm ${
-                              isRecu
-                                ? "rounded-bl-sm border border-ivory-dark bg-white text-ink"
-                                : "rounded-br-sm bg-coral text-white"
-                            }`}
-                          >
-                            {message.content}
-                          </div>
-                          <span
-                            className={`mt-1 font-mono text-[10px] uppercase tracking-wide ${
-                              isRecu ? "text-ink-soft" : "text-coral-dark"
-                            }`}
-                          >
-                            {isRecu ? "Reçu" : "Envoyé"}
-                          </span>
-                        </div>
-                      );
-                    })}
-                    {/* Ancre invisible utilisée pour faire défiler jusqu'au dernier message. */}
-                    <div ref={messagesEndRef} />
-                  </>
+                  activeConversation.messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`max-w-xs rounded-2xl px-4 py-2.5 font-body text-sm text-ink ${
+                        message.sender_id === activeConversation.otherUserId
+                          ? "rounded-tl-sm bg-ivory-dark/60"
+                          : "ml-auto rounded-tr-sm bg-coral/15"
+                      }`}
+                    >
+                      {message.content}
+                    </div>
+                  ))
                 ) : (
                   <p className="font-body text-sm text-ink-soft">
                     Aucun message dans cette conversation.

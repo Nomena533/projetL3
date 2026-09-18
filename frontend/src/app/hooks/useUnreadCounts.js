@@ -1,24 +1,17 @@
-/**
- * TODO (backend) : remplacer ce hook "mock" par une vraie source de
- * données (NotificationContext existant, ou un appel à
- * app/api/notificationApi.js / app/api/messageApi.js).
- *
- * Il centralise les compteurs affichés dans les icônes du nav
- * (messages non lus, notifications non lues) pour les espaces
- * Élève / Professeur / Administrateur, ainsi qu'une liste des
- * dernières notifications pour le panneau déroulant.
- *
- * Forme attendue en sortie, à conserver pour ne pas casser les layouts :
- * {
- *   unreadMessages: number,
- *   unreadNotifications: number,
- *   notifications: { id, title, time }[]
- * }
- */
+import { useMessage } from "./useMessage";
+
+// Le layout réutilise ce hook pour afficher le total des messages non lus.
 export default function useUnreadCounts() {
-  // Valeurs par défaut à 0 / vide en attendant le branchement API.
+  const { conversations } = useMessage();
+
+  // Chaque conversation fournit son compteur, ce qui évite de recompter les messages côté interface.
+  const unreadMessages = conversations.reduce(
+    (total, conversation) => total + (conversation.unreadCount || 0),
+    0,
+  );
+
   return {
-    unreadMessages: 0,
+    unreadMessages,
     unreadNotifications: 0,
     notifications: [],
   };

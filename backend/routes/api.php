@@ -44,6 +44,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post("/storeMessage", [MessagesController::class, 'store']);
     Route::get("/getMessage", [MessagesController::class, 'index']);
+    // Ouvre une conversation et réinitialise son compteur de messages non lus.
+    Route::post("/messages/{otherUserId}/read", [MessagesController::class, 'markAsRead']);
 
     });
 
