@@ -2,23 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-// Contrôleur de base de Laravel
 use App\Http\Controllers\Controller;
-
-// Modèle User
 use App\Models\User;
-
-// Gestion de l'authentification
 use Illuminate\Support\Facades\Auth;
-
-// Hash permet de chiffrer le mot de passe
 use Illuminate\Support\Facades\Hash;
-
-// Objet Request contenant les données envoyées par React
 use Illuminate\Http\Request;
-
-// Resource qui permet de contrôler les données renvoyées au frontend
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -288,6 +278,47 @@ class AuthController extends Controller
             'message' => 'Déconnexion réussie.'
         ]);
 
+    }
+
+    public function updateProfil(Request $request)
+    {
+        $userId = request()->user()->id;
+        $user = User::findOrFail($userId);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'confirmed|min:8'
+        ]);
+
+        $user->name = $request->name;
+        $user->firstname = $request->firstname;
+        $user->bio = $request->bio;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->telephone = $request->telephone;
+
+        if ($request->hasFile('photo')) {
+            // supprime l'ancienne image 
+            if ($user->photo) {
+                Storage::disk("public")->delete($user->photo);
+            }
+
+            $filename = uniqid("avatar_", true) . "." . $request->file("photo")->getClientOriginalExtension();
+
+            // Store le fichier dans Storage/app/public/avatar
+            $path = $request->file('photo')->storeAs("avatar", $filename, "public");
+
+            $user->photo = $path;
+        }
+        
+        $user->save();
+
+        return response()->json([
+            'message' => 'Profil utilisateur modifié avec succès',
+            'utilisateur' => $user
+        ], 201);
     }
 
 }

@@ -13,3 +13,7 @@ export const login = (data) => {
 export const logout = () => {
     return API.post("/logout");
 };
+
+export const updateProfile = (formData) => {
+    return API.post("/updateProfile", formData);
+};

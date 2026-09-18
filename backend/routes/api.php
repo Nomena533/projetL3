@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Récupérer le profil de l'utilisateur connecté
     Route::get('/profile', [AuthController::class, 'profile']);
-
+    Route::get('/updateProfile', [AuthController::class, 'updateProfile']);
     Route::post('/logout', [AuthController::class, 'logout']);
     
     Route::post('/storeCour', [CourController::class, 'store']);
