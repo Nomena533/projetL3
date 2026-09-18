@@ -135,7 +135,7 @@ export default function LayoutAdmin() {
             </div>
             {/* ⚠️ /admin/messages est à créer/confirmer côté routing */}
             <IconLinkBadge
-              to="/admin/messages"
+              to="/administrateur/messages"
               icon={Mail}
               count={unreadMessages}
               label="Messages"
@@ -146,8 +146,8 @@ export default function LayoutAdmin() {
               displayName={`${user?.firstname || ""} ${user?.name || ""}`.trim() || "Administrateur"}
               subLabel={user?.email || "Accès administrateur"}
               items={[
-                { to: "/admin/profil", label: "Profil", icon: User },
-                { to: "/admin/parametres", label: "Paramètres", icon: Settings },
+                { to: "/administrateur/profil", label: "Profil", icon: User },
+                { to: "/administrateur/parametres", label: "Paramètres", icon: Settings },
               ]}
               onLogout={handleLogout}
             />

@@ -14,7 +14,7 @@ class PaiementController extends Controller
      */
     public function index()
     {
-        $paiement = Paiement::all();
+        $paiement = Paiement::with('inscription')->get();
 
         return response()->json($paiement);
     }

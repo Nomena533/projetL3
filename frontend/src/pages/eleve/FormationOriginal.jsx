@@ -13,23 +13,15 @@ import {
 } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import StatCard from "../../components/StatCard";
-import {
-  NIVEAUX_PARCOURS,
-  MODES_PAIEMENT,
-  MOIS_PAYES_PAR_NIVEAU,
-} from "../../lib/mockFormationData";
+import { NIVEAUX_PARCOURS, MODES_PAIEMENT } from "../../lib/mockFormationData";
 import { useLevel } from "../../app/hooks/useLevel";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../app/hooks/useAuth";
 import { capitalize, formatDate } from "../../lib/formatFunction";
 import { useUser } from "../../app/hooks/useUser";
 import usePaiement from "../../app/hooks/usePaiement";
-
-// TODO: remplacer par l'appel API réel, ex. paiementApi.creerPaiement(payload)
-async function envoyerPaiement(payload) {
-  console.log("Paiement envoyé à la BDD :", payload);
-  return new Promise((resolve) => setTimeout(resolve, 700));
-}
+import { storePaiement } from "../../app/api/paiementApi";
+import { Guitar } from "../../lib/icons";
 
 // Modal de paiement pour un niveau donné, ouvert depuis la liste des niveaux.
 // Reprend la logique de eleve/paiement.jsx (sélection de mois + mode de paiement)
@@ -45,11 +37,24 @@ function ModalPaiementNiveau({
   const [mode, setMode] = useState(null);
   const [enCours, setEnCours] = useState(false);
   const [confirme, setConfirme] = useState(false);
+  // const [moisRestants, setMoisRestants] = useState([]);
 
+  // Expliquer
+
+  // moisPayer et moisRestant sont désormais des nombres (ex. moisPayer = 3
+  // signifie que les mois 1, 2 et 3 sont payés, successivement).
+  // Les mois restants sont donc simplement les mois moisPayer+1 à dureeMois.
   const moisRestants = Array.from(
-    { length: niveauModal.dureeMois },
-    (_, idx) => idx + 1,
-  ).filter((m) => !moisPayer.includes(m));
+    { length: moisRestant },
+    (_, idx) => moisPayer + idx + 1,
+  );
+
+  // const moisRest = Array.from(
+  //   { length: moisRestant },
+  //   (_, idx) => moisPayer + idx + 1,
+  // );
+
+  // setMoisRestants(moisRest);
 
   console.log("moisRestants : ", moisRestants);
 
@@ -73,15 +78,18 @@ function ModalPaiementNiveau({
   }
 
   const total = moisSelectionnes.length * niveauModal.montantMensuel;
+
   const modesMobileMoney = MODES_PAIEMENT.filter(
     (m) => m.groupe === "mobile_money",
   );
+
   const modeCarte = MODES_PAIEMENT.find((m) => m.groupe === "carte");
 
+  // A expliquer
   async function handlePayer() {
     if (moisSelectionnes.length === 0 || !mode) return;
     setEnCours(true);
-    await onConfirmerPaiement(moisSelectionnes, mode);
+    await onConfirmerPaiement(total, moisSelectionnes.length, mode);
     setEnCours(false);
     setMoisSelectionnes([]);
     setMode(null);
@@ -95,7 +103,7 @@ function ModalPaiementNiveau({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-2xl border border-ivory-dark bg-white p-6 shadow-xl"
+        className="w-full max-w-xl rounded-2xl border border-ivory-dark bg-white p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3">
@@ -118,8 +126,9 @@ function ModalPaiementNiveau({
         </div>
 
         <p className="mt-2 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-          <HiOutlineClock size={13} /> {moisPayer} / {niveauModal.dureeMois} mois
-          payés · {niveauModal.montantMensuel.toLocaleString("fr-MG")} Ar / mois
+          <HiOutlineClock size={13} /> {moisPayer} / {niveauModal.dureeMois}{" "}
+          mois payés · {niveauModal.montantMensuel.toLocaleString("fr-MG")} Ar /
+          mois
         </p>
 
         {confirme && (
@@ -130,7 +139,7 @@ function ModalPaiementNiveau({
 
         {moisRestant === 0 ? (
           <p className="mt-4 font-body text-sm text-ink-soft">
-            Tous les mois de ce niveau sont payés. 🎉
+            Tous les mois de ce niveau sont payés.
           </p>
         ) : (
           <>
@@ -142,11 +151,8 @@ function ModalPaiementNiveau({
               mois précédents non payés.
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {Array.from({ length: moisRestant }).map((_, index) => {
-                const nombreMois = index + 1;
-
-                return (
-                  <button
+              {moisRestants.map((nombreMois) => (
+                <button
                   key={nombreMois}
                   type="button"
                   onClick={() => toggleMois(nombreMois)}
@@ -158,9 +164,7 @@ function ModalPaiementNiveau({
                 >
                   Mois {nombreMois}
                 </button>
-                )
-                
-              })}
+              ))}
             </div>
 
             {moisSelectionnes.length > 0 && (
@@ -234,15 +238,7 @@ export default function Formation() {
   const { levels } = useLevel();
   const { user } = useAuth();
   const { userListInscription, fetchUserListInscription } = useUser();
-  const { paiementList } = usePaiement();
-
-  console.log("paiementList : ", paiementList);
-
-  // Copie locale mutable du mock des mois payés ; à remplacer par l'état
-  // renvoyé par l'API une fois le paiement branché sur le backend.
-  const [moisPayesParNiveau, setMoisPayesParNiveau] = useState(() => ({
-    ...MOIS_PAYES_PAR_NIVEAU,
-  }));
+  const { paiementList, fetchPaiement } = usePaiement();
 
   // Niveau pour lequel le modal de paiement est ouvert (objet fusionné
   // id / nom / dureeMois / montantMensuel), ou null si fermé.
@@ -252,33 +248,49 @@ export default function Formation() {
     fetchUserListInscription(user.id);
   }, [user]);
 
-  async function handleConfirmerPaiement(niveauId, moisSelectionnes, mode) {
-    await envoyerPaiement({
-      niveau: niveauId,
-      mois: moisSelectionnes,
-      modePaiement: mode,
-    });
-    setMoisPayesParNiveau((prev) => ({
-      ...prev,
-      [niveauId]: [...(prev[niveauId] || []), ...moisSelectionnes].sort(
-        (a, b) => a - b,
-      ),
-    }));
-  }
+  const handleConfirmPaiement = async (
+    inscriptionId,
+    total,
+    moisSelectionnes,
+    mode,
+  ) => {
+    try {
+      const data = {
+        nombre_mois: moisSelectionnes,
+        montant: total,
+        mode_paiement: mode,
+      };
 
-  console.log("userListInscription : ", userListInscription);
-  // return;
+      console.log("inscriptionId : ", inscriptionId);
+      console.log("data : ", data);
 
-  // Un niveau est ouvert à l'inscription si c'est le premier de la liste,
-  // ou si le niveau précédent est terminé (inscrit + progression 100%).
-  /*
-  const peutSinscrire = (index) => {
-    if (index === 0) return true;
-    const precedent = levels[index - 1];
-    console.log("precedent : ", precedent);
-    return Boolean(precedent?.inscrit && precedent.progression >= 100);
+      const response = await storePaiement(inscriptionId, data);
+      console.log("Paiement effectué avec succès : ", response.data);
+
+      await fetchPaiement();
+
+      // Mise à jour immédiate du modal
+      /*
+      setNiveauPaiementOuvert((prev) => ({
+        ...prev,
+        moisPayer: prev.moisPayer + moisSelectionnes,
+        moisRestant: prev.moisRestant - moisSelectionnes,
+      }));
+      */
+      // Même résultat
+      setNiveauPaiementOuvert({
+        inscriptionId: niveauPaiementOuvert.inscriptionId,
+        nom: niveauPaiementOuvert.nom,
+        dureeMois: niveauPaiementOuvert.dureeMois,
+        montantMensuel: niveauPaiementOuvert.montantMensuel,
+        moisPayer: niveauPaiementOuvert.moisPayer + moisSelectionnes,
+        moisRestant: niveauPaiementOuvert.moisRestant - moisSelectionnes,
+      });
+    } catch (err) {
+      console.error("Erreur lors du paiement", err.response?.data);
+      setErreur("Une erreur est survenue lors du paiement");
+    }
   };
-  */
 
   return (
     <div className="space-y-10">
@@ -315,7 +327,7 @@ export default function Formation() {
           delay={160}
         />
         <StatCard
-          icon={HiOutlineMusicalNote}
+          icon={Guitar}
           label="Instrument à apprendre"
           value={null}
           delay={160}
@@ -395,7 +407,6 @@ export default function Formation() {
                   </div>
 
                   {/* carte niveau */}
-                  {/* Blocs pour afficher l'état du niveau : inscrit ou non  */}
                   <div
                     className={`flex-1 rounded-2xl border p-5 transition-all duration-300 sm:p-6 ${
                       inscrit
@@ -448,50 +459,6 @@ export default function Formation() {
                         </div>
                       </div>
 
-                      {/* Bar de progression pour les niveaux si inscrit */}
-                      {/* {n.inscrit && (
-                    <div className="mt-4">
-                      <div className="h-1.5 w-full rounded-full bg-ivory-dark">
-                        <div
-                          className="h-1.5 rounded-full bg-coral transition-all duration-500"
-                          style={{ width: `${n.progression}%` }}
-                        />
-                      </div>
-                      <p className="mt-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                        {n.progression}% terminé
-                      </p>
-                    </div>
-                  )} */}
-
-                      {/* Bloc pour afficher le lien en fonction de l'état du niveau : inscrit ou non */}
-                      {/* {inscrit ? (
-                    <Link
-                      to={`/eleve/formation/${n.id}`}
-                      className="group mt-4 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark transition-colors duration-300 hover:text-brick"
-                    >
-                      Voir le détail de ma formation
-                      <HiOutlineArrowRight
-                        size={14}
-                        className="transition-transform duration-300 group-hover:translate-x-1"
-                      />
-                    </Link>
-                  ) : accessible ? (
-                    <Link
-                      to={`/inscription?niveau=${n.id}`}
-                      className="group mt-4 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:text-coral-dark"
-                    >
-                      S'inscrire à ce niveau
-                      <HiOutlineArrowRight
-                        size={14}
-                        className="transition-transform duration-300 group-hover:translate-x-1"
-                      />
-                    </Link>
-                    ) : (
-                      <span className="mt-4 inline-flex items-center gap-1.5 font-body text-sm font-medium text-ink-soft/70">
-                      <HiOutlineLockClosed size={14} />
-                      Termine le niveau précédent pour débloquer l'inscription
-                      </span>
-                      )} */}
                       {inscrit ? (
                         <Link
                           to={`/eleve/formation/${n.name}`}
@@ -533,7 +500,7 @@ export default function Formation() {
                               type="button"
                               onClick={() =>
                                 setNiveauPaiementOuvert({
-                                  id: n.id,
+                                  inscriptionId: inscription.id,
                                   nom: n.name,
                                   dureeMois: n.duree,
                                   montantMensuel: n.prix_mensuel,
@@ -568,9 +535,10 @@ export default function Formation() {
           moisPayer={niveauPaiementOuvert.moisPayer}
           moisRestant={niveauPaiementOuvert.moisRestant}
           onClose={() => setNiveauPaiementOuvert(null)}
-          onConfirmerPaiement={(moisSelectionnes, mode) =>
-            handleConfirmerPaiement(
-              niveauPaiementOuvert.id,
+          onConfirmerPaiement={(total, moisSelectionnes, mode) =>
+            handleConfirmPaiement(
+              niveauPaiementOuvert.inscriptionId,
+              total,
               moisSelectionnes,
               mode,
             )
