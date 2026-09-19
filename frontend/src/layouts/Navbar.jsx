@@ -15,7 +15,7 @@ import useDarkMode from "../app/hooks/useDarkMode";
 const SPACE_BASE_PATH = {
   eleve: "/eleve",
   professeur: "/professeur",
-  admin: "/admin",
+  admin: "/administrateur",
 };
 
 const LINKS = [

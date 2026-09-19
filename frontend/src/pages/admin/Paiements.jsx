@@ -7,6 +7,7 @@ import usePaiement from "../../app/hooks/usePaiement";
 import { useUser } from "../../app/hooks/useUser";
 import { useLevel } from "../../app/hooks/useLevel";
 import { capitalize } from "../../lib/formatFunction";
+import { ChevronDown } from "../../lib/icons";
 
 const STATUTS_PAIEMENT = ["validé", "En attente", "Échoué"];
 
@@ -73,7 +74,12 @@ export default function AdminPaiements() {
     }
   };
 
-  // Regroupement des paiements par élève, trié par nom d'élève.
+  // Un paiement est-il en attente de validation ? (comparaison insensible à la casse)
+  const estEnAttente = (p) => statutDe(p).toLowerCase() === "en attente";
+
+  // Regroupement des paiements par élève, trié par nom d'élève. Dans chaque
+  // groupe, les paiements "en attente" remontent en premier pour attirer
+  // l'attention de l'administrateur sur ce qui reste à valider.
   const groupesParEleve = useMemo(() => {
     const groupes = new Map();
 
@@ -87,10 +93,31 @@ export default function AdminPaiements() {
       groupes.get(cle).paiements.push(p);
     });
 
-    return Array.from(groupes.values()).sort((a, b) =>
-      (a.eleve?.name || "").localeCompare(b.eleve?.name || ""),
-    );
-  }, [paiementList, userList]);
+    return Array.from(groupes.values())
+      .map((groupe) => ({
+        ...groupe,
+        paiements: [...groupe.paiements].sort(
+          (a, b) => Number(estEnAttente(b)) - Number(estEnAttente(a)),
+        ),
+      }))
+      .sort((a, b) => (a.eleve?.name || "").localeCompare(b.eleve?.name || ""));
+  }, [paiementList, userList, statutsLocaux]);
+
+  // Accordéon : un groupe est ouvert par défaut s'il contient un paiement en
+  // attente de validation, sinon fermé. `overrides` ne stocke que les
+  // groupes que l'administrateur a explicitement ouverts/fermés lui-même,
+  // pour ne jamais forcer une réouverture après une action manuelle.
+  const [overrides, setOverrides] = useState({});
+
+  const estOuvert = (cle, aDesPaiementsEnAttente) =>
+    overrides[cle] ?? aDesPaiementsEnAttente;
+
+  const toggleGroupe = (cle, aDesPaiementsEnAttente) => {
+    setOverrides((prev) => ({
+      ...prev,
+      [cle]: !estOuvert(cle, aDesPaiementsEnAttente),
+    }));
+  };
 
   return (
     <div className="space-y-6">
@@ -111,102 +138,149 @@ export default function AdminPaiements() {
 
       <div className="space-y-5">
         {groupesParEleve.map(({ eleve, paiements }, index) => {
+          const cle = eleve?.id ?? "inconnu";
           const total = paiements.reduce(
             (somme, p) => somme + parseFloat(p.montant || 0),
             0,
           );
+          const nbEnAttente = paiements.filter((p) =>
+            estEnAttente(p),
+          ).length;
+          const ouvert = estOuvert(cle, nbEnAttente > 0);
 
           return (
             <AnimatedSection
-              key={eleve?.id ?? "inconnu"}
+              key={cle}
               delay={index * 60}
               className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/70"
             >
-              {/* En-tête de groupe : élève + récapitulatif */}
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ivory-dark bg-ivory-dark/20 px-5 py-3">
-                <div>
-                  <h3 className="font-display text-sm font-semibold text-ink">
-                    {eleve
-                      ? `${eleve.name} ${eleve.firstname}`
-                      : "Élève inconnu"}
-                  </h3>
-                  <p className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                    {paiements.length} paiement{paiements.length > 1 ? "s" : ""}
-                  </p>
+              {/* En-tête de groupe : élève + récapitulatif — déclenche l'accordéon */}
+              <button
+                type="button"
+                onClick={() => toggleGroupe(cle, nbEnAttente > 0)}
+                aria-expanded={ouvert}
+                className="flex w-full flex-wrap items-center justify-between gap-2 border-b border-ivory-dark bg-ivory-dark/20 px-5 py-3 text-left transition-colors duration-200 hover:bg-ivory-dark/30"
+              >
+                <div className="flex items-center gap-3">
+                  <ChevronDown
+                    size={16}
+                    className={`shrink-0 text-ink-soft transition-transform duration-300 ${
+                      ouvert ? "rotate-180" : ""
+                    }`}
+                  />
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="font-display text-sm font-semibold text-ink">
+                        {eleve
+                          ? `${eleve.name} ${eleve.firstname}`
+                          : "Élève inconnu"}
+                      </h3>
+                      {nbEnAttente > 0 && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-amber/40 bg-amber/20 px-2 py-2 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink">
+                            <span>{nbEnAttente}</span> en attente
+                          </span>
+                      )}
+                    </div>
+                    <p className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+                      {paiements.length} paiement
+                      {paiements.length > 1 ? "s" : ""}
+                    </p>
+                  </div>
                 </div>
                 <span className="font-mono text-sm font-semibold text-coral-dark">
                   {formatAriary(total)}
                 </span>
-              </div>
+              </button>
 
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="border-b border-ivory-dark">
-                    <tr>
-                      <Th>Niveau</Th>
-                      <Th>Montant</Th>
-                      <Th>Description</Th>
-                      <Th>Mode</Th>
-                      <Th>Statut</Th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-ivory-dark">
-                    {paiements.map((p) => {
-                      const niveau = levels.find(
-                        (l) => l.id === p.inscription?.niveau_id,
-                      );
-                      const statut = statutDe(p);
-
-                      const options = STATUTS_PAIEMENT.includes(statut)
-                        ? STATUTS_PAIEMENT
-                        : [statut, ...STATUTS_PAIEMENT];
-
-                      return (
-                        <tr
-                          key={p.id}
-                          className="transition-colors duration-200 hover:bg-ivory-dark/30"
-                        >
-                          <Td>{niveau ? capitalize(niveau.name) : "—"}</Td>
-                          <Td className="font-mono">
-                            {formatAriary(p.montant)}
-                          </Td>
-                          <Td></Td>
-                          <Td>{p.mode_paiement}</Td>
-                          <Td>
-                            <select
-                              value={statut}
-                              disabled={statut !== "en attente"}
-                              onChange={(e) =>
-                                handleStatutChange(p, {
-                                  inscription_id: p.inscription_id,
-                                  nombre_mois: p.nombre_mois,
-                                  montant: p.montant,
-                                  mode_paiement: p.mode_paiement,
-                                  statut: e.target.value,
-                                })
-                              }
-                              aria-label={`Modifier le statut du paiement ${p.id}`}
-                              className={`rounded-full border px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wide outline-none transition-colors duration-200 focus:border-coral disabled:cursor-wait disabled:opacity-60 
-  ${styleStatut(statut)} 
-                                ${
-                                  statut !== "en attente"
-                                    ? "disabled:cursor-not-allowed"
-                                    : "cursor-pointer"
-                                }
-                              `}
-                            >
-                              {options.map((s) => (
-                                <option key={s} value={s}>
-                                  {s}
-                                </option>
-                              ))}
-                            </select>
-                          </Td>
+              {/* Panneau dépliable (transition fluide via grid-rows) */}
+              <div
+                className={`grid transition-all duration-300 ease-in-out ${
+                  ouvert ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="border-b border-ivory-dark">
+                        <tr>
+                          <Th>Niveau</Th>
+                          <Th>Montant</Th>
+                          <Th>Description</Th>
+                          <Th>Mode</Th>
+                          <Th>Statut</Th>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                      </thead>
+                      <tbody className="divide-y divide-ivory-dark">
+                        {paiements.map((p) => {
+                          const niveau = levels.find(
+                            (l) => l.id === p.inscription?.niveau_id,
+                          );
+                          const statut = statutDe(p);
+
+                          const options = STATUTS_PAIEMENT.includes(statut)
+                            ? STATUTS_PAIEMENT
+                            : [statut, ...STATUTS_PAIEMENT];
+
+                          return (
+                            <tr
+                              key={p.id}
+                              className={`transition-colors duration-200 hover:bg-ivory-dark/30 ${
+                                estEnAttente(p) ? "bg-amber/5" : ""
+                              }`}
+                            >
+                              <Td>
+                                <span className="flex items-center gap-1.5">
+                                  {estEnAttente(p) && (
+                                    <span
+                                      className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber"
+                                      title="Nouveau paiement à valider"
+                                    />
+                                  )}
+                                  {niveau ? capitalize(niveau.name) : "—"}
+                                </span>
+                              </Td>
+                              <Td className="font-mono">
+                                {formatAriary(p.montant)}
+                              </Td>
+                              <Td>{p.description || "_"}</Td>
+                              <Td>{p.mode_paiement}</Td>
+                              <Td>
+                                <select
+                                  value={statut}
+                                  disabled={statut !== "en attente"}
+                                  onChange={(e) =>
+                                    handleStatutChange(p, {
+                                      inscription_id: p.inscription_id,
+                                      nombre_mois: p.nombre_mois,
+                                      montant: p.montant,
+                                      mode_paiement: p.mode_paiement,
+                                      statut: e.target.value,
+                                    })
+                                  }
+                                  aria-label={`Modifier le statut du paiement ${p.id}`}
+                                  className={`rounded-full border px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wide outline-none transition-colors duration-200 focus:border-coral disabled:cursor-wait disabled:opacity-60 
+                                    ${styleStatut(statut)} 
+                                    ${
+                                      statut !== "en attente"
+                                        ? "disabled:cursor-not-allowed"
+                                        : "cursor-pointer"
+                                    }
+                                  `}
+                                >
+                                  {options.map((s) => (
+                                    <option key={s} value={s}>
+                                      {s}
+                                    </option>
+                                  ))}
+                                </select>
+                              </Td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             </AnimatedSection>
           );

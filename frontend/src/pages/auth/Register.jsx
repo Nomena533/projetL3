@@ -133,7 +133,7 @@ export default function Register() {
         <HiOutlineArrowLeft size={13} /> Retour au site
       </Link>
 
-      <div className="relative mx-auto grid max-w-5xl overflow-hidden rounded-4xl shadow-2xl shadow-brick/20 md:grid-cols-2">
+      <div className="relative mx-auto mt-10 grid max-w-5xl overflow-hidden rounded-4xl shadow-2xl shadow-brick/20 md:grid-cols-2">
         {/* ---------- PANNEAU ÉDITORIAL ---------- */}
         <AnimatedSection className="relative hidden flex-col justify-between overflow-hidden bg-linear-to-br from-brick via-coral to-amber p-1 md:flex">
           <div className="flex h-full flex-col justify-between rounded-[1.85rem] bg-ink/90 p-10">

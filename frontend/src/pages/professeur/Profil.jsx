@@ -58,7 +58,7 @@ export default function ProfProfil() {
        * e.target.files[0] => même si l'user sélectionne une seul image, le navigateur fournit une collection de fichier
        *  => DONC , e.target.files[0] prend le premier fichier sélectionné
        */
-      image:e.target.files[0]
+      photo:e.target.files[0]
     });
   };
 
@@ -150,7 +150,6 @@ export default function ProfProfil() {
                   type="file"
                   name="photo"
                   accept="image/*"
-                  value={form?.photo}
                   onChange={handleImageChange}
                   className="sr-only"
                 />

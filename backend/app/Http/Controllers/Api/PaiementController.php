@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Inscription;
 use App\Models\Paiement;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PaiementController extends Controller
@@ -97,7 +98,9 @@ class PaiementController extends Controller
 
         $inscriptionId = $request->inscription_id;
 
-        $inscription = Inscription::findOrFail($inscriptionId);
+        $inscription = Inscription::with('level')->findOrFail($inscriptionId);
+
+        $paiement->save();
 
         if (!$inscription) {
             return response()->json([
@@ -106,11 +109,24 @@ class PaiementController extends Controller
             ], 404);
         }
 
-        $paiement->save();
+        if ($inscription->date_debut === null) {
+            $dateDebut = $paiement->updated_at;
+            $inscription->date_debut = $dateDebut;
+            $duree = explode(' ', $inscription->level->duree)[0];
+
+            // Calculer la date de fin selon la durée du niveau
+            $inscription->date_fin = Carbon::parse($dateDebut)
+                ->addMonths((int) $duree);
+
+            $inscription->statut = 'validé';
+            $inscription->save();
+        }
+
 
         return response()->json([
             'message' => "Statut du paiement modifié avec succès",
-            'paiement' => $paiement
+            'paiement' => $paiement,
+            'inscription' => $inscription
         ], 201);
     }
 
