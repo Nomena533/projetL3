@@ -24,6 +24,8 @@ class UserController extends Controller
         $inscription = Inscription::where("user_id", $userId)->with("level")->with("instruments")->get();
         // $inscription_instrument = Inscription::with("instruments")->get();
         // return response()->json([$inscription, $inscription_instrument]);
+
+        
         return response()->json($inscription);
     }
 

@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import {
   HiOutlineChevronLeft,
+  HiOutlineChevronUp,
   HiOutlineCheckCircle,
   HiOutlinePlayCircle,
   HiOutlineLockClosed,
@@ -29,8 +30,7 @@ export default function FormationDetail() {
 
   const { user } = useAuth();
 
-  const { userListInscription, fetchUserListInscription } =
-    useUser();
+  const { userListInscription, fetchUserListInscription } = useUser();
 
   const { courPublie, setCours, fetchCours } = useGetCour();
 
@@ -47,6 +47,66 @@ export default function FormationDetail() {
   );
 
   console.log("formation : ", formation);
+
+  const calculProgression = (dateDebut, dureeTotale) => {
+    const debut = new Date(dateDebut);
+    const aujourdHui = new Date();
+
+    let moisEcoules =
+      (aujourdHui.getFullYear() - debut.getFullYear()) * 12 +
+      (aujourdHui.getMonth() - debut.getMonth());
+
+    if (aujourdHui.getDate() < debut.getDate()) {
+      moisEcoules--;
+    }
+
+    moisEcoules = Math.max(0, moisEcoules);
+
+    const moisActuel = Math.min(moisEcoules + 1, dureeTotale);
+
+    const progression = Math.min((moisActuel / dureeTotale) * 100, 100);
+
+    const moisRestants = Math.max(dureeTotale - moisActuel, 0);
+
+    return {
+      moisEcoules,
+      moisActuel,
+      moisRestants,
+      progression,
+    };
+  };
+
+  const progressionValues = calculProgression(
+    formation?.date_debut,
+    formation?.level.duree.split(" ")[0],
+  );
+
+  console.log("progressionValues : ", progressionValues);
+  console.log("moisActuel : ", progressionValues?.moisActuel);
+
+  const dureeTotale = Array.from(
+    { length: formation?.level.duree.split(" ")[0] },
+    (_, idx) => idx + 1,
+  );
+
+  const dateFin = (() => {
+    if (!formation?.date_debut) return null;
+    const debut = new Date(formation.date_debut);
+    const fin = new Date(debut);
+    fin.setMonth(fin.getMonth() + Number(dureeTotale.length));
+    return fin;
+  })();
+
+  const formatDate = (date) => {
+    if (!date) return "—";
+    const d = date instanceof Date ? date : new Date(date);
+    if (Number.isNaN(d.getTime())) return "—";
+    return d.toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   let instruments = null;
 
@@ -88,6 +148,105 @@ export default function FormationDetail() {
           {capitalize(formation.level.name)}
         </h2>
         <p className="mt-2 max-w-xl font-body text-sm text-ink-soft"></p>
+      </AnimatedSection>
+
+      <AnimatedSection className="rounded-2xl border border-ivory-dark bg-white/60 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="font-display text-lg font-semibold text-ink">
+            Progression du niveau
+          </h3>
+          <span className="font-mono text-[11px] uppercase tracking-wide text-coral-dark">
+            {Math.round(progressionValues.progression)}% terminé
+          </span>
+        </div>
+
+        <div className="mt-6 flex items-start justify-between">
+          <div className="flex flex-col">
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-ink">
+              Début
+            </span>
+            <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+              {formatDate(formation.date_debut)}
+            </span>
+          </div>
+          <div className="flex flex-col items-end">
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-ink">
+              Fin
+            </span>
+            <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+              {formatDate(dateFin)}
+            </span>
+          </div>
+        </div>
+
+        <div className="relative mt-3 pt-3">
+          {/* Ligne de base */}
+          <div className="absolute left-3 right-3 top-6 h-0.5 -translate-y-1/2 bg-ivory-dark" />
+          {/* Ligne de progression */}
+          <div
+            className="absolute left-3 top-6 h-0.5 -translate-y-1/2 bg-coral transition-all duration-500"
+            style={{
+              width: `calc(${progressionValues.progression}% - ${
+                progressionValues.progression >= 100 ? "24px" : "12px"
+              })`,
+            }}
+          />
+
+          <div className="relative flex justify-between">
+            {dureeTotale.map((mois) => {
+              const estTermine = mois < progressionValues.moisActuel;
+              const estActuel = mois === progressionValues.moisActuel;
+
+              return (
+                <div
+                  key={mois}
+                  className="flex flex-1 flex-col items-center gap-2 text-center"
+                >
+                  <div className="flex h-4 items-end">
+                    {estActuel && (
+                      <HiOutlineChevronUp
+                        size={14}
+                        className="text-coral-dark"
+                      />
+                    )}
+                  </div>
+                  <div
+                    className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 ${
+                      estTermine
+                        ? "border-coral bg-coral text-white"
+                        : estActuel
+                          ? "border-coral bg-white ring-4 ring-coral/20"
+                          : "border-ivory-dark bg-white"
+                    }`}
+                  >
+                    {estTermine && <HiOutlineCheckCircle size={14} />}
+                  </div>
+                  <span className="font-mono text-[10px] uppercase tracking-wide text-ink-soft">
+                    Mois {mois}
+                  </span>
+                  <span
+                    className={`font-mono text-[10px] uppercase tracking-wide ${
+                      estActuel ? "text-coral-dark" : "text-transparent"
+                    }`}
+                  >
+                    Actuel
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+          <span>
+            Mois écoulés :{" "}
+            <span className="text-ink">{progressionValues.moisEcoules}</span>
+          </span>
+          <span>
+            Mois restants :{" "}
+            <span className="text-ink">{progressionValues.moisRestants}</span>
+          </span>
+        </div>
       </AnimatedSection>
 
       <div className="space-y-6">

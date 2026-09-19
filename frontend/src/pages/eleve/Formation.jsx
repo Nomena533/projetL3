@@ -54,11 +54,6 @@ function ModalPaiementNiveau({
     (_, idx) => moisPayer + idx + 1,
   );
 
-  // const moisRest = Array.from(
-  //   { length: moisRestant },
-  //   (_, idx) => moisPayer + idx + 1,
-  // );
-
   // setMoisRestants(moisRest);
 
   console.log("moisRestants : ", moisRestants);
@@ -142,6 +137,8 @@ function ModalPaiementNiveau({
     Math.round((moisPayer / niveauModal.dureeMois) * 100),
   );
 
+  console.log("pourcentagePaye : ", pourcentagePaye);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4 backdrop-blur-[2px]"
@@ -151,7 +148,12 @@ function ModalPaiementNiveau({
         className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-ivory-dark bg-white shadow-2xl shadow-ink/20"
         onClick={(e) => e.stopPropagation()}
       >
-        <input type="hidden" name="description" value="Paiement par tranche" readOnly />
+        <input
+          type="hidden"
+          name="description"
+          value="Paiement par tranche"
+          readOnly
+        />
         {/* ---------- EN-TÊTE ---------- */}
         <div className="flex items-start justify-between gap-3 px-6 pb-5 pt-6">
           <div>
@@ -393,6 +395,8 @@ export default function Formation() {
   const { user } = useAuth();
   const { userListInscription, fetchUserListInscription } = useUser();
   const { paiementList, fetchPaiement } = usePaiement();
+  const [ cardEnCour, setCardEnCour ] = useState(null);
+  // console.log("cardEnCour : ", cardEnCour) ;
 
   // Niveau pour lequel le modal de paiement est ouvert (objet fusionné
   // id / nom / dureeMois / montantMensuel), ou null si fermé.
@@ -438,6 +442,36 @@ export default function Formation() {
     }
   };
 
+  const calculProgression = (dateDebut, dureeTotale) => {
+    const debut = new Date(dateDebut);
+    const aujourdHui = new Date();
+
+    let moisEcoules =
+      (aujourdHui.getFullYear() - debut.getFullYear()) * 12 +
+      (aujourdHui.getMonth() - debut.getMonth());
+
+    if (aujourdHui.getDate() < debut.getDate()) {
+      moisEcoules--;
+    }
+
+    moisEcoules = Math.max(0, moisEcoules);
+
+    const moisActuel = Math.min(moisEcoules + 1, dureeTotale);
+
+    const progression = Math.min((moisActuel / dureeTotale) * 100, 100);
+
+    const moisRestants = Math.max(dureeTotale - moisActuel, 0);
+
+    return {
+      moisEcoules,
+      moisActuel,
+      moisRestants,
+      progression,
+    };
+  };
+
+  const inscritQuelquePart = userListInscription.length > 0;
+
   return (
     <div className="space-y-10">
       <AnimatedSection>
@@ -447,8 +481,8 @@ export default function Formation() {
         <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
           Mon parcours
         </h2>
-        <p className="mt-2 max-w-xl font-body text-sm text-ink-soft">
-          Ta progression à travers les 4 niveaux de la formation Kalon'ny, de
+        <p className="mt-2  font-body text-sm text-ink-soft">
+          Ta progression à travers les 4 niveaux de la formation, de
           l'initiation jusqu'au niveau avancé.
         </p>
       </AnimatedSection>
@@ -491,6 +525,21 @@ export default function Formation() {
 
             console.log("inscription : ", inscription);
 
+            const progressionValues = calculProgression(
+              inscription?.date_debut,
+              inscription?.level.duree.split(" ")[0],
+            );
+
+            // console.log("progressionValues : ", progressionValues);
+            // console.log("moisActuel : ", progressionValues?.moisActuel);
+
+            const dureeTotale = Array.from(
+              { length: inscription?.level.duree.split(" ")[0] },
+              (_, idx) => idx + 1,
+            );
+
+            console.log("dureeTotale : ", dureeTotale);
+
             let paiementNiveau;
             let moisPayer;
             let moisRestant;
@@ -513,6 +562,7 @@ export default function Formation() {
                 parseInt(inscription.level.duree.split(" ")[0]) - moisPayer;
 
               enCours = inscrit && inscription?.date_debut;
+              console.log("enCours : ", enCours);
               enAttente = inscrit && inscription?.date_debut === null;
             }
 
@@ -555,6 +605,16 @@ export default function Formation() {
                     carte: "border-dashed border-ivory-dark bg-ivory-dark/20",
                     badge: "bg-ivory-dark text-ink-soft",
                   };
+
+            let ouvertInscription = false;
+
+            if (inscrit || inscritQuelquePart) {
+              ouvertInscription = false;
+            } else {
+              if (n.name === "initiation" || n.name === "avance") {
+                ouvertInscription = true;
+              }
+            }
 
             return (
               <>
@@ -646,7 +706,7 @@ export default function Formation() {
                             <HiOutlineLockClosed size={14} />
                             En attente de validation
                           </span>
-                        ) : (n.id === 1 || n.id === 4) ? (
+                        ) : ouvertInscription ? (
                           <Link
                             to={`/inscription?niveau=${n.name}`}
                             className="group mt-4 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:text-coral-dark"
@@ -704,7 +764,7 @@ export default function Formation() {
                                   setNiveauPaiementOuvert({
                                     inscriptionId: inscription.id,
                                     nom: n.name,
-                                    dureeMois: n.duree,
+                                    dureeMois: n.duree.split(" ")[0],
                                     montantMensuel: n.prix_mensuel,
                                     moisPayer,
                                     moisRestant,
@@ -741,12 +801,7 @@ export default function Formation() {
           moisPayer={niveauPaiementOuvert.moisPayer}
           moisRestant={niveauPaiementOuvert.moisRestant}
           onClose={() => setNiveauPaiementOuvert(null)}
-          onConfirmerPaiement={(
-            total,
-            moisSelectionnes,
-            mode,
-            donneesCarte,
-          ) =>
+          onConfirmerPaiement={(total, moisSelectionnes, mode, donneesCarte) =>
             handleConfirmPaiement(
               niveauPaiementOuvert.inscriptionId,
               total,
