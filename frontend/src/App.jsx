@@ -133,8 +133,8 @@ export default function App() {
       >
         <Route index element={<Dashboard />} />
         <Route path="catalogue" element={<Catalogue />} />
-        <Route path="cours/:id" element={<CoursDetail />} />
-        <Route path="lecon/:id" element={<LessonPlayer />} />
+        <Route path="formation/cours/:id" element={<CoursDetail />} />
+        <Route path="formation/lecon/:id" element={<LessonPlayer />} />
         <Route path="progression" element={<Progression />} />
         <Route path="favoris" element={<Favoris />} />
         <Route path="messages" element={<Messages />} />

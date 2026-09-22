@@ -26,31 +26,34 @@ import UserProvider from "./app/provider/UserProvider";
 import PaiementProvider from "./app/provider/PaiementProvider";
 import MessageProvider from "./app/provider/MessageProvider";
 import { LangProvider } from "./app/provider/LangProvider";
+import SoumissionProvider from "./app/provider/SoumissionProvider";
 // import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <LangProvider>
-      <MessageProvider>
-        <PaiementProvider>
-          <UserProvider>
-            <InstrumentProvider>
-              <LevelProvider>
-                <LessonProvider>
-                  <CourProvider>
-                    <BrowserRouter>
-                      {/* AuthProvider englobe toute l'application, tous les composants enfants peuvent accéder à user, logout, setUser */}
-                      <AuthProvider>
-                        <App />
-                      </AuthProvider>
-                    </BrowserRouter>
-                  </CourProvider>
-                </LessonProvider>
-              </LevelProvider>
-            </InstrumentProvider>
-          </UserProvider>
-        </PaiementProvider>
-      </MessageProvider>
+      <SoumissionProvider>
+        <MessageProvider>
+          <PaiementProvider>
+            <UserProvider>
+              <InstrumentProvider>
+                <LevelProvider>
+                  <LessonProvider>
+                    <CourProvider>
+                      <BrowserRouter>
+                        {/* AuthProvider englobe toute l'application, tous les composants enfants peuvent accéder à user, logout, setUser */}
+                        <AuthProvider>
+                          <App />
+                        </AuthProvider>
+                      </BrowserRouter>
+                    </CourProvider>
+                  </LessonProvider>
+                </LevelProvider>
+              </InstrumentProvider>
+            </UserProvider>
+          </PaiementProvider>
+        </MessageProvider>
+      </SoumissionProvider>
     </LangProvider>
   </React.StrictMode>,
 );

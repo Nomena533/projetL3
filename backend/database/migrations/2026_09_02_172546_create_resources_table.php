@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId("lesson_id")->constrained("lessons")->cascadeOnDelete();
             $table->enum("type",["video","audio","pdf"]);
-            $table->string("file");
+            $table->string("fichier");
             $table->timestamps();
         });
     }

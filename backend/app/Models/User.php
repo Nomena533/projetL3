@@ -105,4 +105,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Inscription::class);
     }
+    
+    public function soumission()
+    {
+        return $this->hasMany(Soumission::class);
+    }
 }

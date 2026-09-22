@@ -1,31 +1,66 @@
 import { useMemo, useState } from "react";
-import { HiOutlineCheckCircle } from "react-icons/hi2";
+import {
+  HiOutlineCheckCircle,
+  HiOutlineUserCircle,
+  HiOutlineAcademicCap,
+  HiOutlineBookOpen,
+  HiOutlineChevronRight,
+} from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import Pill from "../../components/Pill";
 import FilterBar from "../../components/FilterBar";
 import { SOUMISSIONS } from "../../lib/mockProfData";
+import { useSoumission } from "../../app/hooks/useSoumission";
 
 const STATUT_OPTIONS = [
   { value: "En attente", label: "En attente" },
   { value: "Corrigé", label: "Corrigé" },
 ];
 
+// Lit le chemin niveau / cours / leçon et l'utilisateur quelle que soit la forme
+// des données (mock plat actuel ou objets imbriqués renvoyés par l'API).
+function getSoumissionMeta(s) {
+  const lecon = s.lecon ?? s.exercice?.lecon ?? null;
+  const cours = s.cours ?? lecon?.cours ?? s.exercice?.lecon?.cours ?? null;
+  const niveau = s.niveau ?? cours?.niveau ?? null;
+
+  const niveauNom = typeof niveau === "string" ? niveau : niveau?.nom;
+  const coursNom = typeof cours === "string" ? cours : cours?.titre ?? cours?.nom;
+  const leconNom = typeof lecon === "string" ? lecon : lecon?.titre;
+
+  const utilisateur = s.utilisateur ?? (typeof s.eleve === "object" ? s.eleve : null);
+  const eleveNom =
+    typeof s.eleve === "string"
+      ? s.eleve
+      : `${utilisateur?.prenom ?? ""} ${utilisateur?.nom ?? ""}`.trim() || "Élève inconnu";
+  const eleveEmail = utilisateur?.email;
+  const eleveAvatar = utilisateur?.photo;
+
+  return { niveauNom, coursNom, leconNom, eleveNom, eleveEmail, eleveAvatar };
+}
+
 export default function ProfCorrections() {
   const [items, setItems] = useState(SOUMISSIONS);
   const [search, setSearch] = useState("");
   const [statutFilter, setStatutFilter] = useState("");
+  const { soumission, fetchSoumission } = useSoumission();
+
+  const enriched = useMemo(
+    () => items.map((s) => ({ ...s, meta: getSoumissionMeta(s) })),
+    [items]
+  );
 
   const filtered = useMemo(() => {
-    return items.filter((s) => {
+    return enriched.filter((s) => {
       const matchSearch = search
-        ? `${s.exercice} ${s.cours} ${s.eleve}`
+        ? `${s.exercice} ${s.meta.coursNom ?? ""} ${s.meta.leconNom ?? ""} ${s.meta.eleveNom ?? ""}`
             .toLowerCase()
             .includes(search.toLowerCase())
         : true;
       const matchStatut = statutFilter ? s.statut === statutFilter : true;
       return matchSearch && matchStatut;
     });
-  }, [items, search, statutFilter]);
+  }, [enriched, search, statutFilter]);
 
   const hasActiveFilters = search !== "" || statutFilter !== "";
 
@@ -68,43 +103,88 @@ export default function ProfCorrections() {
         </p>
       ) : (
         <div className="space-y-3">
-          {filtered.map((s, i) => (
-            <AnimatedSection
-              key={s.id}
-              delay={i * 70}
-              className="flex flex-col gap-4 rounded-2xl border border-ivory-dark bg-white/60 p-5 sm:flex-row sm:items-center"
-            >
-              <div className="min-w-0 flex-1">
-                <p className="font-body text-sm font-semibold text-ink">
-                  {s.exercice} <span className="font-normal text-ink-soft">— {s.cours}</span>
-                </p>
-                <p className="mt-0.5 font-body text-xs text-ink-soft">
-                  {s.eleve} · {s.date}
-                </p>
-              </div>
+          {filtered.map((s, i) => {
+            const { niveauNom, coursNom, leconNom, eleveNom, eleveEmail, eleveAvatar } = s.meta;
 
-              <Pill>{s.statut}</Pill>
+            return (
+              <AnimatedSection
+                key={s.id}
+                delay={i * 70}
+                className="rounded-2xl border border-ivory-dark bg-white/60 p-5"
+              >
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0 flex-1 space-y-2.5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-body text-sm font-semibold text-ink">{s.exercice}</p>
+                      <Pill>{s.statut}</Pill>
+                    </div>
 
-              {s.statut === "En attente" ? (
-                <div className="flex items-center gap-2">
-                  <input
-                    placeholder="Note /20"
-                    className="w-24 rounded-full border border-ivory-dark bg-white/70 px-4 py-2 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
-                  />
-                  <button
-                    onClick={() => setItems(items.map((x) => (x.id === s.id ? { ...x, statut: "Corrigé" } : x)))}
-                    className="rounded-full bg-coral px-4 py-2 font-body text-xs font-semibold text-ivory shadow-md shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
-                  >
-                    Valider
-                  </button>
+                    {/* Chemin niveau / cours / leçon */}
+                    {(niveauNom || coursNom || leconNom) && (
+                      <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+                        {niveauNom && (
+                          <span className="flex items-center gap-1">
+                            <HiOutlineAcademicCap size={13} className="text-coral-dark" />
+                            {niveauNom}
+                          </span>
+                        )}
+                        {niveauNom && (coursNom || leconNom) && <HiOutlineChevronRight size={11} />}
+                        {coursNom && (
+                          <span className="flex items-center gap-1">
+                            <HiOutlineBookOpen size={13} className="text-coral-dark" />
+                            {coursNom}
+                          </span>
+                        )}
+                        {coursNom && leconNom && <HiOutlineChevronRight size={11} />}
+                        {leconNom && <span>{leconNom}</span>}
+                      </div>
+                    )}
+
+                    {/* Élève ayant envoyé la soumission */}
+                    <div className="flex items-center gap-2">
+                      {eleveAvatar ? (
+                        <img
+                          src={eleveAvatar}
+                          alt={eleveNom}
+                          className="h-6 w-6 shrink-0 rounded-full object-cover"
+                        />
+                      ) : (
+                        <HiOutlineUserCircle size={20} className="shrink-0 text-ink-soft" />
+                      )}
+                      <p className="font-body text-xs text-ink-soft">
+                        <span className="font-semibold text-ink">{eleveNom}</span>
+                        {eleveEmail && <span> · {eleveEmail}</span>}
+                        <span> · {s.date}</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-2 sm:pl-4">
+                    {s.statut === "En attente" ? (
+                      <>
+                        <input
+                          placeholder="Note /20"
+                          className="w-24 rounded-full border border-ivory-dark bg-white/70 px-4 py-2 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
+                        />
+                        <button
+                          onClick={() =>
+                            setItems(items.map((x) => (x.id === s.id ? { ...x, statut: "Corrigé" } : x)))
+                          }
+                          className="rounded-full bg-coral px-4 py-2 font-body text-xs font-semibold text-ivory shadow-md shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
+                        >
+                          Valider
+                        </button>
+                      </>
+                    ) : (
+                      <span className="flex items-center gap-1.5 font-mono text-xs text-coral-dark">
+                        <HiOutlineCheckCircle size={17} /> {s.note ? `${s.note}/20` : "Corrigé"}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              ) : (
-                <span className="flex items-center gap-1.5 font-mono text-xs text-coral-dark">
-                  <HiOutlineCheckCircle size={17} /> {s.note ? `${s.note}/20` : "Corrigé"}
-                </span>
-              )}
-            </AnimatedSection>
-          ))}
+              </AnimatedSection>
+            );
+          })}
         </div>
       )}
     </div>

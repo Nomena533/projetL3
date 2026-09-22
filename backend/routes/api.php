@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\PaiementController;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\MessagesController;
+use App\Http\Controllers\Api\SoumissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,9 +38,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [AuthController::class, 'profile']);
     Route::get('/updateProfile', [AuthController::class, 'updateProfile']);
     Route::post('/logout', [AuthController::class, 'logout']);
-    
+
     Route::post('/storeCour', [CourController::class, 'store']);
-    
+
     Route::post('/niveau/{niveauId}/storeInscription', [InscriptionController::class, 'store']);
 
     Route::post("/storeMessage", [MessagesController::class, 'store']);
@@ -47,11 +48,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // Ouvre une conversation et réinitialise son compteur de messages non lus.
     Route::post("/messages/{otherUserId}/read", [MessagesController::class, 'markAsRead']);
 
-    });
+    Route::post("/exercice/{exerciceId}/storeSoumission", [SoumissionController::class, 'store']);
+
+});
 
 
 Route::get('/getUsers', [UserController::class, 'index']);
-    
+
 Route::get('/getRole', [RoleController::class, 'index']);
 
 Route::get('/getCour', [CourController::class, 'index']);
@@ -99,3 +102,5 @@ Route::get('/getPaimentDetail/{id}', [PaiementController::class, 'show']);
 Route::put('/updateStatutPaiement/{id}', [PaiementController::class, 'updateStatut']);
 // Route::put('/updateResource/{id}', [ResourceController::class, 'update']);
 // Route::delete('/deleteResource/{id}', [ResourceController::class, 'destroy']);
+
+Route::get('/getSoumission', [SoumissionController::class, 'index']);

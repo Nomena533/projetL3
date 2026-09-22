@@ -16,4 +16,9 @@ class Exercice extends Model
     {
         return $this->belongsTo(Exercice::class);
     }
+
+    public function soumission()
+    {
+        return $this->belongsTo(Soumission::class);
+    }
 }

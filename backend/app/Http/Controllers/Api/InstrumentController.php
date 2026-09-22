@@ -34,7 +34,6 @@ class InstrumentController extends Controller
     {
         $request->validate([
             "name" => "required|string",
-
         ]);
 
         $instrument = Instrument::create([

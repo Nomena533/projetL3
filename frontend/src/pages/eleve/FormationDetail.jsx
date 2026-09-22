@@ -250,103 +250,6 @@ export default function FormationDetail() {
       </AnimatedSection>
 
       <div className="space-y-6">
-        {/* {formations.map((f, i) => (
-            <AnimatedSection
-              key={f.instrument}
-              delay={i * 90}
-              className="rounded-2xl border border-ivory-dark bg-white/60 p-6"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div
-                    className={`grid h-14 w-14 shrink-0 place-items-center rounded-xl text-2xl ${TONE_BG[f.tone]}`}
-                  >
-                    <span className="opacity-90">{f.emoji}</span>
-                  </div>
-                  <div>
-                    <h3 className="font-display text-lg font-semibold text-ink">
-                      {f.instrument}
-                    </h3>
-                    <p className="font-body text-sm text-ink-soft">
-                      avec {f.prof}
-                    </p>
-                  </div>
-                </div>
-                <div className="min-w-[140px] flex-1 sm:flex-none sm:w-40">
-                  <div className="h-1.5 w-full rounded-full bg-ivory-dark">
-                    <div
-                      className="h-1.5 rounded-full bg-coral transition-all duration-500"
-                      style={{ width: `${f.progression}%` }}
-                    />
-                  </div>
-                  <p className="mt-1.5 text-right font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                    {f.progression}%
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-6 grid gap-6 sm:grid-cols-2">
-                <div>
-                  <h4 className="mb-3 font-body text-xs font-semibold uppercase tracking-wide text-ink-soft">
-                    Cours suivis
-                  </h4>
-                  <div className="divide-y divide-ivory-dark overflow-hidden rounded-xl border border-ivory-dark bg-ivory/40">
-                    {f.cours.map((c) => (
-                      <Link
-                        key={c.id}
-                        to={`/eleve/cours/${c.coursId}`}
-                        className="flex items-center gap-2.5 px-4 py-3 transition-colors duration-200 hover:bg-ivory-dark/40"
-                      >
-                        {c.statut === "Terminé" ? (
-                          <HiOutlineCheckCircle
-                            size={16}
-                            className="shrink-0 text-coral-dark"
-                          />
-                        ) : (
-                          <HiOutlinePlayCircle
-                            size={16}
-                            className="shrink-0 text-ink-soft"
-                          />
-                        )}
-                        <span className="flex-1 font-body text-sm text-ink">
-                          {c.titre}
-                        </span>
-                        <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                          {c.statut}
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="mb-3 font-body text-xs font-semibold uppercase tracking-wide text-ink-soft">
-                    Exercices réalisés
-                  </h4>
-                  <div className="divide-y divide-ivory-dark overflow-hidden rounded-xl border border-ivory-dark bg-ivory/40">
-                    {f.exercices.map((e) => (
-                      <div
-                        key={e.id}
-                        className="flex items-center gap-2.5 px-4 py-3"
-                      >
-                        <HiOutlineClipboardDocumentCheck
-                          size={16}
-                          className="shrink-0 text-coral-dark"
-                        />
-                        <span className="flex-1 font-body text-sm text-ink">
-                          {e.titre}
-                        </span>
-                        <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                          {e.note}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </AnimatedSection>
-          ))} 
-           */}
         {instruments &&
           instruments.map((instrument, i) => {
             // let courFormation;
@@ -394,7 +297,7 @@ export default function FormationDetail() {
                         courFormation.map((c) => (
                           <Link
                             key={c.id}
-                            to={`/eleve/cours/${c.id}`}
+                            to={`/eleve/formation/cours/${c.id}`}
                             className="flex items-center gap-2.5 px-4 py-3 transition-colors duration-200 hover:bg-ivory-dark/40"
                           >
                             {/* {c.statut === "Terminé" ? (
@@ -408,19 +311,19 @@ export default function FormationDetail() {
                         className="shrink-0 text-ink-soft"
                         />
                       )} */}
-                            <HiOutlineCheckCircle
-                              size={16}
-                              className="shrink-0 text-coral-dark"
-                            />
                             <HiOutlinePlayCircle
-                              size={16}
+                              size={18}
                               className="shrink-0 text-ink-soft"
                             />
+                            {/* <HiOutlinePlayCircle
+                              size={16}
+                              className="shrink-0 text-ink-soft"
+                            /> */}
                             <span className="flex-1 font-body text-sm text-ink">
                               {capitalize(c.titre)}
                             </span>
                             <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                              STATUT(TERMINE OU en cours)
+                              {c.duree}
                             </span>
                           </Link>
                         ))
