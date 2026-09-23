@@ -77,7 +77,7 @@ Route::put('/updateLesson/{id}', [LessonController::class, 'update']);
 Route::delete('/deleteLesson/{id}', [LessonController::class, 'destroy']);
 
 Route::post('/lesson/{lessonId}/storeExercice', [ExerciceController::class, 'store']);
-// Route::get('/getLesson', [LessonController::class, 'index']);
+Route::get('/getExercice', [ExerciceController::class, 'index']);
 Route::get('/getExerciceByLesson/{lessonId}', [ExerciceController::class, 'getByLesson']);
 // Route::get('/getLessonDetail/{id}', [LessonController::class, 'show']);
 Route::put('/updateExercice/{id}', [ExerciceController::class, 'update']);
@@ -104,3 +104,5 @@ Route::put('/updateStatutPaiement/{id}', [PaiementController::class, 'updateStat
 // Route::delete('/deleteResource/{id}', [ResourceController::class, 'destroy']);
 
 Route::get('/getSoumission', [SoumissionController::class, 'index']);
+// patch modifie seulement les valeurs envoyé sans touché au reste dans la BDD contrairement à put qui modifie tout les valeurs dans la BDD
+Route::patch('/updateNoteSoumission/{id}', [SoumissionController::class, 'updateNoteSoumission']);

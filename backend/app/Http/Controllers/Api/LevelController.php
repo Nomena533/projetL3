@@ -15,6 +15,7 @@ class LevelController extends Controller
     public function index()
     {
         $levels = Level::all();
+        // $levels = Level::with("cour")->get();
 
         return response()->json($levels);
     }

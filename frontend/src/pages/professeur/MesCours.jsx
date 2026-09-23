@@ -20,35 +20,36 @@ import useGetCour from "../../app/hooks/useGetCour";
 import { BASE_URL } from "../../app/api/api";
 import { deleteCour } from "../../app/api/courApi";
 import { capitalize } from "../../lib/formatFunction";
+import Alert from "../../components/Alert";
 
 // Bandeau d'alerte succès/erreur affiché après une action (ex. création d'un
 // cours). Se ferme automatiquement après quelques secondes, ou manuellement.
-function Alert({ type = "success", message, onClose }) {
-  const isSuccess = type === "success";
-  return (
-    <div
-      className={`flex items-start gap-3 rounded-2xl border px-5 py-4 font-body text-sm ${
-        isSuccess
-          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-          : "border-brick/30 bg-brick/10 text-brick"
-      }`}
-    >
-      {isSuccess ? (
-        <HiOutlineCheckCircle size={18} className="mt-0.5 shrink-0" />
-      ) : (
-        <HiOutlineExclamationTriangle size={18} className="mt-0.5 shrink-0" />
-      )}
-      <p className="flex-1">{message}</p>
-      <button
-        onClick={onClose}
-        aria-label="Fermer"
-        className="shrink-0 opacity-70 transition-opacity hover:opacity-100"
-      >
-        <HiOutlineXMark size={16} />
-      </button>
-    </div>
-  );
-}
+// function Alert({ type = "success", message, onClose }) {
+//   const isSuccess = type === "success";
+//   return (
+//     <div
+//       className={`flex items-start gap-3 rounded-2xl border px-5 py-4 font-body text-sm ${
+//         isSuccess
+//           ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+//           : "border-brick/30 bg-brick/10 text-brick"
+//       }`}
+//     >
+//       {isSuccess ? (
+//         <HiOutlineCheckCircle size={18} className="mt-0.5 shrink-0" />
+//       ) : (
+//         <HiOutlineExclamationTriangle size={18} className="mt-0.5 shrink-0" />
+//       )}
+//       <p className="flex-1">{message}</p>
+//       <button
+//         onClick={onClose}
+//         aria-label="Fermer"
+//         className="shrink-0 opacity-70 transition-opacity hover:opacity-100"
+//       >
+//         <HiOutlineXMark size={16} />
+//       </button>
+//     </div>
+//   );
+// }
 
 export default function ProfMesCours() {
   const location = useLocation();

@@ -68,6 +68,7 @@ import FormationPublique from "./pages/home/FormationPublique";
 import PaiementPublic from "./pages/home/PaiementPublic";
 import Paiement from "./pages/eleve/Paiement";
 import AdminProfil from "./pages/admin/Profil";
+import CorrectionDetail from "./pages/professeur/CorrectionDetail";
 
 /** Remonte en haut de page à chaque changement de route */
 function ScrollToTop() {
@@ -160,6 +161,7 @@ export default function App() {
         <Route path="cours/nouveau" element={<ProfCourEditeur />} />
         <Route path="cours/:id" element={<ProfCourEditeur />} />
         <Route path="corrections" element={<ProfCorrections />} />
+        <Route path="corrections/:id" element={<CorrectionDetail />} />
         <Route path="eleves" element={<ProfEleves />} />
         <Route path="messages" element={<ProfMessages />} />
         <Route path="parametres" element={<ProfParametres />} />

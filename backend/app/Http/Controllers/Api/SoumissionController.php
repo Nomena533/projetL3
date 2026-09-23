@@ -14,7 +14,7 @@ class SoumissionController extends Controller
      */
     public function index()
     {
-        $soumission = Soumission::with(['exercice','eleve'])->get();
+        $soumission = Soumission::with(['exercice.lesson.cour.level','eleve'])->get();
 
         return response()->json($soumission);
     }
@@ -34,6 +34,7 @@ class SoumissionController extends Controller
     {
         $validated = $request->validate([
             "fichier" => 'required',
+            "type" => 'required',
             "description" => 'string'
         ]);
 
@@ -79,6 +80,30 @@ class SoumissionController extends Controller
     public function update(Request $request, Soumission $soumission)
     {
         //
+    }
+
+    public function updateNoteSoumission(Request $request, $id)
+    {
+        // dd($request, $id);
+        $soumission = Soumission::findOrFail($id);
+
+        if (!$soumission) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cours introuvable'
+            ], 404);
+        }
+
+        $soumission->statut = $request->statut;
+        $soumission->note = $request->note;
+        $soumission->commentaire = $request->commentaire;
+
+        $soumission->save();
+
+        return response()->json([
+            'message' => 'soumission corriger modifié avec succès',
+            'soumission' => $soumission
+        ], 201);
     }
 
     /**

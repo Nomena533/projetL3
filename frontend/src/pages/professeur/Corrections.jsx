@@ -1,6 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   HiOutlineCheckCircle,
+  HiOutlineClock,
   HiOutlineUserCircle,
   HiOutlineAcademicCap,
   HiOutlineBookOpen,
@@ -11,67 +13,82 @@ import Pill from "../../components/Pill";
 import FilterBar from "../../components/FilterBar";
 import { SOUMISSIONS } from "../../lib/mockProfData";
 import { useSoumission } from "../../app/hooks/useSoumission";
+import { getSoumissionMeta } from "../../lib/soumissionMeta";
+import { useLevel } from "../../app/hooks/useLevel";
+import { capitalize, formatDate } from "../../lib/formatFunction";
+import Alert from "../../components/Alert";
 
 const STATUT_OPTIONS = [
-  { value: "En attente", label: "En attente" },
-  { value: "Corrigé", label: "Corrigé" },
+  { value: "en attente", label: "En attente" },
+  { value: "corriger", label: "Corrigé" },
 ];
 
-// Lit le chemin niveau / cours / leçon et l'utilisateur quelle que soit la forme
-// des données (mock plat actuel ou objets imbriqués renvoyés par l'API).
-function getSoumissionMeta(s) {
-  const lecon = s.lecon ?? s.exercice?.lecon ?? null;
-  const cours = s.cours ?? lecon?.cours ?? s.exercice?.lecon?.cours ?? null;
-  const niveau = s.niveau ?? cours?.niveau ?? null;
-
-  const niveauNom = typeof niveau === "string" ? niveau : niveau?.nom;
-  const coursNom = typeof cours === "string" ? cours : cours?.titre ?? cours?.nom;
-  const leconNom = typeof lecon === "string" ? lecon : lecon?.titre;
-
-  const utilisateur = s.utilisateur ?? (typeof s.eleve === "object" ? s.eleve : null);
-  const eleveNom =
-    typeof s.eleve === "string"
-      ? s.eleve
-      : `${utilisateur?.prenom ?? ""} ${utilisateur?.nom ?? ""}`.trim() || "Élève inconnu";
-  const eleveEmail = utilisateur?.email;
-  const eleveAvatar = utilisateur?.photo;
-
-  return { niveauNom, coursNom, leconNom, eleveNom, eleveEmail, eleveAvatar };
-}
-
 export default function ProfCorrections() {
-  const [items, setItems] = useState(SOUMISSIONS);
+  const location = useLocation();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statutFilter, setStatutFilter] = useState("");
   const { soumission, fetchSoumission } = useSoumission();
+  console.log("soumission :", soumission);
 
-  const enriched = useMemo(
-    () => items.map((s) => ({ ...s, meta: getSoumissionMeta(s) })),
-    [items]
+  const [alert, setAlert] = useState(
+    location.state?.success
+      ? { type: "success", message: location.state.success }
+      : location.state?.error
+        ? { type: "error", message: location.state.error }
+        : null,
   );
 
+  // Nettoie le state de navigation pour ne pas réafficher l'alerte si
+  // l'utilisateur revient sur cette page (F5, retour navigateur…).
+  useEffect(() => {
+    if (location.state) {
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-fermeture de l'alerte après quelques secondes.
+  useEffect(() => {
+    if (!alert) return;
+    const timer = setTimeout(() => setAlert(null), 5000);
+    return () => clearTimeout(timer);
+  }, [alert]);
+
   const filtered = useMemo(() => {
-    return enriched.filter((s) => {
+    return soumission.filter((s) => {
       const matchSearch = search
-        ? `${s.exercice} ${s.meta.coursNom ?? ""} ${s.meta.leconNom ?? ""} ${s.meta.eleveNom ?? ""}`
+        ? `${s.exercice.titre} ${s.exercice.lesson.titre ?? ""} ${s.exercice.lesson.cour.titre ?? ""} ${s.exercice.lesson.cour.level.name ?? ""} ${s.eleve.name ?? ""} ${s.eleve.firstname ?? ""}`
             .toLowerCase()
             .includes(search.toLowerCase())
         : true;
       const matchStatut = statutFilter ? s.statut === statutFilter : true;
       return matchSearch && matchStatut;
     });
-  }, [enriched, search, statutFilter]);
+  }, [soumission, search, statutFilter]);
 
   const hasActiveFilters = search !== "" || statutFilter !== "";
 
   return (
     <div className="space-y-6">
       <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">Espace professeur</span>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">Corrections</h2>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
+          Espace professeur
+        </span>
+        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
+          Corrections
+        </h2>
       </AnimatedSection>
 
-      {items.length > 0 && (
+      {alert && (
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert(null)}
+        />
+      )}
+
+      {soumission?.length > 0 && (
         <FilterBar
           searchValue={search}
           onSearchChange={setSearch}
@@ -86,7 +103,7 @@ export default function ProfCorrections() {
             },
           ]}
           resultCount={filtered.length}
-          totalCount={items.length}
+          totalCount={soumission.length}
           hasActiveFilters={hasActiveFilters}
           onReset={() => {
             setSearch("");
@@ -97,14 +114,19 @@ export default function ProfCorrections() {
 
       {filtered.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-ivory-dark px-5 py-12 text-center font-body text-sm text-ink-soft">
-          {items.length === 0
+          {soumission.length === 0
             ? "Aucune soumission pour le moment."
             : "Aucune soumission ne correspond à ta recherche."}
         </p>
       ) : (
         <div className="space-y-3">
           {filtered.map((s, i) => {
-            const { niveauNom, coursNom, leconNom, eleveNom, eleveEmail, eleveAvatar } = s.meta;
+            const niveauNom = s.exercice.lesson.cour.level.name;
+            const coursNom = s.exercice.lesson.cour.titre;
+            const leconNom = s.exercice.lesson.titre;
+            const eleveNom = `${s.eleve.name} ${s.eleve.firstname}`;
+            const eleveEmail = s.eleve.email;
+            const eleveAvatar = s.eleve.photo;
 
             return (
               <AnimatedSection
@@ -115,30 +137,36 @@ export default function ProfCorrections() {
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1 space-y-2.5">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-body text-sm font-semibold text-ink">{s.exercice}</p>
+                      <p className="font-body text-sm font-semibold text-ink">
+                        {s.exercice.titre}
+                      </p>
+                      {/* le bg du statut est défini depuis le composant réutilisatble components/Pill.jsx 
+                        "en attente": "bg-amber/20 text-brick",
+                        corriger: "bg-coral/10 text-coral-dark",
+                      */}
                       <Pill>{s.statut}</Pill>
                     </div>
 
-                    {/* Chemin niveau / cours / leçon */}
-                    {(niveauNom || coursNom || leconNom) && (
-                      <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                        {niveauNom && (
-                          <span className="flex items-center gap-1">
-                            <HiOutlineAcademicCap size={13} className="text-coral-dark" />
-                            {niveauNom}
-                          </span>
-                        )}
-                        {niveauNom && (coursNom || leconNom) && <HiOutlineChevronRight size={11} />}
-                        {coursNom && (
-                          <span className="flex items-center gap-1">
-                            <HiOutlineBookOpen size={13} className="text-coral-dark" />
-                            {coursNom}
-                          </span>
-                        )}
-                        {coursNom && leconNom && <HiOutlineChevronRight size={11} />}
-                        {leconNom && <span>{leconNom}</span>}
-                      </div>
-                    )}
+                    {/* Chemin niveau / cours / leçon — infos générales sur la soumission */}
+                    <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+                      <span className="flex items-center gap-1">
+                        <HiOutlineAcademicCap
+                          size={13}
+                          className="text-coral-dark"
+                        />
+                        {niveauNom}
+                      </span>
+                      <HiOutlineChevronRight size={11} />
+                      <span className="flex items-center gap-1">
+                        <HiOutlineBookOpen
+                          size={13}
+                          className="text-coral-dark"
+                        />
+                        {coursNom}
+                      </span>
+                      <HiOutlineChevronRight size={11} />
+                      <span>{leconNom}</span>
+                    </div>
 
                     {/* Élève ayant envoyé la soumission */}
                     <div className="flex items-center gap-2">
@@ -149,35 +177,40 @@ export default function ProfCorrections() {
                           className="h-6 w-6 shrink-0 rounded-full object-cover"
                         />
                       ) : (
-                        <HiOutlineUserCircle size={20} className="shrink-0 text-ink-soft" />
+                        <HiOutlineUserCircle
+                          size={20}
+                          className="shrink-0 text-ink-soft"
+                        />
                       )}
                       <p className="font-body text-xs text-ink-soft">
-                        <span className="font-semibold text-ink">{eleveNom}</span>
-                        {eleveEmail && <span> · {eleveEmail}</span>}
-                        <span> · {s.date}</span>
+                        <span className="font-semibold text-ink">
+                          {eleveNom}
+                        </span>
+                        {/* {eleveEmail && <span> · {eleveEmail}</span>} */}
+                        <span> · {formatDate(s.created_at)}</span>
                       </p>
                     </div>
+
+                    {/* Lien discret vers le détail de la soumission */}
+                    <Link
+                      to={`/professeur/corrections/${s.id}`}
+                      className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-wide text-ink-soft/70 transition-colors duration-200 hover:text-coral-dark"
+                    >
+                      Voir le détail
+                      <HiOutlineChevronRight size={11} />
+                    </Link>
                   </div>
 
-                  <div className="flex shrink-0 items-center gap-2 sm:pl-4">
-                    {s.statut === "En attente" ? (
-                      <>
-                        <input
-                          placeholder="Note /20"
-                          className="w-24 rounded-full border border-ivory-dark bg-white/70 px-4 py-2 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
-                        />
-                        <button
-                          onClick={() =>
-                            setItems(items.map((x) => (x.id === s.id ? { ...x, statut: "Corrigé" } : x)))
-                          }
-                          className="rounded-full bg-coral px-4 py-2 font-body text-xs font-semibold text-ivory shadow-md shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
-                        >
-                          Valider
-                        </button>
-                      </>
+                  {/* Statut + note mise par le prof (lecture seule ici, la correction se fait sur la page de détail) */}
+                  <div className="flex shrink-0 items-center gap-1.5 font-mono text-xs sm:pl-4">
+                    {s.statut === "en attente" ? (
+                      <span className="flex items-center gap-1.5 text-ink-soft">
+                        <HiOutlineClock size={16} /> En attente
+                      </span>
                     ) : (
-                      <span className="flex items-center gap-1.5 font-mono text-xs text-coral-dark">
-                        <HiOutlineCheckCircle size={17} /> {s.note ? `${s.note}/20` : "Corrigé"}
+                      <span className="flex items-center gap-1.5 text-coral-dark">
+                        <HiOutlineCheckCircle size={17} />{" "}
+                        {s.note ? `${s.note}/20` : "Corrigé"}
                       </span>
                     )}
                   </div>

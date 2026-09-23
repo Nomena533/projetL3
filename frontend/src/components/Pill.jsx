@@ -7,8 +7,8 @@ const TONE = {
   Publié: "bg-coral/10 text-coral-dark",
   Brouillon: "bg-amber/20 text-brick",
   // Corrections
-  "En attente": "bg-amber/20 text-brick",
-  Corrigé: "bg-coral/10 text-coral-dark",
+  "en attente": "bg-amber/20 text-brick",
+  corriger: "bg-coral/10 text-coral-dark",
   // Utilisateurs
   Actif: "bg-coral/10 text-coral-dark",
   Suspendu: "bg-brick/10 text-brick",

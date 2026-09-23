@@ -10,6 +10,7 @@ class Soumission extends Model
         "exercice_id",
         "user_id",
         "fichier",
+        "type",
         "description",
         "note",
         "commentaire"

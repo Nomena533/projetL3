@@ -20,6 +20,7 @@ import { BASE_URL } from "../../app/api/api";
 import { getExerciceByLesson } from "../../app/api/exerciceApi";
 import { storeSoumission } from "../../app/api/soumissionApi";
 import { useSoumission } from "../../app/hooks/useSoumission";
+import { useAuth } from "../../app/hooks/useAuth";
 
 // Reprend exactement la même logique d'affichage que dans LeconDetail.jsx,
 // pour rester cohérent sur toute la plateforme.
@@ -35,6 +36,16 @@ const RESOURCE_LABEL = {
   pdf: "PDF",
 };
 
+// Devine le type de ressource (video/audio/pdf) à partir du MIME type,
+// avec repli sur l'extension du fichier si le navigateur ne le fournit pas.
+function guessType(file) {
+  // Vérifie l'extension du fichier
+  const extension = file.name.split(".").pop()?.toLowerCase();
+  if (["mp4", "mov", "webm", "mkv", "avi"].includes(extension)) return "video";
+  if (["mp3", "wav", "ogg", "m4a"].includes(extension)) return "audio";
+  if (["pdf","doc","docx","xlsx","xls","csv","ppt","pptx","txt"].includes(extension)) return "document";
+}
+
 export default function LessonPlayer() {
   const { id } = useParams();
   const [params] = useSearchParams();
@@ -45,12 +56,17 @@ export default function LessonPlayer() {
   const [lessons, setLessons] = useState([]);
   const [exercice, setExercice] = useState(null);
   const { soumission, fetchSoumission } = useSoumission();
+  const { user, logout } = useAuth();
 
   // Soumission de l'exercice par l'élève (fichier + description).
-  const [soumissionFichier, setSoumissionFichier] = useState(null);
-  const [soumissionDescription, setSoumissionDescription] = useState("");
   const [soumissionEnvoi, setSoumissionEnvoi] = useState(false);
   const [soumissionStatut, setSoumissionStatut] = useState(null); // "success" | "error" | null
+
+  const [soumissionForm, setSoumissionForm] = useState({
+    description: "",
+    type: "",
+    fichier: null,
+  });
 
   // Ressource actuellement affichée dans la vue principale.
   // null => on affiche le lecteur "par défaut" de la leçon.
@@ -113,30 +129,47 @@ export default function LessonPlayer() {
     setActiveResource(null);
   }, [id]);
 
+  const handleChange = (e) => {
+    setSoumissionForm({
+      ...soumissionForm,
+      description: e.target.value,
+    });
+  };
+
+  const handleFileChange = (e) => {
+    setSoumissionForm({
+      ...soumissionForm,
+      fichier: e.target.files[0],
+      type: guessType(e.target.files[0]),
+    });
+  };
+
+  console.log("soumissionForm : ", soumissionForm);
+
   // On réinitialise le formulaire de soumission si on change de leçon.
   useEffect(() => {
-    setSoumissionFichier(null);
-    setSoumissionDescription("");
+    setSoumissionForm({ description: "", type: "", fichier: null });
     setSoumissionStatut(null);
   }, [id]);
 
   const handleSoumissionSubmit = async (e) => {
     e.preventDefault();
-    if (!soumissionFichier || !exercice) return;
+    if (!soumissionForm.fichier || !exercice) return;
     try {
       setSoumissionEnvoi(true);
       setSoumissionStatut(null);
 
       const formData = new FormData();
-      formData.append("fichier", soumissionFichier);
-      formData.append("description", soumissionDescription);
+      formData.append("fichier", soumissionForm.fichier);
+      formData.append("description", soumissionForm.description);
+      formData.append("type", soumissionForm.type);
 
       const response = await storeSoumission(exercice?.id, formData);
       console.log("Soumision envoyé avec succès", response.data);
 
+      await fetchSoumission();
       setSoumissionStatut("success");
-      setSoumissionFichier(null);
-      setSoumissionDescription("");
+      setSoumissionForm({ description: "", type: "", fichier: null });
     } catch (error) {
       console.error(
         "Erreur lors de l'envoi de la soumission :",
@@ -155,16 +188,14 @@ export default function LessonPlayer() {
 
   console.log("CURRENT : ", CURRENT);
 
-  // if (lessons) {
-  //   console.log("lessons : ", lessons);
-  //   console.log("indexOf : ", lessons.indexOf(lesson));
-  // }
+  const exerciceHasSoumission = soumission?.find((s) => {
+    const conditionExercice = Number(s.exercice_id) === Number(exercice?.id);
+    const conditionEleve = Number(s.user_id) === Number(user.id);
 
-  const soumissionExercice = soumission?.filter(
-    (s) => s.exercice_id === exercice?.id
-  );
-  
-  const exerciceHasSoumission = soumissionExercice.length === 1;
+    return conditionExercice && conditionEleve;
+  });
+
+  // console.log("exerciceHasSoumission : ", exerciceHasSoumission);
 
   if (!lesson || !resource || !lessons) {
     return (
@@ -298,7 +329,9 @@ export default function LessonPlayer() {
             </p>
             <hr className="border-ivory-dark mt-4 mb-4" />
             {exerciceHasSoumission ? (
-              <div className="font-body flex justify-center text-ink-soft leading-relaxed">Vous avez déjà soumis votre réponse</div>
+              <div className="font-body flex justify-center text-ink-soft leading-relaxed">
+                Vous avez déjà soumis votre réponse
+              </div>
             ) : (
               <form onSubmit={handleSoumissionSubmit} className="space-y-4">
                 <div>
@@ -310,18 +343,25 @@ export default function LessonPlayer() {
                     className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-ivory-dark bg-white px-4 py-3 font-body text-sm text-ink-soft transition-colors duration-300 hover:border-coral/40 hover:text-coral-dark"
                   >
                     <HiOutlineArrowUpTray size={16} className="shrink-0" />
-                    <span className="truncate">
+                    {/* <span className="truncate">
                       {soumissionFichier
                         ? soumissionFichier.name
+                        : "Choisir un fichier depuis mon ordinateur"}
+                    </span> */}
+                    <span className="truncate">
+                      {soumissionForm.fichier
+                        ? soumissionForm.fichier.name
                         : "Choisir un fichier depuis mon ordinateur"}
                     </span>
                   </label>
                   <input
                     id="soumission-fichier"
                     type="file"
-                    onChange={(e) =>
-                      setSoumissionFichier(e.target.files?.[0] || null)
-                    }
+                    accept="video/*,audio/*,.pdf,.doc,.docx,.xlsx,.xls,.csv,.ppt,.pptx,.txt"
+                    // onChange={(e) =>
+                    //   setSoumissionFichier(e.target.files?.[0] || null)
+                    // }
+                    onChange={handleFileChange}
                     className="hidden"
                   />
                 </div>
@@ -336,8 +376,11 @@ export default function LessonPlayer() {
                   <textarea
                     id="soumission-description"
                     rows={3}
-                    value={soumissionDescription}
-                    onChange={(e) => setSoumissionDescription(e.target.value)}
+                    name="description"
+                    // value={soumissionDescription}
+                    value={soumissionForm.description}
+                    // onChange={(e) => setSoumissionDescription(e.target.value)}
+                    onChange={handleChange}
                     placeholder="Un mot sur ta soumission pour ton professeur…"
                     className="w-full resize-none rounded-xl border border-ivory-dark bg-white px-4 py-2.5 font-body text-sm text-ink placeholder:text-ink-soft/60 focus:border-coral/40 focus:outline-none"
                   />
@@ -346,7 +389,8 @@ export default function LessonPlayer() {
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     type="submit"
-                    disabled={!soumissionFichier || soumissionEnvoi}
+                    // disabled={!soumissionFichier || soumissionEnvoi}
+                    disabled={!soumissionForm.fichier || soumissionEnvoi}
                     className="rounded-full bg-coral px-5 py-2.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
                   >
                     {soumissionEnvoi

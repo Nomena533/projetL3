@@ -111,7 +111,6 @@ class CourController extends Controller
             "niveau_id" => 'required|exists:levels,id',
             "titre" => 'required|string',
             "description" => 'required|string',
-            // "prix" => 'required',
 
             // mimes : extension autorisé pour l'insertion d'image
             "image" => 'nullable|image|mimes:jpg,jpeg,png,webp',
@@ -122,7 +121,6 @@ class CourController extends Controller
         $cour->niveau_id = $request->niveau_id;
         $cour->titre = $request->titre;
         $cour->description = $request->description;
-        // $cour->prix = $request->prix;
         $cour->duree = $request->duree;
 
         // Vérifie si une image a été envoyé
