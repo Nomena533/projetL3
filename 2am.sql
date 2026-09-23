@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : sam. 19 sep. 2026 à 22:33
+-- Généré le : mer. 23 sep. 2026 à 16:35
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -84,7 +84,7 @@ CREATE TABLE `cours` (
 --
 
 INSERT INTO `cours` (`id`, `prof_id`, `instrument_id`, `niveau_id`, `titre`, `description`, `image`, `duree`, `statut`, `created_at`, `updated_at`) VALUES
-(1, 3, 2, 1, 'Cour test', 'test 2', 'cours/tFXp7DDFUPiwXMRpChm6ZlbURyvlVsuMfhYqW4qB.jpg', '12 min', 'publié', '2026-09-14 05:41:42', '2026-09-18 09:44:43'),
+(1, 3, 2, 1, 'Cour test', 'test 2 modifier', 'cours/tFXp7DDFUPiwXMRpChm6ZlbURyvlVsuMfhYqW4qB.jpg', '15 min', 'publié', '2026-09-14 05:41:42', '2026-09-23 11:26:53'),
 (2, 3, 1, 1, 'Cour test 2', 'test 2', 'cours/N3uvA4gZNbX76CXREAXQtljhPr2CJ1vWZzZX5dZ9.png', '2 heures', 'publié', '2026-09-14 05:50:14', '2026-09-14 17:02:26');
 
 -- --------------------------------------------------------
@@ -101,6 +101,13 @@ CREATE TABLE `exercices` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `exercices`
+--
+
+INSERT INTO `exercices` (`id`, `lesson_id`, `titre`, `description`, `created_at`, `updated_at`) VALUES
+(6, 2, 'Exercice leçon 1', 'Test', '2026-09-22 05:13:32', '2026-09-22 05:13:32');
 
 -- --------------------------------------------------------
 
@@ -155,11 +162,11 @@ CREATE TABLE `inscriptions` (
 --
 
 INSERT INTO `inscriptions` (`id`, `niveau_id`, `user_id`, `montant`, `statut`, `date_debut`, `date_fin`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 100000.00, 'en attente', NULL, NULL, '2026-09-14 05:54:15', '2026-09-14 05:54:15'),
 (2, 1, 4, 100000.00, 'en attente', NULL, NULL, '2026-09-14 06:25:20', '2026-09-14 06:25:20'),
 (3, 1, 5, 200000.00, 'en attente', NULL, NULL, '2026-09-15 14:12:46', '2026-09-15 14:12:46'),
 (15, 1, 6, 200000.00, 'validé', '2026-09-19', '2027-06-19', '2026-09-15 17:45:42', '2026-09-19 16:28:59'),
-(17, 1, 8, 150000.00, 'validé', '2026-09-19', '2027-06-19', '2026-09-19 03:37:53', '2026-09-19 06:16:13');
+(17, 1, 8, 150000.00, 'validé', '2026-09-19', '2027-06-19', '2026-09-19 03:37:53', '2026-09-19 06:16:13'),
+(18, 1, 1, 150000.00, 'validé', '2025-12-26', '2026-09-26', '2026-09-22 04:54:16', '2026-09-22 04:55:29');
 
 -- --------------------------------------------------------
 
@@ -180,15 +187,14 @@ CREATE TABLE `inscription_instrument` (
 --
 
 INSERT INTO `inscription_instrument` (`id`, `inscription_id`, `instrument_id`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, '2026-09-14 05:54:15', '2026-09-14 05:54:15'),
-(2, 1, 2, '2026-09-14 05:54:15', '2026-09-14 05:54:15'),
 (3, 2, 1, '2026-09-14 06:25:20', '2026-09-14 06:25:20'),
 (4, 2, 2, '2026-09-14 06:25:20', '2026-09-14 06:25:20'),
 (5, 3, 1, '2026-09-15 14:12:46', '2026-09-15 14:12:46'),
 (6, 3, 3, '2026-09-15 14:12:46', '2026-09-15 14:12:46'),
 (19, 15, 1, '2026-09-15 17:45:42', '2026-09-15 17:45:42'),
 (20, 15, 2, '2026-09-15 17:45:42', '2026-09-15 17:45:42'),
-(23, 17, 1, '2026-09-19 03:37:53', '2026-09-19 03:37:53');
+(23, 17, 1, '2026-09-19 03:37:53', '2026-09-19 03:37:53'),
+(24, 18, 1, '2026-09-22 04:54:16', '2026-09-22 04:54:16');
 
 -- --------------------------------------------------------
 
@@ -393,7 +399,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (28, '2026_09_17_230552_add_bio_to_users_table', 10),
 (29, '2026_09_18_123325_add_columns_to_inscription_table', 11),
 (31, '2026_09_18_195819_add_description_to_paiement_table', 12),
-(32, '2026_09_19_000000_add_card_fields_to_paiements_table', 13);
+(32, '2026_09_19_000000_add_card_fields_to_paiements_table', 13),
+(35, '2026_09_22_111704_add_description_to_soumissions_table', 14),
+(36, '2026_09_22_165735_add_statut_to_soumissions_table', 15),
+(37, '2026_09_23_070534_add_type_to_soumissions_table', 16);
 
 -- --------------------------------------------------------
 
@@ -429,7 +438,8 @@ INSERT INTO `paiements` (`id`, `inscription_id`, `nombre_mois`, `montant`, `desc
 (11, 3, '1', 50000.00, NULL, NULL, NULL, NULL, 'orange_money', 'en attente', '2026-09-17 18:15:39', '2026-09-17 18:15:39'),
 (12, 3, '1', 50000.00, NULL, NULL, NULL, NULL, 'orange_money', 'en attente', '2026-09-17 18:16:50', '2026-09-17 18:16:50'),
 (13, 17, '2', 200000.00, 'Premier paiement', '2131231231212312313', '11/22', '1233', 'carte', 'validé', '2026-09-19 03:55:38', '2026-09-19 06:15:15'),
-(14, 17, '2', 100000.00, 'Paiement par tranche', '1231231231231231231', '12/12', '1212', 'carte', 'en attente', '2026-09-19 14:03:46', '2026-09-19 14:03:46');
+(14, 17, '2', 100000.00, 'Paiement par tranche', '1231231231231231231', '12/12', '1212', 'carte', 'en attente', '2026-09-19 14:03:46', '2026-09-19 14:03:46'),
+(15, 18, '1', 150000.00, 'Premier paiement', NULL, NULL, NULL, 'orange_money', 'validé', '2026-09-22 04:55:00', '2026-09-22 04:55:29');
 
 -- --------------------------------------------------------
 
@@ -492,11 +502,11 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (19, 'App\\Models\\User', 2, 'react-app', '1ea1ab471fd5845599a01b69edcbcc1bc210a5e6468ad475ce8e61aaf5de0cbd', '[\"*\"]', NULL, NULL, '2026-09-14 16:43:12', '2026-09-14 16:43:12'),
 (22, 'App\\Models\\User', 5, 'react-app', '0eacc9f6c961c0dc1fcf979094ca9b5dbe633d433b3b540ba73107935ab657c8', '[\"*\"]', NULL, NULL, '2026-09-15 13:50:52', '2026-09-15 13:50:52'),
 (25, 'App\\Models\\User', 6, 'react-app', '01c5d384e99e15093f2913d6c6ac2329a9f328847da191c14e32f28b7edd74a2', '[\"*\"]', NULL, NULL, '2026-09-15 17:24:32', '2026-09-15 17:24:32'),
-(30, 'App\\Models\\User', 2, 'react-app', '66dfe7cfa609c0dc391c6d8cf90b1145563739d670a233893424bd38e795695f', '[\"*\"]', '2026-09-19 17:01:01', NULL, '2026-09-16 16:44:16', '2026-09-19 17:01:01'),
+(30, 'App\\Models\\User', 2, 'react-app', '66dfe7cfa609c0dc391c6d8cf90b1145563739d670a233893424bd38e795695f', '[\"*\"]', '2026-09-23 05:02:27', NULL, '2026-09-16 16:44:16', '2026-09-23 05:02:27'),
 (32, 'App\\Models\\User', 7, 'react-app', '4795c2a8734dd2a577b26fa8796b1889f69b5a73f8e3bea90e10ffec39fe2161', '[\"*\"]', NULL, NULL, '2026-09-17 07:36:45', '2026-09-17 07:36:45'),
 (37, 'App\\Models\\User', 8, 'react-app', '1909ccd68653f638d11cbdc7d4b0f3fcc198d508019a4a5df8ccc84d006f48b3', '[\"*\"]', NULL, NULL, '2026-09-19 03:36:55', '2026-09-19 03:36:55'),
-(40, 'App\\Models\\User', 3, 'react-app', '387d2380174ced883602b8c04e5547377e8f938faf460c89799813cbe703f94b', '[\"*\"]', '2026-09-19 12:57:23', NULL, '2026-09-19 07:18:25', '2026-09-19 12:57:23'),
-(41, 'App\\Models\\User', 6, 'react-app', 'cf77f433733117390ffa199f474ca01210edfb7959d6b00b53e9fa3452ff4846', '[\"*\"]', '2026-09-19 17:03:58', NULL, '2026-09-19 16:29:58', '2026-09-19 17:03:58');
+(40, 'App\\Models\\User', 3, 'react-app', '387d2380174ced883602b8c04e5547377e8f938faf460c89799813cbe703f94b', '[\"*\"]', '2026-09-23 11:25:07', NULL, '2026-09-19 07:18:25', '2026-09-23 11:25:07'),
+(47, 'App\\Models\\User', 8, 'react-app', '10e30ac22f24b8784c1755066859c1ca5efcb2c1e5a3798b1ffbab83f81522f1', '[\"*\"]', '2026-09-23 10:12:53', NULL, '2026-09-23 04:39:54', '2026-09-23 10:12:53');
 
 -- --------------------------------------------------------
 
@@ -563,6 +573,13 @@ CREATE TABLE `sessions` (
   `last_activity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Déchargement des données de la table `sessions`
+--
+
+INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
+('6w8BOCr9GlP656QR4MoOdQyr6UsppX2oDuAL6ulp', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiSjBmODVsVldQa3dxOVlWMGdlTnhzNjVNM052M2VoZXQ1aXlHQlVHOCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7czo1OiJyb3V0ZSI7Tjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1790093654);
+
 -- --------------------------------------------------------
 
 --
@@ -574,11 +591,24 @@ CREATE TABLE `soumissions` (
   `exercice_id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `fichier` varchar(255) NOT NULL,
-  `note` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
+  `type` enum('video','audio','document') NOT NULL,
+  `description` longtext DEFAULT NULL,
+  `note` tinyint(3) UNSIGNED DEFAULT 0,
   `commentaire` longtext DEFAULT NULL,
+  `statut` enum('en attente','corriger') NOT NULL DEFAULT 'en attente',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `soumissions`
+--
+
+INSERT INTO `soumissions` (`id`, `exercice_id`, `user_id`, `fichier`, `type`, `description`, `note`, `commentaire`, `statut`, `created_at`, `updated_at`) VALUES
+(4, 6, 1, 'soumissions/Q7iO3OVBRGKk1adi1dCaKvRouDTxoZvU041jfNGH.txt', 'video', NULL, 18, 'Bien joué', 'corriger', '2026-09-22 11:14:40', '2026-09-23 11:24:07'),
+(5, 6, 5, 'soumissions/GMpszV5DZFFzR06O6WogSj6sCwwBC7x3kdAueU0z.txt', 'video', 'Soumission Harena', 14, 'A améliorer', 'corriger', '2026-09-23 04:29:04', '2026-09-23 11:28:18'),
+(6, 6, 6, 'soumissions/5yILkyHp6Cv3lO9qKV8FwpCHJUsW8dAEWiv341qK.mkv', 'video', 'Soumission Sarobidy', 15, 'Bien joué', 'corriger', '2026-09-23 04:37:07', '2026-09-23 11:16:01'),
+(7, 6, 8, 'soumissions/UNwypjIX3WABOauVAL3ZZY4eakrdKSjUAn6YACMq.docx', 'document', 'Soumission Manavotra', 0, NULL, 'en attente', '2026-09-23 04:41:37', '2026-09-23 04:41:37');
 
 -- --------------------------------------------------------
 
@@ -625,7 +655,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `firstname`, `bio`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `photo`, `telephone`, `statut`, `role_id`) VALUES
-(1, 'Razafindralambo', 'Valisoa', NULL, 'valisoarazafindralambo@gmail.com', NULL, '$2y$12$XROKGQD9BQqmxGZgF4UPP.R7FZwuB3OfQ8WXMaIzD5U/exV2cMTEC', NULL, '2026-09-14 05:31:54', '2026-09-14 05:54:15', NULL, '0383456734', 'actif', 2),
+(1, 'Razafindralambo', 'Valisoa', NULL, 'valisoarazafindralambo@gmail.com', NULL, '$2y$12$XROKGQD9BQqmxGZgF4UPP.R7FZwuB3OfQ8WXMaIzD5U/exV2cMTEC', NULL, '2026-09-14 05:31:54', '2026-09-22 04:54:16', NULL, '0383456734', 'actif', 2),
 (2, 'admin', 'admin', NULL, 'admin@gmail.com', NULL, '$2y$12$hCA192AHk4fhRsRLj8ofTOH/BN3ekVMt8E3T0skNA1zk6bHirvh5O', NULL, '2026-09-14 05:33:00', '2026-09-14 05:33:00', NULL, NULL, 'actif', 1),
 (3, 'Razafindralambo', 'Heriniaina', NULL, 'heriniaina@gmail.com', NULL, '$2y$12$qbNpO6AcoN4MJ45H4.8mw.HWmWfx1yEwurSlxESza17uCclissf0e', NULL, '2026-09-14 05:36:09', '2026-09-14 05:36:09', NULL, NULL, 'actif', 3),
 (4, 'Razafindralambo', 'Nono', NULL, 'nono@gmail.com', NULL, '$2y$12$GXJoO82hDtF8xVrMZMbwOOPytszj5yQ3wlevACzQEVjCSqFU2D2ma', NULL, '2026-09-14 06:21:53', '2026-09-14 06:25:20', NULL, '0383456734', 'actif', 2),
@@ -850,7 +880,7 @@ ALTER TABLE `cours`
 -- AUTO_INCREMENT pour la table `exercices`
 --
 ALTER TABLE `exercices`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT pour la table `failed_jobs`
@@ -868,13 +898,13 @@ ALTER TABLE `favoris`
 -- AUTO_INCREMENT pour la table `inscriptions`
 --
 ALTER TABLE `inscriptions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT pour la table `inscription_instrument`
 --
 ALTER TABLE `inscription_instrument`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT pour la table `instruments`
@@ -916,13 +946,13 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT pour la table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT pour la table `paiements`
 --
 ALTER TABLE `paiements`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT pour la table `paiementsbackup`
@@ -934,7 +964,7 @@ ALTER TABLE `paiementsbackup`
 -- AUTO_INCREMENT pour la table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT pour la table `resources`
@@ -952,7 +982,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT pour la table `soumissions`
 --
 ALTER TABLE `soumissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT pour la table `soumissionsbackup`
