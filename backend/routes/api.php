@@ -13,8 +13,8 @@ use App\Http\Controllers\Api\PaiementController;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\MessagesController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\SoumissionController;
-use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------

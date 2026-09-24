@@ -57,25 +57,25 @@ export default function ProfMesCours() {
 
   const [toDelete, setToDelete] = useState(null);
 
-  const { cours, setCours, fetchCours } = useGetCour();
-  console.log("cours : ", cours);
+  const { courByProf, setCours, fetchCours } = useGetCour();
+  console.log("courByProf : ", courByProf);
 
   const [search, setSearch] = useState("");
   const [statutFilter, setStatutFilter] = useState("");
   const [instrumentFilter, setInstrumentFilter] = useState("");
 
   const statutOptions = useMemo(() => {
-    const set = new Set(cours.map((c) => c.statut).filter(Boolean));
+    const set = new Set(courByProf.map((c) => c.statut).filter(Boolean));
     return [...set].map((s) => ({ value: s, label: s }));
-  }, [cours]);
+  }, [courByProf]);
 
   const instrumentOptions = useMemo(() => {
-    const set = new Set(cours.map((c) => c.instrument?.name).filter(Boolean));
+    const set = new Set(courByProf.map((c) => c.instrument?.name).filter(Boolean));
     return [...set].map((n) => ({ value: n, label: n }));
-  }, [cours]);
+  }, [courByProf]);
 
   const filteredCours = useMemo(() => {
-    return cours.filter((c) => {
+    return courByProf.filter((c) => {
       const matchSearch = search
         ? (c.titre || "").toLowerCase().includes(search.toLowerCase())
         : true;
@@ -85,7 +85,7 @@ export default function ProfMesCours() {
         : true;
       return matchSearch && matchStatut && matchInstrument;
     });
-  }, [cours, search, statutFilter, instrumentFilter]);
+  }, [courByProf, search, statutFilter, instrumentFilter]);
 
   const hasActiveFilters =
     search !== "" || statutFilter !== "" || instrumentFilter !== "";
@@ -171,7 +171,7 @@ export default function ProfMesCours() {
         />
       )}
 
-      {cours.length > 0 && (
+      {courByProf.length > 0 && (
         <FilterBar
           searchValue={search}
           onSearchChange={setSearch}
@@ -193,7 +193,7 @@ export default function ProfMesCours() {
             },
           ]}
           resultCount={filteredCours.length}
-          totalCount={cours.length}
+          totalCount={courByProf.length}
           hasActiveFilters={hasActiveFilters}
           onReset={() => {
             setSearch("");
@@ -287,7 +287,7 @@ export default function ProfMesCours() {
           </table>
         </div>
 
-        {cours.length === 0 ? (
+        {courByProf.length === 0 ? (
           <p className="px-5 py-12 text-center font-body text-sm text-ink-soft">
             Tu n'as pas encore publié de cours.{" "}
             <Link

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\CourPublieEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CourResource;
 use App\Models\Cour;
@@ -16,24 +17,29 @@ class CourController extends Controller
      */
     public function index(Request $request)
     {
-        $cour = Cour::with(['instrument', 'level','prof'])
+        $courByProf = Cour::with(['instrument', 'level','prof'])
             ->where("prof_id", $request->user()->id)
+            ->latest()
+            ->get();
+        $cour = Cour::with(['instrument', 'level','prof'])
+            // ->where("prof_id", $request->user()->id)
             ->latest()
             ->get();
         $courBrouillon = Cour::with(['instrument','level','prof'])
             ->where("statut", "brouillon")
-            ->where("prof_id", $request->user()->id)
+            // ->where("prof_id", $request->user()->id)
             ->latest()
             ->get();
         $courPublié = Cour::with('instrument')
             ->with(['level','prof'])
             ->where("statut", "publié")
-            ->where("prof_id", $request->user()->id
-            )->latest()
+            // ->where("prof_id", $request->user()->id)
+            ->latest()
             ->get();
 
         return response()->json([
             "all" => $cour, 
+            "byProf" => $courByProf, 
             "brouillon" => $courBrouillon,
             "publie" => $courPublié
         ]);
@@ -176,6 +182,8 @@ class CourController extends Controller
         $cour->statut = $request->statut;
 
         $cour->save();
+
+        event(new CourPublieEvent($cour));
 
         return response()->json([
             'message' => 'Statut du cour modifié avec succès',

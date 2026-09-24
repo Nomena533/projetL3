@@ -5,6 +5,7 @@ import { CourContext } from "../context/CourContext";
 function CourProvider({ children }) {
   const [cours, setCours] = useState([]);
   const [cour, setCourDetail] = useState(null);
+  const [courByProf, setCourByProf] = useState([]);
   const [courBrouillon, setCourBrouillon] = useState([]);
   const [courPublie, setCourPublie] = useState([]);
 
@@ -16,6 +17,7 @@ function CourProvider({ children }) {
     try {
       const response = await getCour();
       setCours(response.data.all);
+      setCourByProf(response.data.byProf);
       setCourBrouillon(response.data.brouillon);
       setCourPublie(response.data.publie);
 
@@ -50,7 +52,7 @@ function CourProvider({ children }) {
 
   return (
     <CourContext.Provider
-      value={{ cours, courBrouillon, courPublie, cour, fetchCours, fetchCourDetail, setCours, setCourBrouillon, setCourPublie }}
+      value={{ cours, courBrouillon, courPublie, cour, courByProf, fetchCours, fetchCourDetail, setCours, setCourBrouillon, setCourPublie }}
     >
       {children}
     </CourContext.Provider>

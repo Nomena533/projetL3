@@ -25,8 +25,10 @@ export default function PaiementPublic() {
   const [searchParams] = useSearchParams();
   const niveauName = searchParams.get("niveau");
   const instrumentsParam = searchParams.get("instruments");
+  console.log("instrumentsParam : ", instrumentsParam);
   const inscriptionId = searchParams.get("inscriptionId");
   const instruments = instrumentsParam ? instrumentsParam.split(",") : [];
+  console.log("instruments : ", instruments);
 
   const [nombreMois, setNombreMois] = useState(1);
   const [modePaiement, setModePaiement] = useState(null);
@@ -55,12 +57,11 @@ export default function PaiementPublic() {
     }
   }, [levels, niveauName]);
 
-  const sousTotal = nombreMois * niveau.prix_mensuel;
+  const montantTotalInstrument = niveau.prix_mensuel * instruments.length;
+  const sousTotal = nombreMois * montantTotalInstrument;
   const total = sousTotal + parseFloat(niveau.droit_inscription);
 
-  const moisValide =
-        Number.isInteger(nombreMois) &&
-        nombreMois >= 1;
+  const moisValide = Number.isInteger(nombreMois) && nombreMois >= 1;
 
   const modesMobileMoney = MODES_PAIEMENT.filter(
     (m) => m.groupe === "mobile_money",
@@ -183,7 +184,12 @@ export default function PaiementPublic() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 px-4 py-12 sm:px-6">
-      <input type="hidden" name="description" value="Premier paiement" readOnly />
+      <input
+        type="hidden"
+        name="description"
+        value="Premier paiement"
+        readOnly
+      />
       <AnimatedSection className="text-center">
         <p className="font-body text-xs font-medium text-coral-dark">
           Dernière étape
@@ -198,7 +204,7 @@ export default function PaiementPublic() {
         </p>
       </AnimatedSection>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_360px] lg:items-start lg:gap-8">
+      <div className="grid gap-6 lg:grid-cols-[1fr_380px] lg:items-start lg:gap-8">
         {/* Colonne gauche : formulaire */}
         <div className="space-y-6">
           {/* Inscription réalisée */}
@@ -216,6 +222,23 @@ export default function PaiementPublic() {
               <span className="rounded-full bg-coral/10 px-3 py-1 font-body text-xs font-semibold text-coral-dark">
                 {niveau.name}
               </span>
+            </div>
+            <div className="border-t border-ivory-dark pt-4 mt-4">
+              <p className="mt-1 font-body text-sm text-ink-soft">
+                Instruments :{" "}
+                {instruments.map((instrument) => (
+                  <span
+                    key={instrument}
+                    className="rounded-full bg-ivory px-2.5 py-0.5 font-body text-xs text-ink-soft"
+                  >
+                    {instrument}
+                  </span>
+                ))}
+              </p>
+              <p className="mt-1 font-body text-sm text-ink-soft">
+                Montant total par mois :{" "}
+                {formatAriary(montantTotalInstrument)} / mois
+              </p>
             </div>
 
             <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-ivory-dark pt-4">
@@ -249,7 +272,7 @@ export default function PaiementPublic() {
             <p className="mt-1 font-body text-sm text-ink-soft">
               Montant mensuel de ce niveau :{" "}
               <span className="font-semibold text-ink">
-                {formatAriary(niveau.prix_mensuel)} / mois
+                {formatAriary(montantTotalInstrument)} / mois
               </span>
             </p>
 
@@ -276,8 +299,7 @@ export default function PaiementPublic() {
                 className="w-28 rounded-lg border border-ivory-dark bg-white px-3 py-2.5 font-body text-sm text-ink focus:border-coral focus:outline-none"
               />
               <span className="font-body text-sm text-ink-soft">
-                {nombreMois > 1 ? "mois" : "mois"} ·{" "}
-                {formatAriary(sousTotal)}
+                {nombreMois > 1 ? "mois" : "mois"} · {formatAriary(sousTotal)}
               </span>
             </div>
           </AnimatedSection>
@@ -406,7 +428,7 @@ export default function PaiementPublic() {
           <dl className="mt-4 space-y-3 font-body text-sm">
             <div className="flex items-center justify-between">
               <dt className="text-ink-soft">
-                {nombreMois} mois × {formatAriary(niveau.prix_mensuel)}
+                {nombreMois} mois × {formatAriary(niveau.prix_mensuel)} × {instruments.length} instrument{instruments.length > 1 ? "s" : " "}
               </dt>
               <dd className="text-ink">{formatAriary(sousTotal)}</dd>
             </div>

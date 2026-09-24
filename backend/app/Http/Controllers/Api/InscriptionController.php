@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\InscriptionEleveCreatedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Inscription;
 use App\Models\Level;
@@ -57,8 +58,10 @@ class InscriptionController extends Controller
         // le $validated['instruments'] est un tableau contenant les id des instruments séléctionnés
         $inscription->instruments()->attach($validated['instruments']);
 
+        event(new InscriptionEleveCreatedEvent($inscription));
+
         // MAJ du telephone de l'user
-        $user = User::where("id", $userId)->update(["telephone" => $request->telephone]);
+        User::where("id", $userId)->update(["telephone" => $request->telephone]);
 
         return response()->json([
             'message' => 'Inscription réussi avec succès',

@@ -15,7 +15,7 @@ export default function AdminValidation() {
   const { cours, courBrouillon, setCours, setCourBrouillon, fetchCours } = useGetCour();
   const [alert, setAlert] = useState(location.state?.success || null);
 
-  console.log(courBrouillon);
+  console.log("courBrouillon : ", courBrouillon);
 
   const formatDate = (date) => {
     const formatted = new Date(date).toLocaleDateString('fr-FR', {

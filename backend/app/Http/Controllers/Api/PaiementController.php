@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\PaiementCreatedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Inscription;
 use App\Models\Paiement;
@@ -49,6 +50,8 @@ class PaiementController extends Controller
         $validated['inscription_id'] = $inscription->id;
 
         $paiement = Paiement::create($validated);
+
+        event(new PaiementCreatedEvent($paiement));
 
         return response()->json([
             'message' => "Paiement effectué avec succès",

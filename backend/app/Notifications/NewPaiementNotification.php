@@ -57,8 +57,8 @@ class NewPaiementNotification extends Notification
     {
         return [
             'titre' => 'Nouveau paiement',
-            'message' => 'Un élève vient d’effectuer un paiement.',
-            'paiement_id' => $this->paiement->id_paiement,
+            'message' => "{$this->paiement->inscription->user->name} {$this->paiement->inscription->user->firstname} vient d\\'effectuer son paiement.",
+            'paiement_id' => $this->paiement->id,
         ];
     }
 

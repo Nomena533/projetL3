@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : mer. 23 sep. 2026 à 16:35
+-- Généré le : ven. 25 sep. 2026 à 01:36
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -85,7 +85,8 @@ CREATE TABLE `cours` (
 
 INSERT INTO `cours` (`id`, `prof_id`, `instrument_id`, `niveau_id`, `titre`, `description`, `image`, `duree`, `statut`, `created_at`, `updated_at`) VALUES
 (1, 3, 2, 1, 'Cour test', 'test 2 modifier', 'cours/tFXp7DDFUPiwXMRpChm6ZlbURyvlVsuMfhYqW4qB.jpg', '15 min', 'publié', '2026-09-14 05:41:42', '2026-09-23 11:26:53'),
-(2, 3, 1, 1, 'Cour test 2', 'test 2', 'cours/N3uvA4gZNbX76CXREAXQtljhPr2CJ1vWZzZX5dZ9.png', '2 heures', 'publié', '2026-09-14 05:50:14', '2026-09-14 17:02:26');
+(2, 3, 1, 1, 'Cour de guitare prof 3', 'test 2', 'cours/N3uvA4gZNbX76CXREAXQtljhPr2CJ1vWZzZX5dZ9.png', '2 heures', 'publié', '2026-09-14 05:50:14', '2026-09-14 17:02:26'),
+(3, 14, 1, 1, 'Cour Mandresy', 'Test', 'cours/IdY6bSpBFXE2nDpM3IzjacrLEv2o44nkzLHt8rq8.png', '2 heures', 'publié', '2026-09-24 19:03:18', '2026-09-24 20:29:43');
 
 -- --------------------------------------------------------
 
@@ -166,7 +167,10 @@ INSERT INTO `inscriptions` (`id`, `niveau_id`, `user_id`, `montant`, `statut`, `
 (3, 1, 5, 200000.00, 'en attente', NULL, NULL, '2026-09-15 14:12:46', '2026-09-15 14:12:46'),
 (15, 1, 6, 200000.00, 'validé', '2026-09-19', '2027-06-19', '2026-09-15 17:45:42', '2026-09-19 16:28:59'),
 (17, 1, 8, 150000.00, 'validé', '2026-09-19', '2027-06-19', '2026-09-19 03:37:53', '2026-09-19 06:16:13'),
-(18, 1, 1, 150000.00, 'validé', '2025-12-26', '2026-09-26', '2026-09-22 04:54:16', '2026-09-22 04:55:29');
+(18, 1, 1, 150000.00, 'validé', '2025-12-26', '2026-09-26', '2026-09-22 04:54:16', '2026-09-22 04:55:29'),
+(19, 1, 12, 200000.00, 'en attente', NULL, NULL, '2026-09-24 18:16:43', '2026-09-24 18:16:43'),
+(20, 1, 11, 200000.00, 'en attente', NULL, NULL, '2026-09-24 18:34:42', '2026-09-24 18:34:42'),
+(21, 1, 9, 150000.00, 'en attente', NULL, NULL, '2026-09-24 19:00:35', '2026-09-24 19:00:35');
 
 -- --------------------------------------------------------
 
@@ -194,7 +198,12 @@ INSERT INTO `inscription_instrument` (`id`, `inscription_id`, `instrument_id`, `
 (19, 15, 1, '2026-09-15 17:45:42', '2026-09-15 17:45:42'),
 (20, 15, 2, '2026-09-15 17:45:42', '2026-09-15 17:45:42'),
 (23, 17, 1, '2026-09-19 03:37:53', '2026-09-19 03:37:53'),
-(24, 18, 1, '2026-09-22 04:54:16', '2026-09-22 04:54:16');
+(24, 18, 1, '2026-09-22 04:54:16', '2026-09-22 04:54:16'),
+(25, 19, 1, '2026-09-24 18:16:43', '2026-09-24 18:16:43'),
+(26, 19, 2, '2026-09-24 18:16:43', '2026-09-24 18:16:43'),
+(27, 20, 1, '2026-09-24 18:34:42', '2026-09-24 18:34:42'),
+(28, 20, 2, '2026-09-24 18:34:42', '2026-09-24 18:34:42'),
+(29, 21, 2, '2026-09-24 19:00:35', '2026-09-24 19:00:35');
 
 -- --------------------------------------------------------
 
@@ -402,7 +411,47 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (32, '2026_09_19_000000_add_card_fields_to_paiements_table', 13),
 (35, '2026_09_22_111704_add_description_to_soumissions_table', 14),
 (36, '2026_09_22_165735_add_statut_to_soumissions_table', 15),
-(37, '2026_09_23_070534_add_type_to_soumissions_table', 16);
+(37, '2026_09_23_070534_add_type_to_soumissions_table', 16),
+(38, '2026_09_24_114939_create_notifications_table', 17);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `notifications`
+--
+
+CREATE TABLE `notifications` (
+  `id` char(36) NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `notifiable_type` varchar(255) NOT NULL,
+  `notifiable_id` bigint(20) UNSIGNED NOT NULL,
+  `data` text NOT NULL,
+  `read_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `notifications`
+--
+
+INSERT INTO `notifications` (`id`, `type`, `notifiable_type`, `notifiable_id`, `data`, `read_at`, `created_at`, `updated_at`) VALUES
+('0cb07727-392b-480d-874e-13cf696f37e5', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 6, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-24 20:29:44', '2026-09-24 20:29:44'),
+('100e72d3-6256-400f-8381-b1de1cd61fe5', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 4, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-24 20:29:44', '2026-09-24 20:29:44'),
+('12824f2d-63e4-48f0-b8d0-51b5cecde84a', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 12, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-24 20:29:44', '2026-09-24 20:29:44'),
+('1de30806-ec9e-4629-b5aa-62a2451c6861', 'App\\Notifications\\NewUserNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau utilisateur\",\"message\":\"Un nouveau utilisateur s\'est inscrit au plateforme.\",\"user_id\":14}', NULL, '2026-09-24 16:51:54', '2026-09-24 16:51:54'),
+('38a1f8d5-3014-46f1-93b7-f64a43260d9a', 'App\\Notifications\\NewPaiementNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau paiement\",\"message\":\"Nomenjanahary Santaniaina vient d\\u2019effectuer son paiement.\",\"paiement_id\":17}', NULL, '2026-09-24 18:31:36', '2026-09-24 18:31:36'),
+('5211c60a-d5a8-42ec-bd97-df3b5c4f56c6', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 9, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-24 20:29:44', '2026-09-24 20:29:44'),
+('629b7bfc-4af5-4760-a871-47821a9e119d', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 5, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-24 20:29:44', '2026-09-24 20:29:44'),
+('6ad50ff9-82e7-4105-843d-42ac9e8bb263', 'App\\Notifications\\NewInscriptionEleveNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau eleve inscrit a la formation\",\"message\":\"Ratovonarivo Sitraka s\'est inscrit a la formation initiation.\",\"niveau\":\"initiation\"}', NULL, '2026-09-24 19:00:36', '2026-09-24 19:00:36'),
+('7119a4fe-79e6-4dee-b0d5-52ef35ad739d', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 1, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-24 20:29:44', '2026-09-24 20:29:44'),
+('862b1e45-e247-4ff1-84ac-9acedef1d43b', 'App\\Notifications\\NewInscriptionEleveNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau \\u00e9l\\u00e8ve inscrit \\u00e0 la formation\",\"message\":\"Un nouveau utilisateur s\'est inscrit \\u00e0 la formation.\",\"niveau\":\"initiation\"}', NULL, '2026-09-24 18:16:43', '2026-09-24 18:16:43'),
+('ac171e89-54c5-436d-82cd-67733dcfd37c', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 11, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-24 20:29:44', '2026-09-24 20:29:44'),
+('ad0e7596-505a-4f49-b972-fe765c65cf6d', 'App\\Notifications\\NewInscriptionEleveNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau eleve inscrit a la formation\",\"message\":\"Andrianantenaina Marinah s\'est inscrit a la formation initiation.\",\"niveau\":\"initiation\"}', NULL, '2026-09-24 18:34:43', '2026-09-24 18:34:43'),
+('b79eb732-efe3-4a3f-824f-d3dedeae4259', 'App\\Notifications\\NewUserNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau utilisateur\",\"message\":\"Un nouveau utilisateur s\'est inscrit au plateforme.\",\"user_id\":13}', NULL, '2026-09-24 11:02:16', '2026-09-24 11:02:16'),
+('bdfbb917-bcaf-4d03-b0b0-5e26e120861b', 'App\\Notifications\\NewPaiementNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau paiement\",\"message\":\"Ratovonarivo Sitraka vient d\\u2019effectuer son paiement.\",\"paiement_id\":19}', NULL, '2026-09-24 19:01:07', '2026-09-24 19:01:07'),
+('eb67566f-acbe-4896-998c-a21003744cd0', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 8, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-24 20:29:44', '2026-09-24 20:29:44'),
+('ebfa4a0e-9379-48bc-8502-84c5221924ea', 'App\\Notifications\\NewPaiementNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau paiement\",\"message\":\"Andrianantenaina Marinah vient d\\u2019effectuer son paiement.\",\"paiement_id\":18}', NULL, '2026-09-24 18:57:27', '2026-09-24 18:57:27');
 
 -- --------------------------------------------------------
 
@@ -439,7 +488,11 @@ INSERT INTO `paiements` (`id`, `inscription_id`, `nombre_mois`, `montant`, `desc
 (12, 3, '1', 50000.00, NULL, NULL, NULL, NULL, 'orange_money', 'en attente', '2026-09-17 18:16:50', '2026-09-17 18:16:50'),
 (13, 17, '2', 200000.00, 'Premier paiement', '2131231231212312313', '11/22', '1233', 'carte', 'validé', '2026-09-19 03:55:38', '2026-09-19 06:15:15'),
 (14, 17, '2', 100000.00, 'Paiement par tranche', '1231231231231231231', '12/12', '1212', 'carte', 'en attente', '2026-09-19 14:03:46', '2026-09-19 14:03:46'),
-(15, 18, '1', 150000.00, 'Premier paiement', NULL, NULL, NULL, 'orange_money', 'validé', '2026-09-22 04:55:00', '2026-09-22 04:55:29');
+(15, 18, '1', 150000.00, 'Premier paiement', NULL, NULL, NULL, 'orange_money', 'validé', '2026-09-22 04:55:00', '2026-09-22 04:55:29'),
+(16, 17, '1', 50000.00, 'Paiement par tranche', NULL, NULL, NULL, 'orange_money', 'en attente', '2026-09-23 16:50:29', '2026-09-23 16:50:29'),
+(17, 19, '2', 200000.00, 'Premier paiement', NULL, NULL, NULL, 'orange_money', 'en attente', '2026-09-24 18:31:32', '2026-09-24 18:31:32'),
+(18, 20, '2', 300000.00, 'Premier paiement', NULL, NULL, NULL, 'orange_money', 'en attente', '2026-09-24 18:57:26', '2026-09-24 18:57:26'),
+(19, 21, '1', 150000.00, 'Premier paiement', '1231231121231231231', '11/11', '1231', 'carte', 'en attente', '2026-09-24 19:01:06', '2026-09-24 19:01:06');
 
 -- --------------------------------------------------------
 
@@ -502,11 +555,19 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (19, 'App\\Models\\User', 2, 'react-app', '1ea1ab471fd5845599a01b69edcbcc1bc210a5e6468ad475ce8e61aaf5de0cbd', '[\"*\"]', NULL, NULL, '2026-09-14 16:43:12', '2026-09-14 16:43:12'),
 (22, 'App\\Models\\User', 5, 'react-app', '0eacc9f6c961c0dc1fcf979094ca9b5dbe633d433b3b540ba73107935ab657c8', '[\"*\"]', NULL, NULL, '2026-09-15 13:50:52', '2026-09-15 13:50:52'),
 (25, 'App\\Models\\User', 6, 'react-app', '01c5d384e99e15093f2913d6c6ac2329a9f328847da191c14e32f28b7edd74a2', '[\"*\"]', NULL, NULL, '2026-09-15 17:24:32', '2026-09-15 17:24:32'),
-(30, 'App\\Models\\User', 2, 'react-app', '66dfe7cfa609c0dc391c6d8cf90b1145563739d670a233893424bd38e795695f', '[\"*\"]', '2026-09-23 05:02:27', NULL, '2026-09-16 16:44:16', '2026-09-23 05:02:27'),
+(30, 'App\\Models\\User', 2, 'react-app', '66dfe7cfa609c0dc391c6d8cf90b1145563739d670a233893424bd38e795695f', '[\"*\"]', '2026-09-23 14:27:15', NULL, '2026-09-16 16:44:16', '2026-09-23 14:27:15'),
 (32, 'App\\Models\\User', 7, 'react-app', '4795c2a8734dd2a577b26fa8796b1889f69b5a73f8e3bea90e10ffec39fe2161', '[\"*\"]', NULL, NULL, '2026-09-17 07:36:45', '2026-09-17 07:36:45'),
 (37, 'App\\Models\\User', 8, 'react-app', '1909ccd68653f638d11cbdc7d4b0f3fcc198d508019a4a5df8ccc84d006f48b3', '[\"*\"]', NULL, NULL, '2026-09-19 03:36:55', '2026-09-19 03:36:55'),
-(40, 'App\\Models\\User', 3, 'react-app', '387d2380174ced883602b8c04e5547377e8f938faf460c89799813cbe703f94b', '[\"*\"]', '2026-09-23 11:25:07', NULL, '2026-09-19 07:18:25', '2026-09-23 11:25:07'),
-(47, 'App\\Models\\User', 8, 'react-app', '10e30ac22f24b8784c1755066859c1ca5efcb2c1e5a3798b1ffbab83f81522f1', '[\"*\"]', '2026-09-23 10:12:53', NULL, '2026-09-23 04:39:54', '2026-09-23 10:12:53');
+(49, 'App\\Models\\User', 3, 'react-app', '4d09b7259d9a2450567eb6a5aec358fb0b28d34fc937591f3aa556410ed44152', '[\"*\"]', NULL, NULL, '2026-09-23 14:46:08', '2026-09-23 14:46:08'),
+(53, 'App\\Models\\User', 9, 'react-app', 'aa62760b4bd81d7ceadf56db3bfbc4ac129298789b3df748ae82129dbe9d7fc5', '[\"*\"]', NULL, NULL, '2026-09-24 09:32:21', '2026-09-24 09:32:21'),
+(55, 'App\\Models\\User', 10, 'react-app', 'f3371bf949d5d3472631d2f8c37b5ad4d8f35e0d7f4aa94d8a9e4a5bdbdf2f70', '[\"*\"]', NULL, NULL, '2026-09-24 09:39:49', '2026-09-24 09:39:49'),
+(56, 'App\\Models\\User', 11, 'react-app', '4d1397b9a072fef225b1028bc67b0f329aa8a4be083e0e946b8a0233d8479f11', '[\"*\"]', NULL, NULL, '2026-09-24 10:58:51', '2026-09-24 10:58:51'),
+(57, 'App\\Models\\User', 12, 'react-app', 'fff201a08a2df540f10a170d42f2b40180f15822ba4cbf9e5d958ed1ba9d4ed7', '[\"*\"]', NULL, NULL, '2026-09-24 11:00:51', '2026-09-24 11:00:51'),
+(58, 'App\\Models\\User', 13, 'react-app', '3089552056a6a689756820030c17d7e2997c46c0f6b24b2ee61657b908feb91a', '[\"*\"]', NULL, NULL, '2026-09-24 11:02:10', '2026-09-24 11:02:10'),
+(59, 'App\\Models\\User', 14, 'react-app', '3688312c0825a7d7232381ee8b73d7303723371e9412ab107f5231479f57de07', '[\"*\"]', NULL, NULL, '2026-09-24 16:51:50', '2026-09-24 16:51:50'),
+(63, 'App\\Models\\User', 9, 'react-app', 'd9f60a41909583cbc6282261a7cf7d2028cf640673841563788cde96cb21537b', '[\"*\"]', '2026-09-24 20:17:42', NULL, '2026-09-24 19:00:22', '2026-09-24 20:17:42'),
+(64, 'App\\Models\\User', 14, 'react-app', '644d25b50d15e46d94aa7e8bf42aea579c097517f1216fc700400eef0201c2e5', '[\"*\"]', '2026-09-24 20:19:51', NULL, '2026-09-24 19:02:19', '2026-09-24 20:19:51'),
+(65, 'App\\Models\\User', 2, 'react-app', '4fdfa69cfd4014c4e50655f91e18277aa6d5769df8e20c51e9d99ea5d5a4e74d', '[\"*\"]', '2026-09-24 20:29:42', NULL, '2026-09-24 19:03:54', '2026-09-24 20:29:42');
 
 -- --------------------------------------------------------
 
@@ -662,7 +723,13 @@ INSERT INTO `users` (`id`, `name`, `firstname`, `bio`, `email`, `email_verified_
 (5, 'Razafiarison', 'Harena', NULL, 'harenarazafiarison@gmail.com', NULL, '$2y$12$35XThGLjFShVm8A2P9eOHOLOpVNOOmf6QNBNEQooqAoiZ4c4APnXm', NULL, '2026-09-15 13:50:52', '2026-09-15 14:12:46', NULL, '0326746200', 'actif', 2),
 (6, 'Razafiarison', 'Sarobidy', NULL, 'sarobidyrazafiarison@gmail.com', NULL, '$2y$12$rdLDuwL8y59cMEdXSVP4pOAC3m6.DQfcgPayhOgU/cpMXx3RXgVQm', NULL, '2026-09-15 17:24:32', '2026-09-16 09:07:56', NULL, '0326746200', 'actif', 2),
 (7, 'Razafindralambo', 'Anysia', NULL, 'anysiarazafindralamabi@gmail.com', NULL, '$2y$12$4poD01Df5QpfofpN4a7K6uDGAQVibQiKDhXfg3duCaEK0vTJnE.h.', NULL, '2026-09-17 07:36:45', '2026-09-17 07:36:45', NULL, NULL, 'actif', 3),
-(8, 'Razafindralambo', 'Manavotra', NULL, 'manavotrarazafindralambo@gmail.com', NULL, '$2y$12$OkQ.UIKI8xwdZuZ2Y0ePLe8qj6mqDgJPDIxG8hRZMCPkvgz4LUSUu', NULL, '2026-09-19 03:36:54', '2026-09-19 03:37:53', NULL, '0326746200', 'actif', 2);
+(8, 'Razafindralambo', 'Manavotra', NULL, 'manavotrarazafindralambo@gmail.com', NULL, '$2y$12$OkQ.UIKI8xwdZuZ2Y0ePLe8qj6mqDgJPDIxG8hRZMCPkvgz4LUSUu', NULL, '2026-09-19 03:36:54', '2026-09-19 03:37:53', NULL, '0326746200', 'actif', 2),
+(9, 'Ratovonarivo', 'Sitraka', NULL, 'sitrakaratovonarivo@gmail.com', NULL, '$2y$12$lH.eXkPGFHQPbFwvcANZBuZFbqWGafg0loaURhTYrk73lusG2/nYO', NULL, '2026-09-24 09:32:20', '2026-09-24 19:00:35', NULL, '0386789098', 'actif', 2),
+(10, 'Razafindralambo', 'Felix', NULL, 'felixrazafindralambo@gmail.com', NULL, '$2y$12$7vgg8gk/ieJp13SY.07Yj.rPlkQEd9R4Mrv16uDQLrZu1wTLSVScO', NULL, '2026-09-24 09:39:49', '2026-09-24 09:39:49', NULL, NULL, 'actif', 3),
+(11, 'Andrianantenaina', 'Marinah', NULL, 'marinahandrianantenaina@gmail.com', NULL, '$2y$12$nuVPcejLd05qEYJKWVV9hem7AnxuIXI6BZHHoeIwDsZjVyPAj5vjm', NULL, '2026-09-24 10:58:50', '2026-09-24 18:34:42', NULL, '0346062701', 'actif', 2),
+(12, 'Nomenjanahary', 'Santaniaina', NULL, 'santaniainanomenjanahary@gmail.com', NULL, '$2y$12$95qRnMRlRaENQHttUuk0NuatTaMxgCnf2K.tzQyXrIAVPCtxtrDsu', NULL, '2026-09-24 11:00:51', '2026-09-24 18:16:43', NULL, '0386789098', 'actif', 2),
+(13, 'Andriambololona', 'Miaritsiory', NULL, 'miaritsioryandriambololona@gmail.com', NULL, '$2y$12$/WOq.5.pqwlYWxTR5j1YkO6Dt6iO9z8UTSXwTP3bnn1DrXJ.bpV8u', NULL, '2026-09-24 11:02:09', '2026-09-24 11:02:09', NULL, NULL, 'actif', 3),
+(14, 'Rajoelison', 'Mandresy', NULL, 'mandresyrajoelison@gmail.com', NULL, '$2y$12$o6VYTAnC7VEiRoaxJ69BWeb3WsE1c25WiFQapqYEewAZD6OF7I9ba', NULL, '2026-09-24 16:51:49', '2026-09-24 16:51:49', NULL, NULL, 'actif', 3);
 
 --
 -- Index pour les tables déchargées
@@ -790,6 +857,13 @@ ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Index pour la table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `notifications_notifiable_type_notifiable_id_index` (`notifiable_type`,`notifiable_id`);
+
+--
 -- Index pour la table `paiements`
 --
 ALTER TABLE `paiements`
@@ -874,7 +948,7 @@ ALTER TABLE `certificats`
 -- AUTO_INCREMENT pour la table `cours`
 --
 ALTER TABLE `cours`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `exercices`
@@ -898,13 +972,13 @@ ALTER TABLE `favoris`
 -- AUTO_INCREMENT pour la table `inscriptions`
 --
 ALTER TABLE `inscriptions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT pour la table `inscription_instrument`
 --
 ALTER TABLE `inscription_instrument`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT pour la table `instruments`
@@ -916,7 +990,7 @@ ALTER TABLE `instruments`
 -- AUTO_INCREMENT pour la table `jobs`
 --
 ALTER TABLE `jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT pour la table `lessons`
@@ -946,13 +1020,13 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT pour la table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT pour la table `paiements`
 --
 ALTER TABLE `paiements`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT pour la table `paiementsbackup`
@@ -964,7 +1038,7 @@ ALTER TABLE `paiementsbackup`
 -- AUTO_INCREMENT pour la table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT pour la table `resources`
@@ -994,7 +1068,7 @@ ALTER TABLE `soumissionsbackup`
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Contraintes pour les tables déchargées
