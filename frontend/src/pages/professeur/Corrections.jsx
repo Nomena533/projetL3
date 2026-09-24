@@ -17,6 +17,8 @@ import { getSoumissionMeta } from "../../lib/soumissionMeta";
 import { useLevel } from "../../app/hooks/useLevel";
 import { capitalize, formatDate } from "../../lib/formatFunction";
 import Alert from "../../components/Alert";
+import { User } from "../../lib/icons";
+import { useAuth } from "../../app/hooks/useAuth";
 
 const STATUT_OPTIONS = [
   { value: "en attente", label: "En attente" },
@@ -29,7 +31,11 @@ export default function ProfCorrections() {
   const [search, setSearch] = useState("");
   const [statutFilter, setStatutFilter] = useState("");
   const { soumission, fetchSoumission } = useSoumission();
-  console.log("soumission :", soumission);
+  // console.log("soumission :", soumission);
+  const {user} = useAuth();
+
+  const soumissionProf = soumission.filter((s) => s.exercice.lesson.cour.prof_id === user.id);
+  // console.log("soumissionProf : ", soumissionProf);
 
   const [alert, setAlert] = useState(
     location.state?.success
@@ -56,7 +62,7 @@ export default function ProfCorrections() {
   }, [alert]);
 
   const filtered = useMemo(() => {
-    return soumission.filter((s) => {
+    return soumissionProf.filter((s) => {
       const matchSearch = search
         ? `${s.exercice.titre} ${s.exercice.lesson.titre ?? ""} ${s.exercice.lesson.cour.titre ?? ""} ${s.exercice.lesson.cour.level.name ?? ""} ${s.eleve.name ?? ""} ${s.eleve.firstname ?? ""}`
             .toLowerCase()

@@ -6,6 +6,8 @@ import {
   HiOutlineBanknotes,
   HiOutlineInbox,
   HiOutlineChatBubbleLeftRight,
+  HiOutlineAcademicCap,
+  HiOutlineChevronRight,
 } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import ValihaMotif from "../../components/ValihaMotif";
@@ -13,10 +15,13 @@ import StatCard from "../../components/StatCard";
 import Pill from "../../components/Pill";
 import { MES_COURS, SOUMISSIONS, TONE_BG } from "../../lib/mockProfData";
 import useGetCour from "../../app/hooks/useGetCour";
-import { capitalize } from "../../lib/formatFunction";
-import { BookOpen } from "../../lib/icons";
+import { capitalize, formatDate } from "../../lib/formatFunction";
+import { BookOpen, ClipboardCheck } from "../../lib/icons";
+import { useSoumission } from "../../app/hooks/useSoumission";
+import { useAuth } from "../../app/hooks/useAuth";
+import { useUser } from "../../app/hooks/useUser";
 
-const EN_ATTENTE = SOUMISSIONS.filter((s) => s.statut === "En attente");
+// const EN_ATTENTE = SOUMISSIONS.filter((s) => s.statut === "En attente");
 
 const QUICK_LINKS = [
   { to: "/professeur/mescours", label: "Mes cours", icon: HiOutlineBookOpen },
@@ -30,7 +35,18 @@ const QUICK_LINKS = [
 
 export default function ProfDashboard() {
   const { cours, setCours, fetchCours } = useGetCour();
-  console.log("cours : ", cours);
+  const { soumission } = useSoumission();
+  const { user } = useAuth();
+  const { userListInscription } = useUser();
+
+  const soumissionProf = soumission.filter(
+    (s) => s.exercice.lesson.cour.prof_id === user.id,
+  );
+  
+  console.log("soumissionProf : ", soumissionProf);
+
+  const EN_ATTENTE = soumissionProf.filter((s) => s.statut === "en attente");
+
   return (
     <div className="space-y-10">
       {/* ---------- HERO ---------- */}
@@ -38,19 +54,27 @@ export default function ProfDashboard() {
         <div className="relative overflow-hidden rounded-[1.85rem] bg-ink/90 p-8 sm:p-10">
           <div className="relative z-10 max-w-lg">
             <p className="font-mono text-xs uppercase tracking-widest text-amber-light">
-              Bonjour Rado
+              Bonjour {user.firstname} {user.name}
             </p>
-            <h2 className="mt-3 font-display text-2xl font-semibold leading-snug text-ivory sm:text-3xl">
-              {EN_ATTENTE.length} soumission{EN_ATTENTE.length > 1 ? "s" : ""}{" "}
-              attendent ta correction.
-            </h2>
-            <Link
-              to="/professeur/corrections"
-              className="group mt-7 inline-flex items-center gap-2 rounded-full bg-ivory px-6 py-3 font-body text-sm font-semibold text-brick shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
-            >
-              Corriger maintenant
-              <HiOutlineArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
+            {soumissionProf.length === 0 ? (
+              <h2 className="mt-3 font-display text-2xl font-semibold leading-snug text-ivory sm:text-3xl">
+                Aucune soumission pour le moment
+              </h2>
+            ) : (
+              <>
+                <h2 className="mt-3 font-display text-2xl font-semibold leading-snug text-ivory sm:text-3xl">
+                  {EN_ATTENTE.length} soumission
+                  {EN_ATTENTE.length > 1 ? "s" : ""} attendent ta correction.
+                </h2>
+                <Link
+                  to="/professeur/corrections"
+                  className="group mt-7 inline-flex items-center gap-2 rounded-full bg-ivory px-6 py-3 font-body text-sm font-semibold text-brick shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
+                >
+                  Corriger maintenant
+                  <HiOutlineArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+              </>
+            )}
           </div>
           <ValihaMotif
             count={22}
@@ -61,22 +85,22 @@ export default function ProfDashboard() {
       </AnimatedSection>
 
       {/* ---------- STATS ---------- */}
-      <section className="grid gap-5 sm:grid-cols-3">
+      <section className="grid gap-5 sm:grid-cols-2">
         <StatCard
           icon={HiOutlineBookOpen}
           label="Cours publiés"
           value={cours.filter((c) => c.statut === "publié").length}
         />
-        <StatCard
+        {/* <StatCard
           icon={HiOutlineUsers}
           label="Élèves inscrits"
           value={MES_COURS.reduce((a, c) => a + c.eleves, 0)}
           delay={80}
-        />
+        /> */}
         <StatCard
-          icon={HiOutlineBanknotes}
-          label="Revenus ce mois"
-          value="410k Ar"
+          icon={ClipboardCheck}
+          label="Total soumissions"
+          value={soumissionProf.length}
           delay={160}
         />
       </section>
@@ -101,13 +125,15 @@ export default function ProfDashboard() {
               key={c.id}
               delay={i * 90}
               as={Link}
-              to={`/professeur/cours/${c.id}`}
+              to={`/professeur/cours/${c.id}/details`}
               className="group flex gap-4 rounded-2xl border border-ivory-dark bg-white/60 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-coral/40 hover:shadow-xl hover:shadow-coral/10"
             >
               <div
                 className={`grid h-16 w-16 shrink-0 place-items-center rounded-xl text-2xl bg-coral/90`}
               >
-                <span className="opacity-90"><BookOpen className="text-white"/></span>
+                <span className="opacity-90">
+                  <BookOpen className="text-white" />
+                </span>
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-2">
@@ -117,7 +143,7 @@ export default function ProfDashboard() {
                   <Pill>{c.statut}</Pill>
                 </div>
                 <p className="mt-1.5 font-body text-sm text-ink-soft">
-                  Instruments : {c.instrument.name} 
+                  Instruments : {c.instrument.name}
                 </p>
               </div>
             </AnimatedSection>
@@ -137,26 +163,51 @@ export default function ProfDashboard() {
         </AnimatedSection>
 
         <div className="mt-6 space-y-3">
-          {EN_ATTENTE.slice(0, 3).map((s, i) => (
-            <AnimatedSection
-              key={s.id}
-              delay={i * 80}
-              className="flex items-center gap-4 rounded-2xl border border-ivory-dark bg-white/60 p-5"
-            >
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-amber/15 text-brick">
-                <HiOutlineInbox size={17} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-body text-sm font-semibold text-ink">
-                  {s.exercice}
-                </p>
-                <p className="mt-0.5 font-body text-xs text-ink-soft">
-                  {s.eleve} · {s.cours} · {s.date}
-                </p>
-              </div>
-              <Pill>{s.statut}</Pill>
-            </AnimatedSection>
-          ))}
+          {EN_ATTENTE.slice(0, 3).map((s, i) => {
+            const niveauNom = s.exercice.lesson.cour.level.name;
+            const coursNom = s.exercice.lesson.cour.titre;
+            const leconNom = s.exercice.lesson.titre;
+            const eleveNom = `${s.eleve.name} ${s.eleve.firstname}`;
+            return (
+              <AnimatedSection
+                key={s.id}
+                delay={i * 80}
+                className="flex items-center gap-4 rounded-2xl border border-ivory-dark bg-white/60 p-5"
+              >
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-amber/15 text-brick">
+                  <HiOutlineInbox size={17} />
+                </span>
+                <div className="min-w-0 flex-1 space-y-2">
+                  <p className="truncate font-body text-sm font-semibold text-ink">
+                    {s.exercice.titre}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+                    <span className="flex items-center gap-1">
+                      <HiOutlineAcademicCap
+                        size={13}
+                        className="text-coral-dark"
+                      />
+                      {niveauNom}
+                    </span>
+                    <HiOutlineChevronRight size={11} />
+                    <span className="flex items-center gap-1">
+                      <HiOutlineBookOpen
+                        size={13}
+                        className="text-coral-dark"
+                      />
+                      {coursNom}
+                    </span>
+                    <HiOutlineChevronRight size={11} />
+                    <span>{leconNom}</span>
+                  </div>
+                  <p className="mt-0.5 font-body text-xs text-ink-soft">
+                    {eleveNom} . Le {formatDate(s.created_at)}
+                  </p>
+                </div>
+                <Pill>{s.statut}</Pill>
+              </AnimatedSection>
+            );
+          })}
         </div>
       </section>
 

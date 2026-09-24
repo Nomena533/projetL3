@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\UserCreatedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -19,16 +20,6 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | Validation des données reçues
-        |--------------------------------------------------------------------------
-        |
-        | validate() vérifie que les données respectent les règles.
-        | Si une règle échoue, Laravel renvoie automatiquement une
-        | réponse JSON avec les erreurs (HTTP 422).
-        |
-        */
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -37,16 +28,6 @@ class AuthController extends Controller
             'password' => 'required|min:8', // confirmed : dois avoir un deuxième champ pour la confirmation du mot de passe dans l'interface user
             'role_id' => 'required|exists:roles,id' // role_id doit obligatoirement correspondre à un id existant dans la table roles
         ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Création de l'utilisateur
-        |--------------------------------------------------------------------------
-        |
-        | Hash::make() chiffre le mot de passe.
-        | Il ne faut JAMAIS enregistrer un mot de passe en clair.
-        |
-        */
 
         $user = User::create([
             'name' => $request->name,
@@ -67,18 +48,11 @@ class AuthController extends Controller
         |
         */
 
+        event(new UserCreatedEvent($user));
+
         $token = $user
                     ->createToken('react-app')
                     ->plainTextToken;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Réponse JSON
-        |--------------------------------------------------------------------------
-        |
-        | UserResource contrôle les informations envoyées.
-        |
-        */
 
         return response()->json([
             'message' => 'Inscription réussie.',
@@ -115,74 +89,6 @@ class AuthController extends Controller
                 'message' => 'Identifiant incorrect'
             ], 401);
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Création d'un nouveau token
-        |--------------------------------------------------------------------------
-        */
-
-        $token = $user
-                    ->createToken('react-app')
-                    ->plainTextToken;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Retour vers React
-        |--------------------------------------------------------------------------
-        */
-
-        return response()->json([
-            'message' => 'Connexion réussie.',
-            'user' => new UserResource($user),
-            'token' => $token
-        ]);
-    }
-
-    public function loginOriginal(Request $request)
-    {
-
-        /*
-        |--------------------------------------------------------------------------
-        | Validation
-        |--------------------------------------------------------------------------
-        */
-
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Vérification des identifiants
-        |--------------------------------------------------------------------------
-        |
-        | Auth::attempt()
-        |
-        | Retourne true si l'utilisateur existe
-        | ET que le mot de passe est correct.
-        |
-        */
-
-        if (!Auth::attempt($request->only('email', 'password'))) {
-
-            return response()->json([
-                'message' => 'Email ou mot de passe incorrect.'
-            ], 401);
-
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Auth::user()
-        |--------------------------------------------------------------------------
-        |
-        | Retourne automatiquement l'utilisateur connecté.
-        |
-        */
-
-        $user = Auth::user();
 
         /*
         |--------------------------------------------------------------------------

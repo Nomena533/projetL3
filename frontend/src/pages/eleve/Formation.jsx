@@ -395,7 +395,7 @@ export default function Formation() {
   const { user } = useAuth();
   const { userListInscription, fetchUserListInscription } = useUser();
   const { paiementList, fetchPaiement } = usePaiement();
-  const [ cardEnCour, setCardEnCour ] = useState(null);
+  const [enCour, setEnCour] = useState(null);
   // console.log("cardEnCour : ", cardEnCour) ;
 
   // Niveau pour lequel le modal de paiement est ouvert (objet fusionné
@@ -440,34 +440,6 @@ export default function Formation() {
       console.error("Erreur lors du paiement", err.response?.data);
       setErreur("Une erreur est survenue lors du paiement");
     }
-  };
-
-  const calculProgression = (dateDebut, dureeTotale) => {
-    const debut = new Date(dateDebut);
-    const aujourdHui = new Date();
-
-    let moisEcoules =
-      (aujourdHui.getFullYear() - debut.getFullYear()) * 12 +
-      (aujourdHui.getMonth() - debut.getMonth());
-
-    if (aujourdHui.getDate() < debut.getDate()) {
-      moisEcoules--;
-    }
-
-    moisEcoules = Math.max(0, moisEcoules);
-
-    const moisActuel = Math.min(moisEcoules + 1, dureeTotale);
-
-    const progression = Math.min((moisActuel / dureeTotale) * 100, 100);
-
-    const moisRestants = Math.max(dureeTotale - moisActuel, 0);
-
-    return {
-      moisEcoules,
-      moisActuel,
-      moisRestants,
-      progression,
-    };
   };
 
   const inscritQuelquePart = userListInscription.length > 0;
@@ -525,14 +497,6 @@ export default function Formation() {
 
             console.log("inscription : ", inscription);
 
-            const progressionValues = calculProgression(
-              inscription?.date_debut,
-              inscription?.level.duree.split(" ")[0],
-            );
-
-            // console.log("progressionValues : ", progressionValues);
-            // console.log("moisActuel : ", progressionValues?.moisActuel);
-
             const dureeTotale = Array.from(
               { length: inscription?.level.duree.split(" ")[0] },
               (_, idx) => idx + 1,
@@ -540,31 +504,30 @@ export default function Formation() {
 
             console.log("dureeTotale : ", dureeTotale);
 
-            let paiementNiveau;
-            let moisPayer;
-            let moisRestant;
-            let enCours;
-            let enAttente;
+            const paiementNiveau = paiementList?.filter(
+              (pl) => pl.inscription_id === inscription?.id,
+            );
 
-            if (inscription) {
-              paiementNiveau = paiementList.filter(
-                (pl) => pl.inscription_id === inscription.id,
-              );
+            // reduce : permet de parcourir un tableau et de donner un résultat finale en une seul valeur => ici somme des nombre de mois
+            // somme : stocke les éléments parcourus => ici nombre_mois
+            const moisPayer = paiementNiveau?.reduce(
+              (somme, paiement) => somme + parseInt(paiement.nombre_mois),
+              0,
+            );
 
-              // reduce : permet de parcourir un tableau et de donner un résultat finale en une seul valeur => ici somme des nombre de mois
-              // somme : stocke les éléments parcourus => ici nombre_mois
-              moisPayer = paiementNiveau.reduce(
-                (somme, paiement) => somme + parseInt(paiement.nombre_mois),
-                0,
-              );
+            const moisRestant =
+              parseInt(inscription?.level?.duree.split(" ")[0]) - moisPayer;
 
-              moisRestant =
-                parseInt(inscription.level.duree.split(" ")[0]) - moisPayer;
+            const enCours = inscrit && inscription?.date_debut;
+            console.log("enCours : ", enCours);
 
-              enCours = inscrit && inscription?.date_debut;
-              console.log("enCours : ", enCours);
-              enAttente = inscrit && inscription?.date_debut === null;
-            }
+            const niveauEnCour = userListInscription?.find(
+              (i) => i.date_debut === enCours,
+            );
+            console.log("niveauEnCour : ", niveauEnCour);
+
+            // setEnCour(niveauEnCour?.level?.name);
+            const enAttente = inscrit && inscription?.date_debut === null;
 
             // Paiement à jour : niveau en cours dont tous les mois sont payés.
             const aJour = enCours && moisRestant === 0;

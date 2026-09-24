@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\MessagesController;
 use App\Http\Controllers\Api\SoumissionController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/updateProfile', [AuthController::class, 'updateProfile']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
+    Route::get('/getCour', [CourController::class, 'index']);
     Route::post('/storeCour', [CourController::class, 'store']);
 
     Route::post('/niveau/{niveauId}/storeInscription', [InscriptionController::class, 'store']);
@@ -50,59 +52,80 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post("/exercice/{exerciceId}/storeSoumission", [SoumissionController::class, 'store']);
 
+    Route::name("notification")->controller(NotificationController::class)->group(function () {
+        Route::get('/getNotification', 'index');
+    });
 });
 
-
-Route::get('/getUsers', [UserController::class, 'index']);
+Route::name("user")->controller(UserController::class)->group(function () {
+    Route::get('/getUsers', 'index');
+    Route::get('/user/{userId}/userListInscription', 'userListInscription');
+});
 
 Route::get('/getRole', [RoleController::class, 'index']);
 
-Route::get('/getCour', [CourController::class, 'index']);
-Route::get('/getCourDetail/{id}', [CourController::class, 'show']);
-Route::put('/updateCour/{id}', [CourController::class, 'update']);
-Route::put('/updateStatutCour/{id}', [CourController::class, 'updateStatut']);
-Route::delete('/deleteCour/{id}', [CourController::class, 'destroy']);
+Route::name("cour")->controller(CourController::class)->group(function () {
+    Route::get('/getCourDetail/{id}', 'show');
+    Route::put('/updateCour/{id}', 'update');
+    Route::put('/updateStatutCour/{id}', 'updateStatut');
+    Route::delete('/deleteCour/{id}', 'destroy');
+});
 
-Route::get('/getInstrument', [InstrumentController::class, 'index']);
-Route::post('/storeInstrument', [InstrumentController::class, 'store']);
+Route::name("instrument")->controller(InstrumentController::class)->group(function () {
+    Route::get('/getInstrument', 'index');
+    Route::post('/storeInstrument', 'store');
+});
 
-Route::get('/getLevel', [LevelController::class, 'index']);
-Route::post('/storeLevel', [LevelController::class, 'store']);
+Route::name("level")->controller(LevelController::class)->group(function () {
+    Route::get('/getLevel', 'index');
+    Route::post('/storeLevel', 'store');
+});
 
-Route::post('/cour/{courId}/storeLesson', [LessonController::class, 'store']);
-Route::get('/getLesson', [LessonController::class, 'index']);
-Route::get('/getLessonByCour/{courId}', [LessonController::class, 'getByCour']);
-Route::get('/getLessonDetail/{id}', [LessonController::class, 'show']);
-Route::put('/updateLesson/{id}', [LessonController::class, 'update']);
-Route::delete('/deleteLesson/{id}', [LessonController::class, 'destroy']);
+Route::name("lesson")->controller(LessonController::class)->group(function () {
+    Route::post('/cour/{courId}/storeLesson', 'store');
+    Route::get('/getLesson', 'index');
+    Route::get('/getLessonByCour/{courId}', 'getByCour');
+    Route::get('/getLessonDetail/{id}', 'show');
+    Route::put('/updateLesson/{id}', 'update');
+    Route::delete('/deleteLesson/{id}', 'destroy');
+});
 
-Route::post('/lesson/{lessonId}/storeExercice', [ExerciceController::class, 'store']);
-Route::get('/getExercice', [ExerciceController::class, 'index']);
-Route::get('/getExerciceByLesson/{lessonId}', [ExerciceController::class, 'getByLesson']);
-// Route::get('/getLessonDetail/{id}', [LessonController::class, 'show']);
-Route::put('/updateExercice/{id}', [ExerciceController::class, 'update']);
-// Route::delete('/deleteLesson/{id}', [LessonController::class, 'destroy']);
+Route::name("exercice")->controller(ExerciceController::class)->group(function () {
+    Route::post('/lesson/{lessonId}/storeExercice', 'store');
+    Route::get('/getExercice', 'index');
+    Route::get('/getExerciceByLesson/{lessonId}', 'getByLesson');
+    // Route::get('/getLessonDetail/{id}', 'show');
+    Route::put('/updateExercice/{id}', 'update');
+    // Route::delete('/deleteLesson/{id}', 'destroy');
+});
 
-Route::post('/lesson/{lessonId}/storeResource', [ResourceController::class, 'store']);
-Route::get('/getResource', [ResourceController::class, 'index']);
-Route::get('/getResourceDetail/{id}', [ResourceController::class, 'show']);
-Route::get('/getResourceByLesson/{lessonId}', [resourceController::class, 'getByLesson']);
-Route::put('/updateResource/{id}', [ResourceController::class, 'update']);
-Route::delete('/deleteResource/{id}', [ResourceController::class, 'destroy']);
+Route::name("resource")->controller(ResourceController::class)->group(function () {
+    Route::post('/lesson/{lessonId}/storeResource', 'store');
+    Route::get('/getResource', 'index');
+    Route::get('/getResourceDetail/{id}', 'show');
+    Route::get('/getResourceByLesson/{lessonId}', 'getByLesson');
+    Route::put('/updateResource/{id}', 'update');
+    Route::delete('/deleteResource/{id}', 'destroy');
+});
 
-Route::get('/user/{userId}/userListInscription', [UserController::class, 'userListInscription']);
 
-Route::get('/getInscription', [InscriptionController::class, 'index']);
-Route::get('/getInscriptionDetail/{id}', [InscriptionController::class, 'show']);
-Route::put('/updateStatutInscription/{id}', [InscriptionController::class, 'updateStatut']);
+Route::name("inscription")->controller(InscriptionController::class)->group(function () {
+    Route::get('/getInscription', 'index');
+    Route::get('/getInscriptionDetail/{id}', 'show');
+    Route::put('/updateStatutInscription/{id}', 'updateStatut');
+});
 
-Route::post('/inscription/{inscriptionId}/storePaiement', [PaiementController::class, 'store']);
-Route::get('/getPaiement', [PaiementController::class, 'index']);
-Route::get('/getPaimentDetail/{id}', [PaiementController::class, 'show']);
-Route::put('/updateStatutPaiement/{id}', [PaiementController::class, 'updateStatut']);
-// Route::put('/updateResource/{id}', [ResourceController::class, 'update']);
-// Route::delete('/deleteResource/{id}', [ResourceController::class, 'destroy']);
+Route::name("paiement")->controller(PaiementController::class)->group(function () {
+    Route::post('/inscription/{inscriptionId}/storePaiement', 'store');
+    Route::get('/getPaiement', 'index');
+    Route::get('/getPaimentDetail/{id}', 'show');
+    Route::put('/updateStatutPaiement/{id}', 'updateStatut');
+    // Route::put('/updateResource/{id}', 'update');
+    // Route::delete('/deleteResource/{id}', 'destroy');
+});
 
-Route::get('/getSoumission', [SoumissionController::class, 'index']);
-// patch modifie seulement les valeurs envoyé sans touché au reste dans la BDD contrairement à put qui modifie tout les valeurs dans la BDD
-Route::patch('/updateNoteSoumission/{id}', [SoumissionController::class, 'updateNoteSoumission']);
+Route::name("soumission")->controller(SoumissionController::class)->group(function () {
+    Route::get('/getSoumission', 'index');
+    // patch modifie seulement les valeurs envoyé sans touché au reste dans la BDD contrairement à put qui modifie tout les valeurs dans la BDD
+    Route::patch('/updateNoteSoumission/{id}', 'updateNoteSoumission');
+});

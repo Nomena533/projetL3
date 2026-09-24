@@ -14,11 +14,23 @@ class CourController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $cour = Cour::with(['instrument', 'level','prof'])->get();
-        $courBrouillon = Cour::with(['instrument','level','prof'])->where("statut", "brouillon")->get();
-        $courPublié = Cour::with('instrument')->with(['level','prof'])->where("statut", "publié")->get();
+        $cour = Cour::with(['instrument', 'level','prof'])
+            ->where("prof_id", $request->user()->id)
+            ->latest()
+            ->get();
+        $courBrouillon = Cour::with(['instrument','level','prof'])
+            ->where("statut", "brouillon")
+            ->where("prof_id", $request->user()->id)
+            ->latest()
+            ->get();
+        $courPublié = Cour::with('instrument')
+            ->with(['level','prof'])
+            ->where("statut", "publié")
+            ->where("prof_id", $request->user()->id
+            )->latest()
+            ->get();
 
         return response()->json([
             "all" => $cour, 
