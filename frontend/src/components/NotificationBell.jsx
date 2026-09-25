@@ -1,17 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { Bell } from "../lib/icons";
+import { Bell, Check, CheckCircle2 } from "../lib/icons";
+import { formatDate } from "../lib/formatFunction";
 
-/**
- * Icône "cloche" avec badge de compteur, qui ouvre un panneau listant les
- * dernières notifications non lues (au lieu de rediriger vers une page
- * dédiée, qui n'existe pas forcément pour chaque espace).
- *
- * Props :
- * - count : nombre de notifications non lues (badge masqué si 0)
- * - items : [{ id, title, time }] dernières notifications à afficher
- *           (tableau vide -> état "Aucune nouvelle notification")
- */
-export default function NotificationBell({ count = 0, items = [] }) {
+export default function NotificationBell({
+  count = 0,
+  items = [],
+  markAsRead,
+  markAll,
+  idNotification
+}) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
 
@@ -46,7 +43,7 @@ export default function NotificationBell({ count = 0, items = [] }) {
       >
         <Bell size={18} />
         {count > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-coral px-1 font-mono text-[10px] font-semibold leading-none text-white">
+          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-coral px-1 font-mono text-[10px] font-semibold leading-none text-white">
             {count > 9 ? "9+" : count}
           </span>
         )}
@@ -60,9 +57,16 @@ export default function NotificationBell({ count = 0, items = [] }) {
           <div className="flex items-center justify-between border-b border-stone-100 px-4 py-3">
             <p className="font-display text-sm text-ink">Notifications</p>
             {count > 0 && (
-              <span className="font-mono text-xs text-stone-400">
-                {count} non lue{count > 1 ? "s" : ""}
-              </span>
+              // <span className="font-mono text-xs text-stone-400">
+              //   {count} non lue{count > 1 ? "s" : ""}
+              // </span>
+              <button
+                id="notifMarkAll"
+                class="text-xs text-slate-400 hover:text-slate-600"
+                onClick={() => {markAll()}}
+              >
+                Tout lire
+              </button>
             )}
           </div>
 
@@ -75,14 +79,30 @@ export default function NotificationBell({ count = 0, items = [] }) {
               items.map((n) => (
                 <div
                   key={n.id}
-                  className="border-b border-stone-50 px-4 py-3 last:border-b-0 hover:bg-stone-50"
+                  className="border-b border-stone-50 px-4 py-3 last:border-b-0 hover:bg-stone-50 flex items-start justify-between"
+                  id="notifList"
                 >
-                  <p className="font-body text-sm text-ink">{n.title}</p>
-                  {n.time && (
-                    <p className="mt-0.5 font-mono text-xs text-stone-400">
-                      {n.time}
+                  <div>
+                    <p className="font-body text-sm text-ink">
+                      {n.data["message"]}
                     </p>
-                  )}
+                    {n.created_at && (
+                      <p className="mt-0.5 font-mono text-xs text-stone-400">
+                        {formatDate(n.created_at)}
+                      </p>
+                    )}
+                  </div>
+                  <div class="ml-3 shrink-0">
+                    <button
+                      class="mark-read-btn text-xs text-slate-400 hover:text-slate-600"
+                      title="Marquer comme lu"
+                      onClick={() => {
+                        markAsRead(n.id);
+                      }}
+                    >
+                      <CheckCircle2 size={16} />
+                    </button>
+                  </div>
                 </div>
               ))
             )}

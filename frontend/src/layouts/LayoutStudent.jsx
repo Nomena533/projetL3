@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { NavLink, useLocation, useNavigate, Outlet } from "react-router-dom";
-import { Music, Menu, X, Search, LogOut, Mail, Settings, User } from "../lib/icons";
+import {
+  Music,
+  Menu,
+  X,
+  Search,
+  LogOut,
+  Mail,
+  Settings,
+  User,
+} from "../lib/icons";
 import ValihaStrings from "../components/ValihaStrings";
 import { NAV } from "../lib/mockStudentData";
 import { useAuth } from "../app/hooks/useAuth";
@@ -9,6 +18,7 @@ import UserMenu from "../components/UserMenu";
 import IconLinkBadge from "../components/IconLinkBadge";
 import NotificationBell from "../components/NotificationBell";
 import useUnreadCounts from "../app/hooks/useUnreadCounts";
+import { useNotification } from "../app/hooks/useNotification";
 
 export default function LayoutStudent() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -20,13 +30,34 @@ export default function LayoutStudent() {
 
   // Récupération de l'user + fonction de déconnexion depuis le context global
   const { user, logout } = useAuth();
-  const { unreadMessages, unreadNotifications, notifications } =
-    useUnreadCounts();
-
   const handleLogout = async () => {
     await logout();
     // pas nécessaire, redirection déja faite par components/RoleRoute.jsx
     // navigate("/");
+  };
+
+  const { unreadMessages } = useUnreadCounts();
+
+  const { unreadNotification, unreadCount, fetchNotification } =
+    useNotification();
+  console.log("unreadNotification : ", unreadNotification);
+
+  const handleMarkAsRead = async (id) => {
+    try {
+      await markNotificationAsRead(id);
+      await fetchNotification();
+    } catch (error) {
+      console.error("Erreur lors de MAJ read_at", error.response?.data);
+    }
+  };
+
+  const handleMarkAll = async () => {
+    try {
+      await markAllNotificationAsRead();
+      await fetchNotification();
+    } catch (error) {
+      console.error("Erreur lors de MAJ read_at", error.response?.data);
+    }
   };
 
   const initials = user
@@ -43,7 +74,7 @@ export default function LayoutStudent() {
       `}
       >
         <div className="px-6 py-6 flex items-center justify-center gap-2 border-b border-teal-900">
-          <LogoBlanc/>
+          <LogoBlanc />
           <button
             className="ml-auto md:hidden"
             onClick={() => setMobileOpen(false)}
@@ -131,14 +162,25 @@ export default function LayoutStudent() {
               count={unreadMessages}
               label="Messages"
             />
-            <NotificationBell count={unreadNotifications} items={notifications} />
+            <NotificationBell
+              count={unreadCount}
+              items={unreadNotification}
+              markAll={handleMarkAll}
+              markAsRead={(id) => handleMarkAsRead(id)}
+            />
             <UserMenu
               initials={initials}
-              displayName={`${user?.firstname || ""} ${user?.name || ""}`.trim() || "Élève"}
+              displayName={
+                `${user?.firstname || ""} ${user?.name || ""}`.trim() || "Élève"
+              }
               subLabel={user?.email || "Compte élève vérifié"}
               items={[
                 { to: "/eleve/profil", label: "Profil", icon: User },
-                { to: "/eleve/parametres", label: "Paramètres", icon: Settings },
+                {
+                  to: "/eleve/parametres",
+                  label: "Paramètres",
+                  icon: Settings,
+                },
               ]}
               onLogout={handleLogout}
             />

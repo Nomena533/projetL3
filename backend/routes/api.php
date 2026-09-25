@@ -45,15 +45,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/niveau/{niveauId}/storeInscription', [InscriptionController::class, 'store']);
 
-    Route::post("/storeMessage", [MessagesController::class, 'store']);
-    Route::get("/getMessage", [MessagesController::class, 'index']);
-    // Ouvre une conversation et réinitialise son compteur de messages non lus.
-    Route::post("/messages/{otherUserId}/read", [MessagesController::class, 'markAsRead']);
-
     Route::post("/exercice/{exerciceId}/storeSoumission", [SoumissionController::class, 'store']);
+    
+    Route::name("message")->controller(MessagesController::class)->group(function () {
+        Route::post("/storeMessage", 'store');
+        Route::get("/getMessage", 'index');
+        // Ouvre une conversation et réinitialise son compteur de messages non lus.
+        Route::post("/messages/{otherUserId}/read", 'markAsRead');
+    });
 
     Route::name("notification")->controller(NotificationController::class)->group(function () {
         Route::get('/getNotification', 'index');
+        Route::post('/notification/{id}/read', 'markAsRead');
+        Route::post('/notification/read', 'markAll');
     });
 });
 

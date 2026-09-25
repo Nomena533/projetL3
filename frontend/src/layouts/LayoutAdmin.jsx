@@ -6,7 +6,17 @@ import {
   useNavigate,
   Outlet,
 } from "react-router-dom";
-import { Music, Menu, X, ShieldCheck, LogOut, Search, Mail, Settings, User } from "../lib/icons";
+import {
+  Music,
+  Menu,
+  X,
+  ShieldCheck,
+  LogOut,
+  Search,
+  Mail,
+  Settings,
+  User,
+} from "../lib/icons";
 import ValihaStrings from "../components/ValihaStrings";
 import { NAV_ADMIN } from "../lib/mockAdminData";
 import { useAuth } from "../app/hooks/useAuth";
@@ -15,7 +25,8 @@ import UserMenu from "../components/UserMenu";
 import IconLinkBadge from "../components/IconLinkBadge";
 import NotificationBell from "../components/NotificationBell";
 import useUnreadCounts from "../app/hooks/useUnreadCounts";
-
+import { useNotification } from "../app/hooks/useNotification";
+import { markAllNotificationAsRead, markNotificationAsRead } from "../app/api/notificationApi";
 
 export default function LayoutAdmin() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -28,14 +39,34 @@ export default function LayoutAdmin() {
 
   // Récupération de l'user + fonction de déconnexion depuis le context global
   const { user, logout } = useAuth();
-  const { unreadMessages, unreadNotifications, notifications } =
-    useUnreadCounts();
 
   const handleLogout = async () => {
     await logout();
     // pas nécessaire, redirection déja faite par components/RoleRoute.jsx
     // navigate("/");
   };
+
+  const { unreadNotification, unreadCount, fetchNotification } =
+    useNotification();
+  console.log("unreadNotification : ", unreadNotification);
+
+  const handleMarkAsRead = async (id) => {
+    try {
+      await markNotificationAsRead(id);
+      await fetchNotification()
+    } catch (error) {
+      console.error("Erreur lors de MAJ read_at", error.response?.data)
+    }
+  }
+  
+  const handleMarkAll = async () => {
+    try {
+      await markAllNotificationAsRead();
+      await fetchNotification()
+    } catch (error) {
+      console.error("Erreur lors de MAJ read_at", error.response?.data)
+    }
+  }
 
   const initials = user
     ? `${user.firstname?.[0] || ""}${user.name?.[0] || ""}`.toUpperCase()
@@ -133,14 +164,26 @@ export default function LayoutAdmin() {
             <div className="hidden sm:flex items-center gap-2 bg-stone-100 rounded-sm px-3 py-1.5 text-sm text-stone-500">
               <Search size={14} /> Rechercher…
             </div>
-            <NotificationBell count={unreadNotifications} items={notifications} />
+            <NotificationBell
+              count={unreadCount}
+              items={unreadNotification}
+              markAll={handleMarkAll}
+              markAsRead={(id) => handleMarkAsRead(id)}
+            />
             <UserMenu
               initials={initials}
-              displayName={`${user?.firstname || ""} ${user?.name || ""}`.trim() || "Administrateur"}
+              displayName={
+                `${user?.firstname || ""} ${user?.name || ""}`.trim() ||
+                "Administrateur"
+              }
               subLabel={user?.email || "Accès administrateur"}
               items={[
                 { to: "/administrateur/profil", label: "Profil", icon: User },
-                { to: "/administrateur/parametres", label: "Paramètres", icon: Settings },
+                {
+                  to: "/administrateur/parametres",
+                  label: "Paramètres",
+                  icon: Settings,
+                },
               ]}
               onLogout={handleLogout}
             />

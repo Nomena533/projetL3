@@ -6,7 +6,17 @@ import {
   useNavigate,
   Outlet,
 } from "react-router-dom";
-import { Music, Menu, X, ShieldCheck, LogOut, Search, Mail, Settings, User } from "../lib/icons";
+import {
+  Music,
+  Menu,
+  X,
+  ShieldCheck,
+  LogOut,
+  Search,
+  Mail,
+  Settings,
+  User,
+} from "../lib/icons";
 import ValihaStrings from "../components/ValihaStrings";
 import { NAV_PROF } from "../lib/mockProfData";
 import { useAuth } from "../app/hooks/useAuth";
@@ -15,6 +25,7 @@ import UserMenu from "../components/UserMenu";
 import IconLinkBadge from "../components/IconLinkBadge";
 import NotificationBell from "../components/NotificationBell";
 import useUnreadCounts from "../app/hooks/useUnreadCounts";
+import { useNotification } from "../app/hooks/useNotification";
 
 export default function LayoutProf({ role }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -27,13 +38,35 @@ export default function LayoutProf({ role }) {
 
   // Récupération de l'user + fonction de déconnexion depuis le context global
   const { user, logout } = useAuth();
-  const { unreadMessages, unreadNotifications, notifications } =
-    useUnreadCounts();
 
   const handleLogout = async () => {
     await logout();
     // pas nécessaire, redirection déja faite par components/RoleRoute.jsx
     // navigate("/");
+  };
+
+  const { unreadMessages } = useUnreadCounts();
+
+  const { unreadNotification, unreadCount, fetchNotification } =
+    useNotification();
+  console.log("unreadNotification : ", unreadNotification);
+
+  const handleMarkAsRead = async (id) => {
+    try {
+      await markNotificationAsRead(id);
+      await fetchNotification();
+    } catch (error) {
+      console.error("Erreur lors de MAJ read_at", error.response?.data);
+    }
+  };
+
+  const handleMarkAll = async () => {
+    try {
+      await markAllNotificationAsRead();
+      await fetchNotification();
+    } catch (error) {
+      console.error("Erreur lors de MAJ read_at", error.response?.data);
+    }
   };
 
   const initials = user
@@ -145,17 +178,31 @@ export default function LayoutProf({ role }) {
               count={unreadMessages}
               label="Messages"
             />
-            <NotificationBell count={unreadNotifications} items={notifications} />
+            <NotificationBell
+              count={unreadCount}
+              items={unreadNotification}
+              markAll={handleMarkAll}
+              markAsRead={(id) => handleMarkAsRead(id)}
+            />
             <UserMenu
               initials={initials}
-              displayName={`${user?.firstname || ""} ${user?.name || ""}`.trim() || (role === "prof" ? "Professeur" : "Administrateur")}
+              displayName={
+                `${user?.firstname || ""} ${user?.name || ""}`.trim() ||
+                (role === "prof" ? "Professeur" : "Administrateur")
+              }
               subLabel={
                 user?.email ||
-                (role === "prof" ? "Compte professeur vérifié" : "Accès administrateur")
+                (role === "prof"
+                  ? "Compte professeur vérifié"
+                  : "Accès administrateur")
               }
               items={[
                 { to: "/professeur/profil", label: "Profil", icon: User },
-                { to: "/professeur/parametres", label: "Paramètres", icon: Settings },
+                {
+                  to: "/professeur/parametres",
+                  label: "Paramètres",
+                  icon: Settings,
+                },
               ]}
               onLogout={handleLogout}
             />
