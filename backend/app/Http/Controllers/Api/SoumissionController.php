@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\SoumissionCreatedEvent;
+use App\Events\SoumissionSentEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Exercice;
 use App\Models\Soumission;
@@ -51,6 +53,8 @@ class SoumissionController extends Controller
         }   
 
         $soumission = Soumission::create($validated);
+
+        event(new SoumissionCreatedEvent($soumission));
 
         return response()->json([
             'message' => 'Soumission enregistré avec succès',

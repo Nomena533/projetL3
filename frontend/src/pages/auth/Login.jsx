@@ -33,6 +33,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  console.log("Location : ", location);
 
   const { fetchUserListInscription } = useUser();
 

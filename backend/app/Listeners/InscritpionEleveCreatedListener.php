@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\InscriptionEleveCreatedEvent;
-use App\Jobs\SendInscritpionEleveNotificationJob;
+use App\Jobs\SendNewInscritpionEleveNotificationJob;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -22,6 +22,6 @@ class InscritpionEleveCreatedListener
      */
     public function handle(InscriptionEleveCreatedEvent $event): void
     {
-        SendInscritpionEleveNotificationJob::dispatch($event->inscription);
+        SendNewInscritpionEleveNotificationJob::dispatch($event->inscription);
     }
 }

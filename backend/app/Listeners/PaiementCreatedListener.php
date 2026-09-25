@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\PaiementCreatedEvent;
-use App\Jobs\SendPaiementNotificationJob;
+use App\Jobs\SendNewPaiementNotificationJob;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -22,6 +22,6 @@ class PaiementCreatedListener
      */
     public function handle(PaiementCreatedEvent $event): void
     {
-        SendPaiementNotificationJob::dispatch($event->paiement);
+        SendNewPaiementNotificationJob::dispatch($event->paiement);
     }
 }

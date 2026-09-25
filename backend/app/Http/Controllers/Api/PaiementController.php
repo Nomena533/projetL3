@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\InscriptionValidateEvent;
 use App\Events\PaiementCreatedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Inscription;
@@ -123,7 +124,10 @@ class PaiementController extends Controller
 
             $inscription->statut = 'validé';
             $inscription->save();
+            
+            event(new InscriptionValidateEvent($inscription));
         }
+
 
 
         return response()->json([

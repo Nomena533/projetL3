@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\UserCreatedEvent;
-use App\Jobs\SendUserNotificationJob;
+use App\Jobs\SendNewUserNotificationJob;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -22,6 +22,6 @@ class UserCreatedListener
      */
     public function handle(UserCreatedEvent $event): void
     {
-        SendUserNotificationJob::dispatch($event->user);
+        SendNewUserNotificationJob::dispatch($event->user);
     }
 }

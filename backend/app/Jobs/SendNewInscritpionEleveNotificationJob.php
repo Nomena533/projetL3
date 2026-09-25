@@ -2,21 +2,21 @@
 
 namespace App\Jobs;
 
-use App\Models\Paiement;
+use App\Models\Inscription;
 use App\Models\User;
-use App\Notifications\NewPaiementNotification;
+use App\Notifications\NewInscriptionEleveNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Notification;
 
-class SendPaiementNotificationJob implements ShouldQueue
+class SendNewInscritpionEleveNotificationJob implements ShouldQueue
 {
     use Queueable;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(public Paiement $paiement)
+    public function __construct(public Inscription $inscription)
     {
         //
     }
@@ -27,6 +27,6 @@ class SendPaiementNotificationJob implements ShouldQueue
     public function handle(): void
     {
         $admin = User::where("role_id", "1")->get();
-        Notification::send($admin, new NewPaiementNotification($this->paiement));
+        Notification::send($admin,new NewInscriptionEleveNotification($this->inscription));
     }
 }

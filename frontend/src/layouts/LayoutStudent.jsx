@@ -19,6 +19,7 @@ import IconLinkBadge from "../components/IconLinkBadge";
 import NotificationBell from "../components/NotificationBell";
 import useUnreadCounts from "../app/hooks/useUnreadCounts";
 import { useNotification } from "../app/hooks/useNotification";
+import { markAllNotificationAsRead, markNotificationAsRead } from "../app/api/notificationApi";
 
 export default function LayoutStudent() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -43,6 +44,8 @@ export default function LayoutStudent() {
   console.log("unreadNotification : ", unreadNotification);
 
   const handleMarkAsRead = async (id) => {
+    console.log("id : ", id);
+    // return;
     try {
       await markNotificationAsRead(id);
       await fetchNotification();

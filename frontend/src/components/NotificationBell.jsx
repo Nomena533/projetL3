@@ -7,7 +7,7 @@ export default function NotificationBell({
   items = [],
   markAsRead,
   markAll,
-  idNotification
+  idNotification,
 }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
@@ -63,7 +63,9 @@ export default function NotificationBell({
               <button
                 id="notifMarkAll"
                 class="text-xs text-slate-400 hover:text-slate-600"
-                onClick={() => {markAll()}}
+                onClick={() => {
+                  markAll();
+                }}
               >
                 Tout lire
               </button>
@@ -87,9 +89,11 @@ export default function NotificationBell({
                       {n.data["message"]}
                     </p>
                     {n.created_at && (
-                      <p className="mt-0.5 font-mono text-xs text-stone-400">
-                        {formatDate(n.created_at)}
-                      </p>
+                      <>
+                        <p className="mt-0.5 font-mono text-xs text-stone-400">
+                          {formatDate(n.created_at)}
+                        </p>
+                      </>
                     )}
                   </div>
                   <div class="ml-3 shrink-0">

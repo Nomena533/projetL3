@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Notification;
 
-class SendUserNotificationJob implements ShouldQueue
+class SendNewUserNotificationJob implements ShouldQueue
 {
     use Queueable;
 

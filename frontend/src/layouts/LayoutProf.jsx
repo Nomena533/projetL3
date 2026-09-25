@@ -26,6 +26,7 @@ import IconLinkBadge from "../components/IconLinkBadge";
 import NotificationBell from "../components/NotificationBell";
 import useUnreadCounts from "../app/hooks/useUnreadCounts";
 import { useNotification } from "../app/hooks/useNotification";
+import { markAllNotificationAsRead, markNotificationAsRead } from "../app/api/notificationApi";
 
 export default function LayoutProf({ role }) {
   const [mobileOpen, setMobileOpen] = useState(false);
