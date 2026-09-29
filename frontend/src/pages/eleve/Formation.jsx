@@ -17,7 +17,7 @@ import { NIVEAUX_PARCOURS, MODES_PAIEMENT } from "../../lib/mockFormationData";
 import { useLevel } from "../../app/hooks/useLevel";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../app/hooks/useAuth";
-import { capitalize, formatDate } from "../../lib/formatFunction";
+import { capitalize, formatAriary, formatDate } from "../../lib/formatFunction";
 import { useUser } from "../../app/hooks/useUser";
 import usePaiement from "../../app/hooks/usePaiement";
 import { storePaiement } from "../../app/api/paiementApi";
@@ -33,6 +33,8 @@ function ModalPaiementNiveau({
   onClose,
   onConfirmerPaiement,
 }) {
+
+  console.log("niveauModal : ", niveauModal);
   const [moisSelectionnes, setMoisSelectionnes] = useState([]);
   const [mode, setMode] = useState(null);
   const [enCours, setEnCours] = useState(false);
@@ -77,7 +79,8 @@ function ModalPaiementNiveau({
     });
   }
 
-  const total = moisSelectionnes.length * niveauModal.montantMensuel;
+  const montantMensuelAvecInstrument = niveauModal.montantMensuel * niveauModal.instruments.length;
+  const total = moisSelectionnes.length * montantMensuelAvecInstrument;
 
   const modesMobileMoney = MODES_PAIEMENT.filter(
     (m) => m.groupe === "mobile_money",
@@ -129,15 +132,13 @@ function ModalPaiementNiveau({
     setExpirationCarte("");
     setCvvCarte("");
     setConfirme(true);
-    setTimeout(() => setConfirme(false), 2000);
+    setTimeout(() => setConfirme(false), 5000);
   }
 
   const pourcentagePaye = Math.min(
     100,
     Math.round((moisPayer / niveauModal.dureeMois) * 100),
   );
-
-  console.log("pourcentagePaye : ", pourcentagePaye);
 
   return (
     <div
@@ -163,6 +164,17 @@ function ModalPaiementNiveau({
             <h3 className="mt-2 font-display text-xl font-semibold text-ink">
               {capitalize(niveauModal.nom)}
             </h3>
+            <p className="mt-1 font-body text-sm text-ink-soft">
+                Instruments :{" "}
+                {niveauModal.instruments.map((instrument) => (
+                  <span
+                    key={instrument.id}
+                    className="rounded-full bg-ivory px-2.5 py-0.5 font-body text-xs text-ink-soft"
+                  >
+                    {instrument.name}
+                  </span>
+                ))}
+              </p>
           </div>
           <button
             type="button"
@@ -210,7 +222,7 @@ function ModalPaiementNiveau({
             />
           </div>
           <p className="mt-1.5 font-body text-[11px] text-ink-soft/80">
-            {niveauModal.montantMensuel.toLocaleString("fr-MG")} Ar / mois
+            {formatAriary(niveauModal.montantMensuel)} × {niveauModal.instruments.length} instrument{niveauModal.instruments.length > 1 ? "s" : "" } = {formatAriary(montantMensuelAvecInstrument)} / mois
           </p>
         </div>
 
@@ -354,9 +366,9 @@ function ModalPaiementNiveau({
                   <p className="flex items-center gap-1.5 font-body text-sm text-ink">
                     <HiOutlineBanknotes size={16} />
                     {moisSelectionnes.length} mois ×{" "}
-                    {niveauModal.montantMensuel.toLocaleString("fr-MG")} Ar ={" "}
+                    {formatAriary(montantMensuelAvecInstrument)} ={" "}
                     <span className="font-semibold text-coral-dark">
-                      {total.toLocaleString("fr-MG")} Ar
+                      {formatAriary(total)}
                     </span>
                   </p>
                   <button
@@ -394,9 +406,8 @@ export default function Formation() {
   const { levels } = useLevel();
   const { user } = useAuth();
   const { userListInscription, fetchUserListInscription } = useUser();
+  console.log("userListInscription : ", userListInscription);
   const { paiementList, fetchPaiement } = usePaiement();
-  const [enCour, setEnCour] = useState(null);
-  // console.log("cardEnCour : ", cardEnCour) ;
 
   // Niveau pour lequel le modal de paiement est ouvert (objet fusionné
   // id / nom / dureeMois / montantMensuel), ou null si fermé.
@@ -442,6 +453,69 @@ export default function Formation() {
     }
   };
 
+  const statistiquesNiveaux = levels.map((niveau) => {
+    const inscription = userListInscription.find(
+      (inscription) => inscription.niveau_id === niveau.id,
+    );
+    const inscrit = inscription;
+
+    if (!inscrit) {
+      return {
+        niveau,
+        inscription: null,
+        statut: "non_commencé",
+      };
+    }
+
+    const paiementNiveau = paiementList?.filter(
+      (p) => p.inscription_id === inscription?.id,
+    );
+
+    // reduce : permet de parcourir un tableau et de donner un résultat finale en une seul valeur => ici somme des nombre de mois
+    // somme : stocke les éléments parcourus => ici nombre_mois
+    const moisPayer = paiementNiveau?.reduce(
+      (somme, paiement) => somme + parseInt(paiement.nombre_mois),
+      0,
+    );
+
+    const dureeMois = parseInt(inscription?.level?.duree.split(" ")[0]);
+
+    const moisRestant = dureeMois - moisPayer;
+
+    if (inscrit && inscription?.date_debut === null) {
+      return {
+        niveau,
+        inscription,
+        statut : "en_attente",
+        moisPayer,
+        moisRestant
+      }
+    }
+
+    if (moisRestant === 0) {
+      return {
+        niveau,
+        inscription,
+        statut : "terminé",
+        moisPayer,
+        moisRestant
+      }
+    }
+    
+    return {
+      niveau,
+      inscription,
+      statut : "en_cour",
+      moisPayer,
+      moisRestant
+    }
+  });
+
+  console.log("statistiquesNiveaux : ", statistiquesNiveaux);
+
+  const niveauxTerminés = statistiquesNiveaux.filter((s) => s.statut === "terminé");
+  const niveauEnCour = statistiquesNiveaux.find((s) => s.statut === "en_cour");
+
   const inscritQuelquePart = userListInscription.length > 0;
 
   return (
@@ -464,12 +538,12 @@ export default function Formation() {
         <StatCard
           icon={HiOutlineAcademicCap}
           label="Niveaux terminés"
-          value={`${NIVEAUX_TERMINES} / ${NIVEAUX_PARCOURS.length}`}
+          value={`${niveauxTerminés.length} / ${levels.length}`}
         />
         <StatCard
           icon={HiOutlineClock}
           label="Niveau en cours"
-          value={NIVEAU_ACTUEL ? NIVEAU_ACTUEL.nom : "Aucun"}
+          value={niveauEnCour ? capitalize(niveauEnCour.niveau.name) : "Aucun"}
           delay={80}
         />
         <StatCard
@@ -497,13 +571,6 @@ export default function Formation() {
 
             console.log("inscription : ", inscription);
 
-            const dureeTotale = Array.from(
-              { length: inscription?.level.duree.split(" ")[0] },
-              (_, idx) => idx + 1,
-            );
-
-            console.log("dureeTotale : ", dureeTotale);
-
             const paiementNiveau = paiementList?.filter(
               (pl) => pl.inscription_id === inscription?.id,
             );
@@ -521,12 +588,6 @@ export default function Formation() {
             const enCours = inscrit && inscription?.date_debut;
             console.log("enCours : ", enCours);
 
-            const niveauEnCour = userListInscription?.find(
-              (i) => i.date_debut === enCours,
-            );
-            console.log("niveauEnCour : ", niveauEnCour);
-
-            // setEnCour(niveauEnCour?.level?.name);
             const enAttente = inscrit && inscription?.date_debut === null;
 
             // Paiement à jour : niveau en cours dont tous les mois sont payés.
@@ -648,7 +709,7 @@ export default function Formation() {
                           {inscription && enCours && (
                             <span className="ml-2">
                               · Inscrit le{" "}
-                              {formatDate(inscription.created_at)}{" "}
+                              {formatDate(inscription.date_debut)}{" "}
                             </span>
                           )}
                         </p>
@@ -731,6 +792,7 @@ export default function Formation() {
                                     montantMensuel: n.prix_mensuel,
                                     moisPayer,
                                     moisRestant,
+                                    instruments : inscription.instruments
                                   })
                                 }
                                 className="group mt-0.5 inline-flex items-center justify-center gap-1.5 rounded-full bg-coral px-4 py-2 font-body text-xs font-semibold text-ivory shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-brick hover:shadow-md"

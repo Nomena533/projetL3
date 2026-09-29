@@ -6,6 +6,8 @@ import {
   HiOutlinePlayCircle,
   HiOutlineLockClosed,
   HiOutlineClipboardDocumentCheck,
+  HiOutlineAcademicCap,
+  HiOutlineCalendarDays,
 } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import {
@@ -108,6 +110,50 @@ export default function FormationDetail() {
     });
   };
 
+  // Date d'examen de passage (à adapter au nom réel du champ renvoyé par l'API)
+  const dateExamen = formation?.date_examen
+    ? new Date(formation.date_examen)
+    : null;
+
+  const examenInfo = (() => {
+    if (!dateExamen || Number.isNaN(dateExamen.getTime())) {
+      return {
+        label: "À planifier",
+        badge: "bg-ivory-dark text-ink-soft",
+        hint: "La date sera communiquée à la fin du niveau.",
+      };
+    }
+
+    const jours = Math.ceil((dateExamen - new Date()) / (1000 * 60 * 60 * 24));
+
+    if (jours < 0) {
+      return {
+        label: "Passé",
+        badge: "bg-ivory-dark text-ink-soft",
+        hint: "L'examen a déjà eu lieu.",
+      };
+    }
+    if (jours === 0) {
+      return {
+        label: "Aujourd'hui",
+        badge: "bg-coral text-white",
+        hint: "Bonne chance !",
+      };
+    }
+    if (jours <= 14) {
+      return {
+        label: `Dans ${jours} jour${jours > 1 ? "s" : ""}`,
+        badge: "bg-coral text-white",
+        hint: "Pensez à réviser vos cours et exercices.",
+      };
+    }
+    return {
+      label: `Dans ${jours} jours`,
+      badge: "bg-amber-100 text-coral-dark",
+      hint: "Après la fin du niveau, vous passerez l'examen de passage.",
+    };
+  })();
+
   let instruments = null;
 
   if (formation && courPublie) {
@@ -131,15 +177,6 @@ export default function FormationDetail() {
         <HiOutlineChevronLeft size={13} /> Retour à mon parcours
       </Link>
 
-      {/* <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">Niveau {niveau.ordre}</span>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{niveau.nom}</h2>
-        <p className="mt-2 max-w-xl font-body text-sm text-ink-soft">{niveau.description}</p>
-        <div className="mt-4 h-1.5 w-full max-w-md rounded-full bg-ivory-dark">
-          <div className="h-1.5 rounded-full bg-coral transition-all duration-500" style={{ width: `${niveau.progression}%` }} />
-        </div>
-        <p className="mt-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">{niveau.progression}% terminé</p>
-      </AnimatedSection> */}
       <AnimatedSection>
         <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
           Niveau {formation.level.id}
@@ -249,10 +286,68 @@ export default function FormationDetail() {
         </div>
       </AnimatedSection>
 
+      {/* Examen de passage */}
+      <AnimatedSection
+        delay={60}
+        className="rounded-2xl border border-ivory-dark bg-white/60 p-6"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-amber text-2xl">
+              <HiOutlineAcademicCap className="opacity-90" />
+            </div>
+            <div>
+              <h3 className="font-display text-lg font-semibold text-ink">
+                Examen de passage
+              </h3>
+              <p className="mt-0.5 font-body text-sm text-ink-soft">
+                {examenInfo.hint}
+              </p>
+            </div>
+          </div>
+
+          <span
+            className={`rounded-full px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wide ${examenInfo.badge}`}
+          >
+            {examenInfo.label}
+          </span>
+        </div>
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          {/* Fin du niveau */}
+          <div className="flex items-center gap-2.5 rounded-xl border border-ivory-dark bg-ivory/40 px-4 py-3">
+            <HiOutlineCheckCircle size={18} className="shrink-0 text-ink-soft" />
+            <div className="flex flex-col">
+              <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+                Fin du niveau
+              </span>
+              <span className="font-body text-sm text-ink">
+                {formatDate(dateFin)}
+              </span>
+            </div>
+          </div>
+
+          {/* Date de l'examen */}
+          <div className="flex items-center gap-2.5 rounded-xl border border-ivory-dark bg-ivory/40 px-4 py-3">
+            <HiOutlineCalendarDays
+              size={18}
+              className="shrink-0 text-coral-dark"
+            />
+            <div className="flex flex-col">
+              <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+                Date de l'examen
+              </span>
+              <span className="font-body text-sm font-semibold text-ink">
+                {dateExamen ? formatDate(dateExamen) : "À définir"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </AnimatedSection>
+
       <div className="space-y-6">
         {instruments &&
           instruments.map((instrument, i) => {
-            // let courFormation;
             const courFormation = courPublie.filter(
               (cour) =>
                 cour.level.id === formation.niveau_id &&
@@ -300,25 +395,10 @@ export default function FormationDetail() {
                             to={`/eleve/formation/cours/${c.id}`}
                             className="flex items-center gap-2.5 px-4 py-3 transition-colors duration-200 hover:bg-ivory-dark/40"
                           >
-                            {/* {c.statut === "Terminé" ? (
-                        <HiOutlineCheckCircle
-                          size={16}
-                          className="shrink-0 text-coral-dark"
-                        />
-                      ) : (
-                        <HiOutlinePlayCircle
-                        size={16}
-                        className="shrink-0 text-ink-soft"
-                        />
-                      )} */}
                             <HiOutlinePlayCircle
                               size={18}
                               className="shrink-0 text-ink-soft"
                             />
-                            {/* <HiOutlinePlayCircle
-                              size={16}
-                              className="shrink-0 text-ink-soft"
-                            /> */}
                             <span className="flex-1 font-body text-sm text-ink">
                               {capitalize(c.titre)}
                             </span>
@@ -336,23 +416,6 @@ export default function FormationDetail() {
                       Exercices réalisés
                     </h4>
                     <div className="divide-y divide-ivory-dark overflow-hidden rounded-xl border border-ivory-dark bg-ivory/40">
-                      {/* {f.exercices.map((e) => (
-                    <div
-                      key={e.id}
-                      className="flex items-center gap-2.5 px-4 py-3"
-                    >
-                      <HiOutlineClipboardDocumentCheck
-                        size={16}
-                        className="shrink-0 text-coral-dark"
-                      />
-                      <span className="flex-1 font-body text-sm text-ink">
-                        {e.titre}
-                      </span>
-                      <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                        {e.note}
-                      </span>
-                    </div>
-                  ))} */}
                       <div
                         key=""
                         className="flex items-center gap-2.5 px-4 py-3"
