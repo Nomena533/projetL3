@@ -8,6 +8,7 @@ import {
   HiOutlineChatBubbleLeftRight,
   HiOutlineAcademicCap,
   HiOutlineChevronRight,
+  HiOutlineCheckCircle,
 } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import ValihaMotif from "../../components/ValihaMotif";
@@ -20,6 +21,7 @@ import { BookOpen, ClipboardCheck } from "../../lib/icons";
 import { useSoumission } from "../../app/hooks/useSoumission";
 import { useAuth } from "../../app/hooks/useAuth";
 import { useUser } from "../../app/hooks/useUser";
+import { useMessage } from "../../app/hooks/useMessage";
 
 // const EN_ATTENTE = SOUMISSIONS.filter((s) => s.statut === "En attente");
 
@@ -34,18 +36,25 @@ const QUICK_LINKS = [
 ];
 
 export default function ProfDashboard() {
-  const { cours, setCours, fetchCours } = useGetCour();
+  const { courByProf, cours } = useGetCour();
   const { soumission } = useSoumission();
   const { user } = useAuth();
-  const { userListInscription } = useUser();
+  const { conversations } = useMessage();
+  const { userListInscription, fetchUserListInscription, userList } = useUser();
 
   const soumissionProf = soumission.filter(
     (s) => s.exercice.lesson.cour.prof_id === user.id,
   );
-  
+
   console.log("soumissionProf : ", soumissionProf);
 
   const EN_ATTENTE = soumissionProf.filter((s) => s.statut === "en attente");
+
+  const conversationsRecentes = [...(conversations || [])]
+    .filter((c) => c.messages?.length)
+    .sort((a, b) => (b.unreadCount || 0) - (a.unreadCount || 0))
+    .slice(0, 3);
+  const aFaire = [];
 
   return (
     <div className="space-y-10">
@@ -89,14 +98,8 @@ export default function ProfDashboard() {
         <StatCard
           icon={HiOutlineBookOpen}
           label="Cours publiés"
-          value={cours.filter((c) => c.statut === "publié").length}
+          value={courByProf.filter((c) => c.statut === "publié").length}
         />
-        {/* <StatCard
-          icon={HiOutlineUsers}
-          label="Élèves inscrits"
-          value={MES_COURS.reduce((a, c) => a + c.eleves, 0)}
-          delay={80}
-        /> */}
         <StatCard
           icon={ClipboardCheck}
           label="Total soumissions"
@@ -107,47 +110,130 @@ export default function ProfDashboard() {
 
       {/* ---------- MES COURS ---------- */}
       <section>
-        <AnimatedSection className="flex flex-wrap items-end justify-between gap-4">
-          <h3 className="font-display text-xl font-semibold text-ink">
-            Mes cours
-          </h3>
-          <Link
-            to="/professeur/mescours"
-            className="inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark transition-colors hover:text-brick"
-          >
-            Gérer mes cours <HiOutlineArrowRight size={15} />
-          </Link>
-        </AnimatedSection>
-
-        <div className="mt-6 grid gap-5 md:grid-cols-2">
-          {cours.slice(0, 2).map((c, i) => (
-            <AnimatedSection
-              key={c.id}
-              delay={i * 90}
-              as={Link}
-              to={`/professeur/cours/${c.id}/details`}
-              className="group flex gap-4 rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-coral/40 hover:shadow-xl hover:shadow-coral/10"
-            >
-              <div
-                className={`grid h-16 w-16 shrink-0 place-items-center rounded-xl text-2xl bg-coral/90`}
+        <div className="mt-6 grid gap-5 md:grid-cols-3">
+          <div className="space-y-10 lg:col-span-2">
+            <AnimatedSection className="flex flex-wrap items-end justify-between gap-4">
+              <h3 className="font-display text-xl font-semibold text-ink">
+                Mes cours
+              </h3>
+              <Link
+                to="/professeur/mescours"
+                className="inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark transition-colors hover:text-brick"
               >
-                <span className="opacity-90">
-                  <BookOpen className="text-white" />
-                </span>
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-2">
-                  <p className="truncate font-display text-base font-semibold text-ink group-hover:text-coral-dark">
-                    {capitalize(c.titre)}
-                  </p>
-                  <Pill>{c.statut}</Pill>
-                </div>
-                <p className="mt-1.5 font-body text-sm text-ink-soft">
-                  Instruments : {c.instrument.name}
-                </p>
-              </div>
+                Gérer mes cours <HiOutlineArrowRight size={15} />
+              </Link>
             </AnimatedSection>
-          ))}
+            {courByProf.length === 0 ? (
+              <AnimatedSection className="mt-6 rounded-2xl border border-dashed border-ivory-dark p-6 text-center">
+                <HiOutlineBookOpen
+                  size={22}
+                  className="mx-auto text-ink-soft"
+                />
+                <p className="mt-3 font-body text-sm text-ink-soft">
+                  Vous n'avez pas encore de cours publié
+                </p>
+              </AnimatedSection>
+            ) : (
+              <div
+                className={` mt-6 ${courByProf.length > 1 ? "grid gap-5 md:grid-cols-2" : ""}`}
+              >
+                {courByProf.slice(0, 2).map((c, i) => (
+                  <AnimatedSection
+                    key={c.id}
+                    delay={i * 90}
+                    as={Link}
+                    to={`/professeur/cours/${c.id}/details`}
+                    className="group flex gap-4 rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-coral/40 hover:shadow-xl hover:shadow-coral/10"
+                  >
+                    <div
+                      className={`grid h-16 w-16 shrink-0 place-items-center rounded-xl text-2xl bg-coral/90`}
+                    >
+                      <span className="opacity-90">
+                        <BookOpen className="text-white" />
+                      </span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="truncate font-display text-base font-semibold text-ink group-hover:text-coral-dark">
+                          {capitalize(c.titre)}
+                        </p>
+                        <Pill>{c.statut}</Pill>
+                      </div>
+                      <p className="mt-1.5 font-body text-sm text-ink-soft">
+                        Instruments : {c.instrument.name}
+                      </p>
+                    </div>
+                  </AnimatedSection>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="space-y-10">
+            {/* --- Messages récents --- */}
+            <section>
+              <AnimatedSection className="flex flex-wrap items-end justify-between gap-4">
+                <h3 className="font-display text-xl font-semibold text-ink">
+                  Messages récents
+                </h3>
+                <Link
+                  to="/professeur/messages"
+                  className="inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark transition-colors hover:text-brick"
+                >
+                  Ouvrir <HiOutlineArrowRight size={15} />
+                </Link>
+              </AnimatedSection>
+
+              {conversationsRecentes.length === 0 ? (
+                <AnimatedSection className="mt-10 rounded-2xl border border-dashed border-ivory-dark p-6 text-center">
+                  <HiOutlineChatBubbleLeftRight
+                    size={22}
+                    className="mx-auto text-ink-soft"
+                  />
+                  <p className="mt-3 font-body text-sm text-ink-soft">
+                    Les messages envoyés par les élèves.
+                  </p>
+                </AnimatedSection>
+              ) : (
+                <div className="mt-10 divide-y divide-ivory-dark overflow-hidden rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10">
+                  {conversationsRecentes.map((c) => {
+                    const prof = (userList || []).find(
+                      (u) => u.id === c.otherUserId,
+                    );
+                    const dernier = c.messages[c.messages.length - 1];
+                    const envoyeParMoi = dernier?.sender_id === user?.id;
+                    return (
+                      <Link
+                        key={c.otherUserId}
+                        to="/eleve/messages"
+                        className="flex items-center gap-3 px-4 py-3 transition-colors duration-200 hover:bg-ivory-dark/40"
+                      >
+                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ivory-dark font-display text-xs font-semibold text-coral-dark">
+                          {prof?.name?.slice(0, 1).toUpperCase()}
+                          {prof?.firstname?.slice(0, 1).toUpperCase()}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate font-body text-sm font-semibold text-ink">
+                            {prof
+                              ? `${prof.name} ${prof.firstname}`
+                              : "Professeur"}
+                          </span>
+                          <span className="block truncate font-body text-xs text-ink-soft">
+                            {envoyeParMoi ? "Toi : " : ""}
+                            {dernier?.content}
+                          </span>
+                        </span>
+                        {c.unreadCount > 0 && (
+                          <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-coral px-1.5 py-0.5 font-mono text-[10px] font-semibold leading-none text-white">
+                            {c.unreadCount > 9 ? "9+" : c.unreadCount}
+                          </span>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          </div>
         </div>
       </section>
 
@@ -162,53 +248,65 @@ export default function ProfDashboard() {
           </h3>
         </AnimatedSection>
 
-        <div className="mt-6 space-y-3">
-          {EN_ATTENTE.slice(0, 3).map((s, i) => {
-            const niveauNom = s.exercice.lesson.cour.level.name;
-            const coursNom = s.exercice.lesson.cour.titre;
-            const leconNom = s.exercice.lesson.titre;
-            const eleveNom = `${s.eleve.name} ${s.eleve.firstname}`;
-            return (
-              <AnimatedSection
-                key={s.id}
-                delay={i * 80}
-                className="flex items-center gap-4 rounded-2xl border border-ivory-dark bg-white/60 p-5"
-              >
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-amber/15 text-brick">
-                  <HiOutlineInbox size={17} />
-                </span>
-                <div className="min-w-0 flex-1 space-y-2">
-                  <p className="truncate font-body text-sm font-semibold text-ink">
-                    {s.exercice.titre}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                    <span className="flex items-center gap-1">
-                      <HiOutlineAcademicCap
-                        size={13}
-                        className="text-coral-dark"
-                      />
-                      {niveauNom}
-                    </span>
-                    <HiOutlineChevronRight size={11} />
-                    <span className="flex items-center gap-1">
-                      <HiOutlineBookOpen
-                        size={13}
-                        className="text-coral-dark"
-                      />
-                      {coursNom}
-                    </span>
-                    <HiOutlineChevronRight size={11} />
-                    <span>{leconNom}</span>
+        {EN_ATTENTE.length === 0 ? (
+          <AnimatedSection className="mt-6 rounded-2xl border border-dashed border-ivory-dark p-6 text-center">
+            <ClipboardCheck
+              size={22}
+              className="mx-auto text-ink-soft"
+            />
+            <p className="mt-3 font-body text-sm text-ink-soft">
+              Aucune soumission en attente ne vous attend.
+            </p>
+          </AnimatedSection>
+        ) : (
+          <div className="mt-6 space-y-3">
+            {EN_ATTENTE.slice(0, 3).map((s, i) => {
+              const niveauNom = s.exercice.lesson.cour.level.name;
+              const coursNom = s.exercice.lesson.cour.titre;
+              const leconNom = s.exercice.lesson.titre;
+              const eleveNom = `${s.eleve.name} ${s.eleve.firstname}`;
+              return (
+                <AnimatedSection
+                  key={s.id}
+                  delay={i * 80}
+                  className="flex items-center gap-4 rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-5"
+                >
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-amber/15 text-brick">
+                    <HiOutlineInbox size={17} />
+                  </span>
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <p className="truncate font-body text-sm font-semibold text-ink">
+                      {s.exercice.titre}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+                      <span className="flex items-center gap-1">
+                        <HiOutlineAcademicCap
+                          size={13}
+                          className="text-coral-dark"
+                        />
+                        {niveauNom}
+                      </span>
+                      <HiOutlineChevronRight size={11} />
+                      <span className="flex items-center gap-1">
+                        <HiOutlineBookOpen
+                          size={13}
+                          className="text-coral-dark"
+                        />
+                        {coursNom}
+                      </span>
+                      <HiOutlineChevronRight size={11} />
+                      <span>{leconNom}</span>
+                    </div>
+                    <p className="mt-0.5 font-body text-xs text-ink-soft">
+                      {eleveNom} . Le {formatDate(s.created_at)}
+                    </p>
                   </div>
-                  <p className="mt-0.5 font-body text-xs text-ink-soft">
-                    {eleveNom} . Le {formatDate(s.created_at)}
-                  </p>
-                </div>
-                <Pill>{s.statut}</Pill>
-              </AnimatedSection>
-            );
-          })}
-        </div>
+                  <Pill>{s.statut}</Pill>
+                </AnimatedSection>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* ---------- ACCÈS RAPIDES ---------- */}

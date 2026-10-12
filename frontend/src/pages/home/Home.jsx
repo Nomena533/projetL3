@@ -77,28 +77,23 @@ export default function Home() {
               Apprenez la musique,
               <span className="relative inline-block px-1 text-coral">
                 {" "}
-                à la malgache.
+                selon votre rythme
               </span>
             </h1>
             <p className="mt-6 max-w-lg font-body text-lg leading-relaxed text-ink-soft">
               Kalon'ny réunit de vrais professeurs et un parcours guidé pour
-              apprendre le valiha, le kabosy, le piano, la guitare, le chant ou
+              apprendre le piano, la guitare, le saxophone ou
               la batterie — où que vous soyez à Madagascar.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <Link
-                to="/cours"
+                to="/formation"
                 className="group inline-flex items-center gap-2 rounded-full bg-coral px-7 py-3.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
               >
-                Explorer les cours
+                Explorer les formations
                 <HiOutlineArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
-              <button className="group inline-flex items-center gap-2.5 font-body text-sm font-semibold text-ink transition-colors hover:text-coral-dark">
-                <span className="grid h-11 w-11 place-items-center rounded-full bg-ivory-dark transition-colors duration-300 group-hover:bg-coral group-hover:text-ivory">
-                  <HiOutlinePlay size={16} />
-                </span>
-                Voir la présentation
-              </button>
+              
             </div>
 
             <dl className="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-ivory-dark pt-6">

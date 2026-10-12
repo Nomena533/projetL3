@@ -208,7 +208,7 @@ export default function CorrectionDetail() {
           {soumissionDetail.description && (
             <AnimatedSection
               delay={100}
-              className="rounded-2xl border border-ivory-dark bg-white/60 p-6"
+              className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
             >
               <h3 className="mb-2 font-display text-base font-semibold text-ink">
                 Description de l'élève
@@ -222,7 +222,7 @@ export default function CorrectionDetail() {
           {/* Section commentaire + note */}
           <AnimatedSection
             delay={140}
-            className="rounded-2xl border border-ivory-dark bg-white/60 p-6"
+            className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
           >
             <h3 className="mb-4 font-display text-base font-semibold text-ink">
               Correction
@@ -241,7 +241,7 @@ export default function CorrectionDetail() {
                   value={commentaire}
                   onChange={(e) => setCommentaire(e.target.value)}
                   placeholder="Un retour pour l'élève sur sa soumission…"
-                  className="w-full resize-none rounded-xl border border-ivory-dark bg-white px-4 py-2.5 font-body text-sm text-ink placeholder:text-ink-soft/60 focus:border-coral/40 focus:outline-none"
+                  className="w-full resize-none rounded-xl border border-ivory-dark  px-4 py-2.5 font-body text-sm text-ink placeholder:text-ink-soft/60 focus:border-coral/40 focus:outline-none"
                 />
               </div>
 
@@ -261,7 +261,7 @@ export default function CorrectionDetail() {
                     placeholder="Note /20"
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    className="w-28 rounded-full border border-ivory-dark bg-white/70 px-4 py-2 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
+                    className="w-28 rounded-full border border-ivory-dark bg-white/70 dark:bg-white/10 px-4 py-2 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
                   />
                 </div>
 
@@ -300,7 +300,7 @@ export default function CorrectionDetail() {
           <AnimatedSection
             delay={80}
             as="aside"
-            className="rounded-2xl border border-ivory-dark bg-white/70 p-5"
+            className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-5"
           >
             <p className="mb-3 font-mono text-xs uppercase tracking-wide text-ink-soft">
               Contexte
@@ -342,7 +342,7 @@ export default function CorrectionDetail() {
           <AnimatedSection
             delay={120}
             as="aside"
-            className="rounded-2xl border border-ivory-dark bg-white/70 p-5"
+            className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-5"
           >
             <p className="mb-3 font-mono text-xs uppercase tracking-wide text-ink-soft">
               Élève
@@ -350,7 +350,7 @@ export default function CorrectionDetail() {
             <div className="flex items-center gap-3">
               {eleveAvatar ? (
                 <img
-                  src={eleveAvatar}
+                  src={`${BASE_URL}/storage/${eleveAvatar}`}
                   alt={eleveNom}
                   className="h-10 w-10 shrink-0 rounded-full object-cover"
                 />

@@ -9,21 +9,19 @@ import { useUser } from "../../app/hooks/useUser";
 import { capitalize } from "../../lib/formatFunction";
 
 export default function AdminUtilisateurs() {
-  const [users, setUsers] = useState(UTILISATEURS);
+  // const [users, setUsers] = useState(UTILISATEURS);
   const [q, setQ] = useState("");
   const [toDelete, setToDelete] = useState(null);
 
   const {userList} = useUser();
 
-  console.log("userList : ", userList)
-
-  const filtered = users.filter(
-    (u) => u.nom.toLowerCase().includes(q.toLowerCase()) || u.email.toLowerCase().includes(q.toLowerCase())
+  const filtered = userList.filter(
+    (u) => u.name.toLowerCase().includes(q.toLowerCase()) || u.firstname.toLowerCase().includes(q.toLowerCase()) || u.email.toLowerCase().includes(q.toLowerCase())
   );
 
-  function toggleStatut(id) {
-    setUsers(users.map((u) => (u.id === id ? { ...u, statut: u.statut === "Actif" ? "Suspendu" : "Actif" } : u)));
-  }
+  // function toggleStatut(id) {
+  //   setUsers(users.map((u) => (u.id === id ? { ...u, statut: u.statut === "Actif" ? "Suspendu" : "Actif" } : u)));
+  // }
 
   if (userList.length === 0) {
     return (
@@ -38,7 +36,7 @@ export default function AdminUtilisateurs() {
         <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">Utilisateurs</h2>
       </AnimatedSection>
 
-      <AnimatedSection delay={60} className="flex max-w-sm items-center gap-2 rounded-full border border-ivory-dark bg-white/70 px-5 py-3 transition-colors duration-300 focus-within:border-coral">
+      <AnimatedSection delay={60} className="flex max-w-sm items-center gap-2 rounded-full border border-ivory-dark bg-white/70 dark:bg-white/10 px-5 py-3 transition-colors duration-300 focus-within:border-coral">
         <HiOutlineMagnifyingGlass className="shrink-0 text-ink-soft" size={16} />
         <input
           value={q}
@@ -48,7 +46,7 @@ export default function AdminUtilisateurs() {
         />
       </AnimatedSection>
 
-      <AnimatedSection delay={100} className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/70">
+      <AnimatedSection delay={100} className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="border-b border-ivory-dark">

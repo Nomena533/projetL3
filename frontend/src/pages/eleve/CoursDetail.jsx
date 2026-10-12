@@ -85,7 +85,7 @@ export default function CourseDetail() {
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           {/* Bloc 1 — Visuel + identité du cours */}
-          <AnimatedSection className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/60">
+          <AnimatedSection className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10">
             <div className="flex h-56 items-center justify-center overflow-hidden">
               {courDetail.image ? (
                 <img
@@ -129,7 +129,7 @@ export default function CourseDetail() {
           {/* Bloc 2 — Description */}
           <AnimatedSection
             delay={60}
-            className="rounded-2xl border border-ivory-dark bg-white/60 p-6"
+            className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
           >
             <h3 className="mb-3 font-display text-lg font-semibold text-ink">
               À propos de ce cours
@@ -144,7 +144,7 @@ export default function CourseDetail() {
             <h3 className="mb-3 font-display text-lg font-semibold text-ink">
               Contenu du cours
             </h3>
-            <div className="divide-y divide-ivory-dark overflow-hidden rounded-2xl border border-ivory-dark bg-white/60">
+            <div className="divide-y divide-ivory-dark overflow-hidden rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10">
               {lesson.map((l) => (
                 <Link
                   key={l.id}
@@ -182,7 +182,7 @@ export default function CourseDetail() {
               {AVIS_COURS.map((a) => (
                 <div
                   key={a.id}
-                  className="rounded-2xl border border-ivory-dark bg-white/60 p-5"
+                  className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-5"
                 >
                   <div className="flex items-center gap-2">
                     <div className="flex gap-0.5 text-amber">
@@ -211,7 +211,7 @@ export default function CourseDetail() {
         <AnimatedSection
           delay={100}
           as="aside"
-          className="h-fit rounded-2xl border border-ivory-dark bg-white/70 p-6 lg:sticky lg:top-6"
+          className="h-fit rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 lg:sticky lg:top-6"
         >
           <button
             onClick={() => setFav(!fav)}

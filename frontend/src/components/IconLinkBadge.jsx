@@ -17,11 +17,11 @@ export default function IconLinkBadge({ to, icon: Icon, count = 0, label }) {
       to={to}
       title={label}
       aria-label={label}
-      className="relative grid h-9 w-9 place-items-center rounded-full text-stone-500 transition-colors hover:bg-stone-100 hover:text-teal-950"
+      className="relative grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-stone-100 dark:hover:bg-stone-600 hover:text-teal-950 dark:hover:text-teal-100"
     >
       <Icon size={18} />
       {count > 0 && (
-        <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-coral px-1 font-mono text-[10px] font-semibold leading-none text-white">
+        <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-coral px-1 font-mono text-[10px] font-semibold leading-none text-white">
           {count > 9 ? "9+" : count}
         </span>
       )}

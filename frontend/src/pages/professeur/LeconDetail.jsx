@@ -158,7 +158,7 @@ export default function ProfLeconDetail() {
       )}
 
       {/* En-tête de la leçon */}
-      <AnimatedSection className="rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7">
+      <AnimatedSection className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
@@ -197,7 +197,7 @@ export default function ProfLeconDetail() {
       {/* Ressources */}
       <AnimatedSection
         delay={80}
-        className="rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7"
+        className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7"
       >
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <h3 className="font-display text-lg font-semibold text-ink">

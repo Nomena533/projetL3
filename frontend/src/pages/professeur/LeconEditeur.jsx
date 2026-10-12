@@ -22,7 +22,7 @@ function TextAreaField({ label, name, value, onChange }) {
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full rounded-xl border border-ivory-dark bg-white/70 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
+        className="w-full rounded-xl border border-ivory-dark bg-white/70 dark:bg-white/10 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
       />
     </label>
   );
@@ -36,7 +36,7 @@ function ExerciceEditeur({ isEditing, form, onChange }) {
   return (
     <AnimatedSection
       delay={120}
-      className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7"
+      className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7"
     >
       <div>
         <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
@@ -267,7 +267,7 @@ export default function ProfLeconEditeur() {
       {/* Formulaire 1 : la leçon */}
       <AnimatedSection
         delay={60}
-        className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7"
+        className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7"
       >
         <div>
           <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">

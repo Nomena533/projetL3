@@ -152,7 +152,7 @@ export default function AdminPaiements() {
             <AnimatedSection
               key={cle}
               delay={index * 60}
-              className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/70"
+              className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10"
             >
               {/* En-tête de groupe : élève + récapitulatif — déclenche l'accordéon */}
               <button

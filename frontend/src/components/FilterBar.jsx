@@ -26,7 +26,7 @@ export default function FilterBar({
   onReset,
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-ivory-dark bg-white/70 p-3 sm:p-3.5">
+    <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-3 sm:p-3.5">
       <label className="relative min-w-45 flex-1">
         <HiOutlineMagnifyingGlass
           size={15}
@@ -36,7 +36,7 @@ export default function FilterBar({
           value={searchValue}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={searchPlaceholder}
-          className="w-full rounded-full border border-ivory-dark bg-white/80 py-2.5 pl-9 pr-4 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
+          className="w-full rounded-full border border-ivory-dark bg-white/80 dark:bg-white/10 py-2.5 pl-9 pr-4 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
         />
       </label>
 
@@ -45,7 +45,7 @@ export default function FilterBar({
           key={f.name}
           value={f.value}
           onChange={(e) => f.onChange(e.target.value)}
-          className="rounded-full border border-ivory-dark bg-white/80 px-4 py-2.5 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
+          className="rounded-full border border-ivory-dark bg-white/80 dark:bg-white/10 px-4 py-2.5 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
         >
           <option value="">{f.label}</option>
           {f.options.map((o) => (

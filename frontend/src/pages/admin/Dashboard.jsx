@@ -11,12 +11,12 @@ import {
 } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import StatCard from "../../components/StatCard";
-import { COURS_A_VALIDER } from "../../lib/mockAdminData";
+import { COURS_A_VALIDER, formatAriary } from "../../lib/mockAdminData";
 import useInscription from "../../app/hooks/useInscription";
 import { useMemo } from "react";
-
-const MOIS = ["Mars", "Avr", "Mai", "Juin", "Juil", "Août"];
-const VALEURS = [40, 55, 48, 70, 65, 82];
+import { useUser } from "../../app/hooks/useUser";
+import useGetCour from "../../app/hooks/useGetCour";
+import usePaiement from "../../app/hooks/usePaiement";
 
 const QUICK_LINKS = [
   {
@@ -83,7 +83,41 @@ function convertirDate(date) {
 
 export default function AdminDashboard() {
   const { inscriptions } = useInscription();
-  console.log("inscriptions : ", inscriptions);
+  const { userList } = useUser();
+  const { cours, courBrouillon } = useGetCour();
+  const { paiementList } = usePaiement();
+  
+  const revenuMois = useMemo(() => {
+    const maintenant = new Date();
+    const moisActuel = maintenant.getMonth();
+    const anneeActuelle = maintenant.getFullYear();
+
+    return (paiementList ?? []).reduce((total, paiement) => {
+      // 1. Ne conserver que les paiements validés.
+      if (paiement.statut?.toLowerCase() !== "validé") {
+        return total;
+      }
+
+      // 2. Récupérer la date de validation.
+      const dateValidation = convertirDate(paiement.updated_at);
+
+      if (!dateValidation) {
+        return total;
+      }
+
+      // 3. Vérifier que la validation appartient au mois actuel.
+      const memeMois =
+        dateValidation.getMonth() === moisActuel &&
+        dateValidation.getFullYear() === anneeActuelle;
+
+      if (!memeMois) {
+        return total;
+      }
+
+      // 4. Ajouter le montant au total.
+      return total + Number(paiement.montant || 0);
+    }, 0);
+  }, [paiementList]);
 
   const statistiques = useMemo(() => {
     const maintenant = new Date();
@@ -134,8 +168,6 @@ export default function AdminDashboard() {
     return mois;
   }, [inscriptions]);
 
-  console.log("statistiques : ", statistiques );
-
   // Éviter une division par zéro.
   const maximum = Math.max(...statistiques.map((m) => m.total), 1);
   return (
@@ -150,23 +182,27 @@ export default function AdminDashboard() {
       </AnimatedSection>
 
       <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={HiOutlineUsers} label="Utilisateurs" value="1 284" />
+        <StatCard
+          icon={HiOutlineUsers}
+          label="Utilisateurs"
+          value={userList.length || 0}
+        />
         <StatCard
           icon={HiOutlineBookOpen}
           label="Cours publiés"
-          value="96"
+          value={cours.filter((c) => c.statut === "publié").length}
           delay={80}
         />
         <StatCard
           icon={HiOutlineBanknotes}
           label="Revenus ce mois"
-          value="6,2M Ar"
+          value={formatAriary(revenuMois)}
           delay={160}
         />
         <StatCard
           icon={HiOutlineClipboardDocumentCheck}
           label="Cours à valider"
-          value={COURS_A_VALIDER.length}
+          value={courBrouillon.length || 0}
           delay={240}
         />
       </section>
@@ -181,27 +217,6 @@ export default function AdminDashboard() {
             Inscriptions — 6 derniers mois
           </h3>
         </div>
-        {/* <div className="flex h-36 items-stretch gap-3 sm:gap-4">
-          {statistiques.map((m, i) => {
-            const hauteur = m.total === 0 ? 0 : Math.max((m.total / maximum) * 100, 3)
-            return (
-            <div
-              key={m.cle}
-              className="flex flex-1 flex-col items-center gap-2"
-            >
-              <div className="relative w-full flex-1">
-                <div
-                  className="absolute bottom-0 w-full rounded-t-lg bg-coral/80 transition-all duration-700 ease-out"
-                  style={{ height: `${v}%` }}
-                />
-              </div>
-              <span className="font-mono text-[10px] uppercase tracking-wide text-ink-soft">
-                {MOIS[i]}
-              </span>
-            </div>
-            )
-          })}
-        </div> */}
         <div className="flex h-40 items-stretch gap-3 sm:gap-4">
           {statistiques.map((m) => {
             const hauteur =

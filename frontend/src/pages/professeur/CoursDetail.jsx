@@ -184,7 +184,7 @@ export default function ProfCoursDetail() {
       )}
 
       {/* En-tête du cours */}
-      <AnimatedSection className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/70">
+      <AnimatedSection className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10">
         <div className="grid gap-0 lg:grid-cols-[360px_1fr]">
           <div className="flex aspect-video w-full items-center justify-center bg-ivory-dark/40 lg:aspect-auto lg:h-full">
             {cours.cour.image ? (
@@ -241,7 +241,7 @@ export default function ProfCoursDetail() {
       {/* Leçons */}
       <AnimatedSection
         delay={80}
-        className="rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7"
+        className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7"
       >
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <h3 className="font-display text-lg font-semibold text-ink">

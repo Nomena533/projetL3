@@ -69,7 +69,7 @@ function SelectField({ label, value, onChange, options, compact }) {
       <select
         value={value}
         onChange={onChange}
-        className={`w-full rounded-xl border border-ivory-dark bg-white/70 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral ${
+        className={`w-full rounded-xl border border-ivory-dark bg-white/70 dark:bg-white/10 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral ${
           compact ? "px-3 py-2" : "px-4 py-3"
         }`}
       >
@@ -278,7 +278,7 @@ export default function ProfRessourceEditeur() {
         // ---------------------------------------------------------------
         <AnimatedSection
           delay={60}
-          className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7"
+          className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7"
         >
           <FormField
             label="Titre de la ressource"
@@ -346,7 +346,7 @@ export default function ProfRessourceEditeur() {
                 e.preventDefault();
                 handleFilesSelected(e.dataTransfer.files);
               }}
-              className="flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-ivory-dark bg-white/70 px-6 py-10 text-center transition-colors duration-300 hover:border-coral/50"
+              className="flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-ivory-dark bg-white/70 dark:bg-white/10 px-6 py-10 text-center transition-colors duration-300 hover:border-coral/50"
             >
               <HiOutlineCloudArrowUp size={26} className="text-ink-soft" />
               <p className="font-body text-sm font-semibold text-ink">
@@ -372,7 +372,7 @@ export default function ProfRessourceEditeur() {
           {staged.length > 0 && (
             <AnimatedSection
               delay={90}
-              className="space-y-3 rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7"
+              className="space-y-3 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7"
             >
               <div className="mb-1 flex items-center justify-between">
                 <h3 className="font-display text-base font-semibold text-ink">
@@ -403,7 +403,7 @@ export default function ProfRessourceEditeur() {
                         updateStaged(s.localId, { titre: e.target.value })
                       }
                       placeholder="Titre de la ressource"
-                      className="min-w-40 flex-1 rounded-lg border border-ivory-dark bg-white/80 px-3 py-2 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
+                      className="min-w-40 flex-1 rounded-lg border border-ivory-dark bg-white/80 dark:bg-white/10 px-3 py-2 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
                     />
                     <div className="w-32 shrink-0">
                       <SelectField

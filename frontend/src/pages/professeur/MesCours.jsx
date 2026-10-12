@@ -205,7 +205,7 @@ export default function ProfMesCours() {
 
       <AnimatedSection
         delay={80}
-        className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/25"
+        className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10"
       >
         <div className="overflow-x-auto">
           <table className="w-full">

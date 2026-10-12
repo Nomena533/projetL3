@@ -307,7 +307,7 @@ export default function LessonPlayer() {
         {exercice === null || exercice === undefined ? (
           <AnimatedSection
             delay={140}
-            className="rounded-2xl border border-ivory-dark bg-white/60 p-6"
+            className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
           >
             <h3 className="mb-2 font-display text-base font-semibold text-ink">
               Exercice
@@ -319,7 +319,7 @@ export default function LessonPlayer() {
         ) : (
           <AnimatedSection
             delay={140}
-            className="rounded-2xl border border-ivory-dark bg-white/60 p-6"
+            className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
           >
             <h3 className="mb-2 font-display text-base font-semibold text-ink">
               {exercice?.titre}
@@ -340,7 +340,7 @@ export default function LessonPlayer() {
                   </label>
                   <label
                     htmlFor="soumission-fichier"
-                    className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-ivory-dark bg-white px-4 py-3 font-body text-sm text-ink-soft transition-colors duration-300 hover:border-coral/40 hover:text-coral-dark"
+                    className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-ivory-dark  px-4 py-3 font-body text-sm text-ink-soft transition-colors duration-300 hover:border-coral/40 hover:text-coral-dark"
                   >
                     <HiOutlineArrowUpTray size={16} className="shrink-0" />
                     {/* <span className="truncate">
@@ -382,7 +382,7 @@ export default function LessonPlayer() {
                     // onChange={(e) => setSoumissionDescription(e.target.value)}
                     onChange={handleChange}
                     placeholder="Un mot sur ta soumission pour ton professeur…"
-                    className="w-full resize-none rounded-xl border border-ivory-dark bg-white px-4 py-2.5 font-body text-sm text-ink placeholder:text-ink-soft/60 focus:border-coral/40 focus:outline-none"
+                    className="w-full resize-none rounded-xl border border-ivory-dark  px-4 py-2.5 font-body text-sm text-ink placeholder:text-ink-soft/60 focus:border-coral/40 focus:outline-none"
                   />
                 </div>
 
@@ -419,14 +419,14 @@ export default function LessonPlayer() {
         <AnimatedSection
           delay={80}
           as="aside"
-          className="rounded-2xl border border-ivory-dark bg-white/70 p-5 "
+          className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-5 "
         >
           <p className="mb-3 font-mono text-xs uppercase tracking-wide text-ink-soft">
             Plan du cours
           </p>
           <div className="space-y-1">
             {lessons &&
-              lessons.map((l) => (
+              lessons?.map((l) => (
                 <Link
                   key={l.id}
                   to={`/eleve/lecon/${l.id}?courId=${l.cour_id}`}
@@ -459,7 +459,7 @@ export default function LessonPlayer() {
         {/* Ressources de la leçon — même logique/infos que LeconDetail.jsx */}
         <AnimatedSection
           delay={180}
-          className="rounded-2xl border border-ivory-dark bg-white/60 p-6"
+          className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
         >
           <h3 className="mb-4 font-display text-base font-semibold text-ink">
             Ressources de la leçon

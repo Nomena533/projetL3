@@ -12,7 +12,7 @@ import { updateStatutCour } from "../../app/api/courApi";
 
 export default function AdminValidation() {
   const [items, setItems] = useState(COURS_A_VALIDER);
-  const { cours, courBrouillon, setCours, setCourBrouillon, fetchCours } = useGetCour();
+  const { courBrouillon, setCourBrouillon} = useGetCour();
   const [alert, setAlert] = useState(location.state?.success || null);
 
   console.log("courBrouillon : ", courBrouillon);
@@ -87,7 +87,7 @@ export default function AdminValidation() {
             <AnimatedSection
               key={c.id}
               delay={i * 80}
-              className="flex flex-col gap-4 rounded-2xl border border-ivory-dark bg-white/60 p-5 sm:flex-row sm:items-center"
+              className="flex flex-col gap-4 rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-5 sm:flex-row sm:items-center"
             >
               <div className="min-w-0 flex-1">
                 <p className="font-body text-sm font-semibold text-ink">

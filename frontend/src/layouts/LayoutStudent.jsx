@@ -9,6 +9,8 @@ import {
   Mail,
   Settings,
   User,
+  Sun,
+  Moon,
 } from "../lib/icons";
 import ValihaStrings from "../components/ValihaStrings";
 import { NAV } from "../lib/mockStudentData";
@@ -23,6 +25,7 @@ import {
   markAllNotificationAsRead,
   markNotificationAsRead,
 } from "../app/api/notificationApi";
+import useTheme from "../app/hooks/useTheme";
 
 export default function LayoutStudent() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -66,9 +69,12 @@ export default function LayoutStudent() {
       console.error("Erreur lors de MAJ read_at", error.response?.data);
     }
   };
+
   const initials = user
     ? `${user.firstname?.[0] || ""}${user.name?.[0] || ""}`.toUpperCase()
     : "?";
+
+  const { isDark, toggleDark } = useTheme();
 
   return (
     <div className="min-h-screen bg-stone-100 dark:bg-ivory font-body flex">
@@ -158,9 +164,17 @@ export default function LayoutStudent() {
             {current?.label || "Kalon'ny"}
           </h1>
           <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
-            <div className="hidden sm:flex items-center gap-2 bg-stone-100 dark rounded-sm px-3 py-1.5 text-sm text-stone-500">
-              <Search size={14} /> Rechercher…
-            </div>
+            <button
+              type="button"
+              onClick={toggleDark}
+              title={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
+              aria-label={
+                isDark ? "Passer en mode clair" : "Passer en mode sombre"
+              }
+              className="relative grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-stone-100 dark:hover:bg-stone-600 hover:text-teal-950 dark:hover:text-teal-100"
+            >
+              {isDark ? <Sun size={19} /> : <Moon size={19} />}
+            </button>
             <IconLinkBadge
               to="/eleve/messages"
               icon={Mail}

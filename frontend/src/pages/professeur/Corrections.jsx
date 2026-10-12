@@ -20,6 +20,7 @@ import Alert from "../../components/Alert";
 import { User } from "../../lib/icons";
 import { useAuth } from "../../app/hooks/useAuth";
 import { useSoumission } from "../../app/hooks/useSoumission";
+import { BASE_URL } from "../../app/api/api";
 
 const STATUT_OPTIONS = [
   { value: "en attente", label: "En attente" },
@@ -139,7 +140,7 @@ export default function ProfCorrections() {
               <AnimatedSection
                 key={s.id}
                 delay={i * 70}
-                className="rounded-2xl border border-ivory-dark bg-white/60 p-5"
+                className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-5"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1 space-y-2.5">
@@ -179,7 +180,7 @@ export default function ProfCorrections() {
                     <div className="flex items-center gap-2">
                       {eleveAvatar ? (
                         <img
-                          src={eleveAvatar}
+                          src={`${BASE_URL}/storage/${eleveAvatar}`}
                           alt={eleveNom}
                           className="h-6 w-6 shrink-0 rounded-full object-cover"
                         />

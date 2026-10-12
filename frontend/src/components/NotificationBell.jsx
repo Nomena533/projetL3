@@ -39,7 +39,7 @@ export default function NotificationBell({
         aria-label="Notifications"
         aria-haspopup="menu"
         aria-expanded={open}
-        className="relative grid h-9 w-9 place-items-center rounded-full text-stone-500 transition-colors hover:bg-stone-100 hover:text-teal-950"
+        className="relative grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-stone-100 dark:hover:bg-stone-600 hover:text-teal-950 dark:hover:text-teal-100"
       >
         <Bell size={18} />
         {count > 0 && (
