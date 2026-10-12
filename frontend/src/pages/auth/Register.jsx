@@ -18,7 +18,7 @@ import FormField from "../../components/FormField";
 import { register } from "../../app/api/authApi";
 import { getRoles } from "../../app/api/roleApi";
 import { LogoBlanc, LogoVert } from "../../components/Logo";
-import useDarkMode from "../../app/hooks/useDarkMode";
+import useTheme from "../../app/hooks/useTheme";
 
 const ROLES_ICONS = {
   professeur: HiOutlineMusicalNote,
@@ -26,7 +26,7 @@ const ROLES_ICONS = {
 };
 
 export default function Register() {
-  const [isDark, toggleDark] = useDarkMode();
+  const {isDark} = useTheme();
   // Liste des rôles récupérés depuis laravel
   const [roles, setRoles] = useState([]);
 

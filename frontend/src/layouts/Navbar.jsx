@@ -6,7 +6,7 @@ import { useAuth } from "../app/hooks/useAuth";
 import { LogOut, Sun, Moon, Grid, Settings, User } from "../lib/icons";
 import UserMenu from "../components/UserMenu";
 import LanguageMenu from "../components/LanguageMenu";
-import useDarkMode from "../app/hooks/useDarkMode";
+import useTheme from "../app/hooks/useTheme";
 
 // Fait correspondre le rôle de l'utilisateur connecté à la base des routes
 // de son espace privé. ⚠️ À vérifier : les valeurs exactes renvoyées par
@@ -47,7 +47,7 @@ export default function Navbar() {
   }, [location.pathname]);
 
   const { user, logout } = useAuth();
-  const [isDark, toggleDark] = useDarkMode();
+  const {isDark, toggleDark} = useTheme();
 
   const handleLogout = async () => {
     await logout();

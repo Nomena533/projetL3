@@ -9,7 +9,7 @@ export default function StatCard({ icon: Icon, label, value, delay = 0 }) {
   return (
     <AnimatedSection
       delay={delay}
-      className="group rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/20 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-coral/40 hover:shadow-xl hover:shadow-coral/10"
+      className="group rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-coral/40 hover:shadow-xl hover:shadow-coral/10"
     >
       <div className="grid h-11 w-11 place-items-center rounded-xl bg-coral/10 text-coral-dark transition-colors duration-300 group-hover:bg-coral group-hover:text-ivory">
         <Icon size={19} />

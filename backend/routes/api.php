@@ -113,7 +113,6 @@ Route::name("resource")->controller(ResourceController::class)->group(function (
     Route::delete('/deleteResource/{id}', 'destroy');
 });
 
-
 Route::name("inscription")->controller(InscriptionController::class)->group(function () {
     Route::get('/getInscription', 'index');
     Route::get('/getInscriptionDetail/{id}', 'show');

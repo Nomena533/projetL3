@@ -146,7 +146,7 @@ function ModalPaiementNiveau({
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-ivory-dark bg-white shadow-2xl shadow-ink/20"
+        className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-ivory-dark bg-ivory  shadow-2xl shadow-ink/20"
         onClick={(e) => e.stopPropagation()}
       >
         <input
@@ -256,7 +256,7 @@ function ModalPaiementNiveau({
                     className={`rounded-full border px-3.5 py-1.5 font-body text-sm font-medium transition-colors duration-200 ${
                       moisSelectionnes.includes(nombreMois)
                         ? "border-coral bg-coral text-ivory"
-                        : "border-ivory-dark bg-white text-ink-soft hover:border-coral hover:text-coral-dark"
+                        : "border-ivory-dark  text-ink-soft hover:border-coral hover:text-coral-dark"
                     }`}
                   >
                     Mois {nombreMois}
@@ -282,7 +282,7 @@ function ModalPaiementNiveau({
                         className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-body text-sm font-medium transition-colors duration-200 ${
                           mode === m.id
                             ? "border-coral bg-coral text-ivory"
-                            : "border-ivory-dark bg-white text-ink-soft hover:border-coral hover:text-coral-dark"
+                            : "border-ivory-dark text-ink-soft hover:border-coral hover:text-coral-dark"
                         }`}
                       >
                         {m.groupe === "carte" ? (
@@ -558,7 +558,7 @@ export default function Formation() {
       <section className="relative">
         {/* ligne verticale reliant les cartes */}
         <div
-          className="absolute left-6 top-6 bottom-6 w-px bg-ivory-dark sm:left-7"
+          className="absolute left-6 top-6 bottom-6 w-px bg-ivory-dark  sm:left-7"
           aria-hidden="true"
         />
 
@@ -619,7 +619,7 @@ export default function Formation() {
                       label: "En cours",
                       pastille: "bg-amber text-ink",
                       carte:
-                        "border-ivory-dark bg-white/70 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brick/10",
+                        "border-ivory-dark bg-white/70 dark:bg-white/10 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brick/10",
                       badge: "bg-amber/20 text-ink",
                     }
                 : {

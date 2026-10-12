@@ -67,7 +67,7 @@ export default function DetailProf() {
         </Link>
 
         {/* ---------- EN-TÊTE ---------- */}
-        <AnimatedSection className="mt-6 rounded-4xl border border-ivory-dark bg-white/60 dark:bg-white/20 p-8 sm:p-10">
+        <AnimatedSection className="mt-6 rounded-4xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-8 sm:p-10">
           <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
             {prof.photo ? (
               <img

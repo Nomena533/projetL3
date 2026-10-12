@@ -3,7 +3,7 @@ import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from "react-icons/fa";
 import { HiOutlineMail, HiOutlinePhone, HiOutlineLocationMarker } from "react-icons/hi";
 import {LogoBlanc, LogoVert} from "../components/Logo";
 import ValihaMotif from "../components/ValihaMotif";
-import useDarkMode from "../app/hooks/useDarkMode";
+import useTheme from "../app/hooks/useTheme";
 
 const COLUMNS = [
   {
@@ -27,7 +27,7 @@ const COLUMNS = [
 ];
 
 export default function Footer() {
-  const [isDark, toggleDark] = useDarkMode();
+  const {isDark} = useTheme();
   return (
     <footer className="relative overflow-hidden bg-ink text-ivory">
       <ValihaMotif count={40} tone="amber" className="absolute inset-x-0 top-0 opacity-20" />

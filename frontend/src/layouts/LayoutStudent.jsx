@@ -19,7 +19,10 @@ import IconLinkBadge from "../components/IconLinkBadge";
 import NotificationBell from "../components/NotificationBell";
 import useUnreadCounts from "../app/hooks/useUnreadCounts";
 import { useNotification } from "../app/hooks/useNotification";
-import { markAllNotificationAsRead, markNotificationAsRead } from "../app/api/notificationApi";
+import {
+  markAllNotificationAsRead,
+  markNotificationAsRead,
+} from "../app/api/notificationApi";
 
 export default function LayoutStudent() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -31,6 +34,7 @@ export default function LayoutStudent() {
 
   // Récupération de l'user + fonction de déconnexion depuis le context global
   const { user, logout } = useAuth();
+  console.log("userLayout : ", user);
   const handleLogout = async () => {
     await logout();
     // pas nécessaire, redirection déja faite par components/RoleRoute.jsx
@@ -62,19 +66,17 @@ export default function LayoutStudent() {
       console.error("Erreur lors de MAJ read_at", error.response?.data);
     }
   };
-
   const initials = user
     ? `${user.firstname?.[0] || ""}${user.name?.[0] || ""}`.toUpperCase()
     : "?";
 
   return (
-    <div className="min-h-screen bg-stone-100 font-body flex">
+    <div className="min-h-screen bg-stone-100 dark:bg-ivory font-body flex">
       {/* Sidebar */}
       <aside
-        className={`
-        fixed z-30 inset-y-0 left-0 h-screen w-64 overflow-y-auto bg-teal-950 text-stone-200 flex flex-col
-        transform transition-transform ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0
-      `}
+        className={`fixed z-30 inset-y-0 left-0 h-screen w-64 overflow-y-auto bg-teal-950 dark:bg-ivory-dark text-stone-200 flex flex-col transform transition-transform ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
       >
         <div className="px-6 py-6 flex items-center justify-center gap-2 border-b border-teal-900">
           <LogoBlanc />
@@ -145,18 +147,18 @@ export default function LayoutStudent() {
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 md:ml-64">
-        <header className="bg-stone-50 border-b border-stone-200 px-4 md:px-8 py-4 flex items-center gap-4">
+        <header className="bg-stone-50 dark:bg-ivory-dark/90 border-b border-stone-200 dark:border-ivory-dark/20 px-4 md:px-8 py-4 flex items-center gap-4">
           <button
             className="md:hidden text-teal-950"
             onClick={() => setMobileOpen(true)}
           >
             <Menu size={20} />
           </button>
-          <h1 className="font-display text-xl text-teal-950">
+          <h1 className="font-display text-xl text-teal-950 dark:text-ink">
             {current?.label || "Kalon'ny"}
           </h1>
           <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
-            <div className="hidden sm:flex items-center gap-2 bg-stone-100 rounded-sm px-3 py-1.5 text-sm text-stone-500">
+            <div className="hidden sm:flex items-center gap-2 bg-stone-100 dark rounded-sm px-3 py-1.5 text-sm text-stone-500">
               <Search size={14} /> Rechercher…
             </div>
             <IconLinkBadge
@@ -174,9 +176,15 @@ export default function LayoutStudent() {
             <UserMenu
               initials={initials}
               displayName={
-                `${user?.firstname || ""} ${user?.name || ""}`.trim() || "Élève"
+                `${user?.firstname || ""} ${user?.name || ""}`.trim() ||
+                (role === "prof" ? "Professeur" : "Administrateur")
               }
-              subLabel={user?.email || "Compte élève vérifié"}
+              subLabel={
+                user?.email ||
+                (role === "prof"
+                  ? "Compte professeur vérifié"
+                  : "Accès administrateur")
+              }
               items={[
                 { to: "/eleve/profil", label: "Profil", icon: User },
                 {

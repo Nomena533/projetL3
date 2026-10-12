@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : lun. 28 sep. 2026 à 09:39
+-- Généré le : lun. 12 oct. 2026 à 20:45
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -113,6 +113,32 @@ INSERT INTO `exercices` (`id`, `lesson_id`, `titre`, `description`, `created_at`
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `experiences_professeurs`
+--
+
+CREATE TABLE `experiences_professeurs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `prof_id` bigint(20) UNSIGNED NOT NULL,
+  `poste` varchar(255) NOT NULL,
+  `lieu` varchar(255) DEFAULT NULL,
+  `periode_debut` date DEFAULT NULL,
+  `periode_fin` date DEFAULT NULL,
+  `description` longtext DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `experiences_professeurs`
+--
+
+INSERT INTO `experiences_professeurs` (`id`, `prof_id`, `poste`, `lieu`, `periode_debut`, `periode_fin`, `description`, `created_at`, `updated_at`) VALUES
+(1, 14, 'Professeur de guitare', 'EGM', '2026-01-01', '2026-08-06', 'Test avec : \"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quae, magni similique sit ipsa id possimus?\"', '2026-10-11 22:27:25', '2026-10-11 22:27:25'),
+(2, 14, 'Professeur de chant', 'EGM', '2025-01-01', '2026-07-16', 'Test avec : \"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quae, magni similique sit ipsa id possimus?\"', '2026-10-11 22:27:25', '2026-10-11 22:27:25');
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `failed_jobs`
 --
 
@@ -179,7 +205,6 @@ CREATE TABLE `inscriptions` (
 --
 
 INSERT INTO `inscriptions` (`id`, `niveau_id`, `user_id`, `montant`, `statut`, `date_debut`, `date_fin`, `created_at`, `updated_at`) VALUES
-(2, 1, 4, 100000.00, 'en attente', NULL, NULL, '2026-09-14 06:25:20', '2026-09-14 06:25:20'),
 (3, 1, 5, 200000.00, 'validé', '2026-09-25', '2027-06-25', '2026-09-15 14:12:46', '2026-09-25 17:02:40'),
 (15, 1, 6, 200000.00, 'validé', '2026-09-19', '2027-06-19', '2026-09-15 17:45:42', '2026-09-19 16:28:59'),
 (17, 1, 8, 150000.00, 'validé', '2026-09-19', '2027-06-19', '2026-09-19 03:37:53', '2026-09-19 06:16:13'),
@@ -188,7 +213,9 @@ INSERT INTO `inscriptions` (`id`, `niveau_id`, `user_id`, `montant`, `statut`, `
 (20, 1, 11, 200000.00, 'validé', '2026-09-25', '2027-06-25', '2026-09-24 18:34:42', '2026-09-25 17:26:44'),
 (21, 1, 9, 150000.00, 'validé', '2026-09-25', '2027-06-25', '2026-09-24 19:00:35', '2026-09-25 17:37:11'),
 (22, 1, 15, 150000.00, 'validé', '2026-09-25', '2027-06-25', '2026-09-25 17:42:07', '2026-09-25 17:43:32'),
-(23, 1, 16, 200000.00, 'validé', '2026-09-25', '2027-06-25', '2026-09-25 18:19:09', '2026-09-25 19:08:05');
+(23, 1, 16, 200000.00, 'validé', '2026-09-25', '2027-06-25', '2026-09-25 18:19:09', '2026-09-25 19:08:05'),
+(24, 1, 4, 200000.00, 'validé', '2026-09-29', '2027-06-29', '2026-09-29 11:20:40', '2026-09-29 11:21:33'),
+(25, 1, 18, 200000.00, 'validé', '2026-10-12', '2027-07-12', '2026-10-12 07:55:34', '2026-10-12 09:07:45');
 
 -- --------------------------------------------------------
 
@@ -209,8 +236,6 @@ CREATE TABLE `inscription_instrument` (
 --
 
 INSERT INTO `inscription_instrument` (`id`, `inscription_id`, `instrument_id`, `created_at`, `updated_at`) VALUES
-(3, 2, 1, '2026-09-14 06:25:20', '2026-09-14 06:25:20'),
-(4, 2, 2, '2026-09-14 06:25:20', '2026-09-14 06:25:20'),
 (5, 3, 1, '2026-09-15 14:12:46', '2026-09-15 14:12:46'),
 (6, 3, 3, '2026-09-15 14:12:46', '2026-09-15 14:12:46'),
 (19, 15, 1, '2026-09-15 17:45:42', '2026-09-15 17:45:42'),
@@ -224,7 +249,11 @@ INSERT INTO `inscription_instrument` (`id`, `inscription_id`, `instrument_id`, `
 (29, 21, 2, '2026-09-24 19:00:35', '2026-09-24 19:00:35'),
 (30, 22, 1, '2026-09-25 17:42:07', '2026-09-25 17:42:07'),
 (31, 23, 2, '2026-09-25 18:19:09', '2026-09-25 18:19:09'),
-(32, 23, 1, '2026-09-25 18:19:09', '2026-09-25 18:19:09');
+(32, 23, 1, '2026-09-25 18:19:09', '2026-09-25 18:19:09'),
+(33, 24, 1, '2026-09-29 11:20:40', '2026-09-29 11:20:40'),
+(34, 24, 2, '2026-09-29 11:20:40', '2026-09-29 11:20:40'),
+(35, 25, 2, '2026-10-12 07:55:34', '2026-10-12 07:55:34'),
+(36, 25, 3, '2026-10-12 07:55:34', '2026-10-12 07:55:34');
 
 -- --------------------------------------------------------
 
@@ -246,9 +275,14 @@ CREATE TABLE `instruments` (
 --
 
 INSERT INTO `instruments` (`id`, `name`, `description`, `image`, `created_at`, `updated_at`) VALUES
-(1, 'Guitare', NULL, NULL, NULL, NULL),
+(1, 'Guitare acoustique', NULL, NULL, NULL, NULL),
 (2, 'Piano', NULL, NULL, NULL, NULL),
-(3, 'Violon', NULL, NULL, NULL, NULL);
+(3, 'Violon', NULL, NULL, NULL, NULL),
+(4, 'Saxophone', NULL, NULL, NULL, NULL),
+(5, 'Batterie', NULL, NULL, NULL, NULL),
+(6, 'Guitare éléctirque', NULL, NULL, NULL, NULL),
+(7, 'Guitare basse', NULL, NULL, NULL, NULL),
+(8, 'Flutte', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -382,7 +416,8 @@ INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `content`, `is_read`, 
 (7, 3, 5, 'Bonjour', 1, '2026-09-18 19:46:13', '2026-09-18 19:46:43'),
 (8, 5, 3, 'Bonjour', 1, '2026-09-18 20:17:51', '2026-09-18 20:18:33'),
 (9, 16, 14, 'Bonjour Mr', 1, '2026-09-25 19:11:53', '2026-09-25 19:12:44'),
-(10, 14, 16, 'Bonjour', 0, '2026-09-25 19:12:49', '2026-09-25 19:12:49');
+(10, 14, 16, 'Bonjour', 0, '2026-09-25 19:12:49', '2026-09-25 19:12:49'),
+(11, 18, 3, 'Bonjour Mr, puis-je avoir plus d\'info sur la leçon 2 ?', 0, '2026-10-12 10:23:08', '2026-10-12 10:23:08');
 
 -- --------------------------------------------------------
 
@@ -435,7 +470,12 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (35, '2026_09_22_111704_add_description_to_soumissions_table', 14),
 (36, '2026_09_22_165735_add_statut_to_soumissions_table', 15),
 (37, '2026_09_23_070534_add_type_to_soumissions_table', 16),
-(38, '2026_09_24_114939_create_notifications_table', 17);
+(38, '2026_09_24_114939_create_notifications_table', 17),
+(47, '2026_10_11_213143_create_profils_professeurs_table', 18),
+(48, '2026_10_11_233417_create_professeur_instrument_table', 18),
+(49, '2026_10_11_233523_create_experiences_professeurs_table', 18),
+(50, '2026_10_11_233538_create_parcours_professeurs_table', 18),
+(51, '2026_10_12_000000_align_professor_profile_schema', 18);
 
 -- --------------------------------------------------------
 
@@ -459,21 +499,29 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`id`, `type`, `notifiable_type`, `notifiable_id`, `data`, `read_at`, `created_at`, `updated_at`) VALUES
+('0572a7cd-7340-459c-b77e-03557cd9e8b3', 'App\\Notifications\\NewPaiementNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau paiement\",\"message\":\"Razafindralambo Nono vient d\\\\\'effectuer son paiement.\",\"paiement_id\":25}', NULL, '2026-09-29 11:21:01', '2026-09-29 11:21:01'),
+('0c520b8f-55ad-4c2e-9ba6-fcc7060c1349', 'App\\Notifications\\NewInscriptionEleveNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau eleve inscrit a la formation\",\"message\":\"Razafindralambo Nono s\'est inscrit a la formation initiation.\",\"niveau\":\"initiation\"}', NULL, '2026-09-29 11:20:41', '2026-09-29 11:20:41'),
+('13a209c1-f9c0-4ed0-ba5a-fbc1b8884231', 'App\\Notifications\\NewInscriptionEleveNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau eleve inscrit a la formation\",\"message\":\"Rakotoarison Avotra s\'est inscrit a la formation initiation.\",\"niveau\":\"initiation\"}', NULL, '2026-10-12 07:55:36', '2026-10-12 07:55:36'),
 ('14355fdb-71a3-46fc-b97a-4f0c5cbc07e8', 'App\\Notifications\\NewInscriptionEleveNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau eleve inscrit a la formation\",\"message\":\"Ramamonjisoa Sitraka s\'est inscrit a la formation initiation.\",\"niveau\":\"initiation\"}', '2026-09-25 18:16:26', '2026-09-25 17:42:10', '2026-09-25 18:16:26'),
 ('173f6d86-b8a8-4ecb-9fcb-9daf20f9032a', 'App\\Notifications\\NewUserNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau utilisateur\",\"message\":\"Un nouveau utilisateur s\'est inscrit au plateforme.\",\"user_id\":16}', NULL, '2026-09-25 18:18:15', '2026-09-25 18:18:15'),
 ('1de30806-ec9e-4629-b5aa-62a2451c6861', 'App\\Notifications\\NewUserNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau utilisateur\",\"message\":\"Un nouveau utilisateur s\'est inscrit au plateforme.\",\"user_id\":14}', '2026-09-25 09:11:36', '2026-09-24 16:51:54', '2026-09-25 09:11:36'),
 ('2649bb87-dc0c-475b-89a2-0d5541b734e3', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 1, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-25 16:36:38', '2026-09-25 16:36:38'),
 ('27687598-e06e-4def-8b81-f30e30fed850', 'App\\Notifications\\NewPaiementNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau paiement\",\"message\":\"Andrianoromiraho Cedrico vient d\\\\\'effectuer son paiement.\",\"paiement_id\":22}', NULL, '2026-09-25 18:19:24', '2026-09-25 18:19:24'),
+('30e27983-5a8e-48fe-a5c6-94ad1ea48cff', 'App\\Notifications\\NewUserNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau utilisateur\",\"message\":\"Un nouveau utilisateur s\'est inscrit au plateforme.\",\"user_id\":18}', NULL, '2026-10-12 07:46:18', '2026-10-12 07:46:18'),
 ('330e0ca3-535c-4b50-9103-4be62b98d488', 'App\\Notifications\\NewInscriptionEleveNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau eleve inscrit a la formation\",\"message\":\"Andrianoromiraho Cedrico s\'est inscrit a la formation initiation.\",\"niveau\":\"initiation\"}', NULL, '2026-09-25 18:19:10', '2026-09-25 18:19:10'),
 ('38a1f8d5-3014-46f1-93b7-f64a43260d9a', 'App\\Notifications\\NewPaiementNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau paiement\",\"message\":\"Nomenjanahary Santaniaina vient d\\u2019effectuer son paiement.\",\"paiement_id\":17}', '2026-09-25 09:11:36', '2026-09-24 18:31:36', '2026-09-25 09:11:36'),
 ('3f5fab01-d1ea-4fb9-8f7b-edcf55a9c7ea', 'App\\Notifications\\NewPaiementNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau paiement\",\"message\":\"Razafiarison Harena vient d\\\\\'effectuer son paiement.\",\"paiement_id\":20}', '2026-09-25 17:19:14', '2026-09-25 17:18:09', '2026-09-25 17:19:14'),
+('48672196-f28f-48a9-815f-78729120d5fc', 'App\\Notifications\\InscriptionValidateNotification', 'App\\Models\\User', 4, '{\"titre\":\"Inscription valid\\u00e9\",\"message\":\"Votre inscription \\u00e0 la niveau initiation a \\u00e9t\\u00e9 valid\\u00e9\",\"niveau\":\"initiation\"}', NULL, '2026-09-29 11:21:37', '2026-09-29 11:21:37'),
 ('571a3de1-c4ee-4577-a105-f5710410bb3e', 'App\\Notifications\\NewUserNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau utilisateur\",\"message\":\"Un nouveau utilisateur s\'est inscrit au plateforme.\",\"user_id\":15}', '2026-09-25 18:16:26', '2026-09-25 17:41:25', '2026-09-25 18:16:26'),
 ('59566feb-02f8-4121-ba86-a3d3cea61851', 'App\\Notifications\\NewUserNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau utilisateur\",\"message\":\"Un nouveau utilisateur s\'est inscrit au plateforme.\",\"user_id\":17}', NULL, '2026-09-25 19:21:00', '2026-09-25 19:21:00'),
+('66e40813-2c0d-4ea7-8621-174367b625e8', 'App\\Notifications\\NewPaiementNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau paiement\",\"message\":\"Razafindralambo Nono vient d\\\\\'effectuer son paiement.\",\"paiement_id\":26}', NULL, '2026-09-29 11:23:19', '2026-09-29 11:23:19'),
+('67cfaa74-e18c-4c17-aec6-c84c638f13c8', 'App\\Notifications\\NewPaiementNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau paiement\",\"message\":\"Rakotoarison Avotra vient d\\\\\'effectuer son paiement.\",\"paiement_id\":27}', NULL, '2026-10-12 08:00:07', '2026-10-12 08:00:07'),
 ('6ad50ff9-82e7-4105-843d-42ac9e8bb263', 'App\\Notifications\\NewInscriptionEleveNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau eleve inscrit a la formation\",\"message\":\"Ratovonarivo Sitraka s\'est inscrit a la formation initiation.\",\"niveau\":\"initiation\"}', '2026-09-25 09:11:36', '2026-09-24 19:00:36', '2026-09-25 09:11:36'),
 ('862b1e45-e247-4ff1-84ac-9acedef1d43b', 'App\\Notifications\\NewInscriptionEleveNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau \\u00e9l\\u00e8ve inscrit \\u00e0 la formation\",\"message\":\"Un nouveau utilisateur s\'est inscrit \\u00e0 la formation.\",\"niveau\":\"initiation\"}', '2026-09-25 09:11:36', '2026-09-24 18:16:43', '2026-09-25 09:11:36'),
 ('86dccf8c-00fc-4943-9130-642f3326f355', 'App\\Notifications\\InscriptionValidateNotification', 'App\\Models\\User', 16, '{\"titre\":\"Inscription valid\\u00e9\",\"message\":\"Votre inscription \\u00e0 la niveau initiation a \\u00e9t\\u00e9 valid\\u00e9\",\"niveau\":\"initiation\"}', NULL, '2026-09-25 19:08:05', '2026-09-25 19:08:05'),
 ('883010a7-99dc-4603-a145-ef04d0ce86eb', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 9, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-25 16:36:38', '2026-09-25 16:36:38'),
 ('9f4036b9-98ab-4652-8901-3ba6ddf75fbe', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 6, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-25 16:36:38', '2026-09-25 16:36:38'),
+('a6d3d74b-91ea-404b-8d03-e836ace2fda4', 'App\\Notifications\\NewPaiementNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau paiement\",\"message\":\"Razafindralambo Valisoa vient d\\\\\'effectuer son paiement.\",\"paiement_id\":24}', NULL, '2026-09-29 10:53:10', '2026-09-29 10:53:10'),
 ('a8fec665-4033-4889-b934-c6ad56696c2a', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 12, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-25 16:36:38', '2026-09-25 16:36:38'),
 ('ad0e7596-505a-4f49-b972-fe765c65cf6d', 'App\\Notifications\\NewInscriptionEleveNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau eleve inscrit a la formation\",\"message\":\"Andrianantenaina Marinah s\'est inscrit a la formation initiation.\",\"niveau\":\"initiation\"}', '2026-09-25 09:11:36', '2026-09-24 18:34:43', '2026-09-25 09:11:36'),
 ('b078a042-1bf7-47d8-98f0-df772115b739', 'App\\Notifications\\NewPaiementNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau paiement\",\"message\":\"Ramamonjisoa Sitraka vient d\\\\\'effectuer son paiement.\",\"paiement_id\":21}', '2026-09-25 18:16:26', '2026-09-25 17:42:25', '2026-09-25 18:16:26'),
@@ -482,9 +530,11 @@ INSERT INTO `notifications` (`id`, `type`, `notifiable_type`, `notifiable_id`, `
 ('c29010fa-3e10-418c-8889-9df9eafbfb6e', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 8, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-25 16:36:38', '2026-09-25 16:36:38'),
 ('c91ea960-c0f0-4c09-9aaa-b54ad2852c77', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 5, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', '2026-09-25 17:20:23', '2026-09-25 16:36:38', '2026-09-25 17:20:23'),
 ('ca8129d2-1101-43f5-8f49-6d21f588ca95', 'App\\Notifications\\NewSoumissionSentNotification', 'App\\Models\\User', 3, '{\"titre\":\"Nouvelle soumission\",\"message\":\"Andrianantenaina Marinah a envoy\\u00e9 sa soumission pour l\'exercice Exercice le\\u00e7on 1\",\"exercice\":\"Exercice le\\u00e7on 1\"}', NULL, '2026-09-25 18:48:30', '2026-09-25 18:48:30'),
+('d7f0e768-6d51-412b-bc33-1a9945a3ab58', 'App\\Notifications\\InscriptionValidateNotification', 'App\\Models\\User', 18, '{\"titre\":\"Inscription valid\\u00e9\",\"message\":\"Votre inscription \\u00e0 la niveau initiation a \\u00e9t\\u00e9 valid\\u00e9\",\"niveau\":\"initiation\"}', NULL, '2026-10-12 09:07:48', '2026-10-12 09:07:48'),
 ('e8ec848c-ddb2-4ce1-bf39-6ad975ed8703', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 4, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', NULL, '2026-09-25 16:36:38', '2026-09-25 16:36:38'),
 ('ebfa4a0e-9379-48bc-8502-84c5221924ea', 'App\\Notifications\\NewPaiementNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau paiement\",\"message\":\"Andrianantenaina Marinah vient d\\u2019effectuer son paiement.\",\"paiement_id\":18}', '2026-09-25 09:11:36', '2026-09-24 18:57:27', '2026-09-25 09:11:36'),
-('f146ad5c-7068-4f19-a8cb-898118c4524e', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 11, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', '2026-09-25 18:17:11', '2026-09-25 16:36:38', '2026-09-25 18:17:11');
+('f146ad5c-7068-4f19-a8cb-898118c4524e', 'App\\Notifications\\CourPublieNotification', 'App\\Models\\User', 11, '{\"titre\":\"Nouveau cour publi\\u00e9\",\"message\":\"Un nouveau cour a \\u00e9t\\u00e9 publi\\u00e9 dans votre formation\",\"niveau\":\"initiation\",\"intrument\":\"Guitare\"}', '2026-09-25 18:17:11', '2026-09-25 16:36:38', '2026-09-25 18:17:11'),
+('fed78d15-2e73-4dd0-b04b-0a07187efbe6', 'App\\Notifications\\NewPaiementNotification', 'App\\Models\\User', 2, '{\"titre\":\"Nouveau paiement\",\"message\":\"Razafindralambo Valisoa vient d\\\\\'effectuer son paiement.\",\"paiement_id\":23}', NULL, '2026-09-29 10:52:12', '2026-09-29 10:52:12');
 
 -- --------------------------------------------------------
 
@@ -528,7 +578,12 @@ INSERT INTO `paiements` (`id`, `inscription_id`, `nombre_mois`, `montant`, `desc
 (19, 21, '1', 150000.00, 'Premier paiement', '1231231121231231231', '11/11', '1231', 'carte', 'validé', '2026-09-24 19:01:06', '2026-09-25 17:37:11'),
 (20, 3, '1', 50000.00, 'Paiement par tranche', NULL, NULL, NULL, 'orange_money', 'en attente', '2026-09-25 17:18:06', '2026-09-25 17:18:06'),
 (21, 22, '1', 150000.00, 'Premier paiement', NULL, NULL, NULL, 'orange_money', 'validé', '2026-09-25 17:42:22', '2026-09-25 17:43:32'),
-(22, 23, '1', 200000.00, 'Premier paiement', NULL, NULL, NULL, 'airtel_money', 'validé', '2026-09-25 18:19:23', '2026-09-25 19:08:05');
+(22, 23, '1', 200000.00, 'Premier paiement', NULL, NULL, NULL, 'airtel_money', 'validé', '2026-09-25 18:19:23', '2026-09-25 19:08:05'),
+(23, 18, '2', 100000.00, 'Paiement par tranche', NULL, NULL, NULL, 'orange_money', 'en attente', '2026-09-29 10:52:07', '2026-09-29 10:52:07'),
+(24, 18, '1', 50000.00, 'Paiement par tranche', NULL, NULL, NULL, 'orange_money', 'en attente', '2026-09-29 10:53:09', '2026-09-29 10:53:09'),
+(25, 24, '2', 300000.00, 'Premier paiement', NULL, NULL, NULL, 'airtel_money', 'validé', '2026-09-29 11:20:56', '2026-09-29 11:21:33'),
+(26, 24, '1', 100000.00, 'Paiement par tranche', NULL, NULL, NULL, 'orange_money', 'en attente', '2026-09-29 11:23:17', '2026-09-29 11:23:17'),
+(27, 25, '1', 200000.00, 'Premier paiement', NULL, NULL, NULL, 'airtel_money', 'validé', '2026-10-12 08:00:05', '2026-10-12 09:07:45');
 
 -- --------------------------------------------------------
 
@@ -545,6 +600,30 @@ CREATE TABLE `paiementsbackup` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `parcours_professeurs`
+--
+
+CREATE TABLE `parcours_professeurs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `prof_id` bigint(20) UNSIGNED NOT NULL,
+  `diplome` varchar(255) NOT NULL,
+  `etablissement` varchar(255) DEFAULT NULL,
+  `periode_debut` date DEFAULT NULL,
+  `periode_fin` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `parcours_professeurs`
+--
+
+INSERT INTO `parcours_professeurs` (`id`, `prof_id`, `diplome`, `etablissement`, `periode_debut`, `periode_fin`, `created_at`, `updated_at`) VALUES
+(1, 14, 'Licence en musicologie', 'EGM', '2022-01-01', '2025-10-12', '2026-10-11 22:27:25', '2026-10-11 22:27:25');
 
 -- --------------------------------------------------------
 
@@ -601,11 +680,59 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (57, 'App\\Models\\User', 12, 'react-app', 'fff201a08a2df540f10a170d42f2b40180f15822ba4cbf9e5d958ed1ba9d4ed7', '[\"*\"]', NULL, NULL, '2026-09-24 11:00:51', '2026-09-24 11:00:51'),
 (58, 'App\\Models\\User', 13, 'react-app', '3089552056a6a689756820030c17d7e2997c46c0f6b24b2ee61657b908feb91a', '[\"*\"]', NULL, NULL, '2026-09-24 11:02:10', '2026-09-24 11:02:10'),
 (59, 'App\\Models\\User', 14, 'react-app', '3688312c0825a7d7232381ee8b73d7303723371e9412ab107f5231479f57de07', '[\"*\"]', NULL, NULL, '2026-09-24 16:51:50', '2026-09-24 16:51:50'),
-(64, 'App\\Models\\User', 14, 'react-app', '644d25b50d15e46d94aa7e8bf42aea579c097517f1216fc700400eef0201c2e5', '[\"*\"]', '2026-09-25 19:12:51', NULL, '2026-09-24 19:02:19', '2026-09-25 19:12:51'),
 (68, 'App\\Models\\User', 15, 'react-app', 'ee69f9fa2bf52a34df762042153748f735dd0b0b0c7ce196491253dc67ab0be6', '[\"*\"]', NULL, NULL, '2026-09-25 17:41:24', '2026-09-25 17:41:24'),
 (72, 'App\\Models\\User', 16, 'react-app', '33606749a09c64b191625eeceb7555af5e79cd07276cf938dfa091f5a30fdf69', '[\"*\"]', NULL, NULL, '2026-09-25 18:18:13', '2026-09-25 18:18:13'),
 (76, 'App\\Models\\User', 17, 'react-app', '9c3998a09574115570c577056259a4b1ad47432e1e5943dcdc4fcded24bc94c8', '[\"*\"]', NULL, NULL, '2026-09-25 19:20:58', '2026-09-25 19:20:58'),
-(79, 'App\\Models\\User', 1, 'react-app', '97f39a7b380f1d4c50c081dbd699910bb719511823728f79943e82bdffdf50d6', '[\"*\"]', '2026-09-28 04:39:23', NULL, '2026-09-27 16:18:32', '2026-09-28 04:39:23');
+(81, 'App\\Models\\User', 2, 'react-app', '260c014cbe9642e63e40d52ecd4d462d6fbfc17bfad659f041453aba3cd30e6a', '[\"*\"]', '2026-10-12 14:00:07', NULL, '2026-09-29 11:12:46', '2026-10-12 14:00:07'),
+(83, 'App\\Models\\User', 14, 'react-app', '939c1d8832cc8a64884f3ef2d535d99c7432512c350fd81cc8297ed732b80a25', '[\"*\"]', '2026-10-12 13:56:31', NULL, '2026-10-12 05:16:20', '2026-10-12 13:56:31'),
+(85, 'App\\Models\\User', 18, 'react-app', '1788b8523ed060fb6e3537e9fe93c55422af2017880325c68a4a9a85f7fa2d67', '[\"*\"]', NULL, NULL, '2026-10-12 07:46:15', '2026-10-12 07:46:15'),
+(87, 'App\\Models\\User', 16, 'react-app', '66fc3693f58e9467304285d1e48f9b995c0e69feec369cb87fb781592e713faf', '[\"*\"]', '2026-10-12 13:56:42', NULL, '2026-10-12 10:47:12', '2026-10-12 13:56:42');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `professeur_instrument`
+--
+
+CREATE TABLE `professeur_instrument` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `prof_id` bigint(20) UNSIGNED NOT NULL,
+  `instrument_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `professeur_instrument`
+--
+
+INSERT INTO `professeur_instrument` (`id`, `prof_id`, `instrument_id`, `created_at`, `updated_at`) VALUES
+(1, 14, 1, '2026-10-11 22:27:25', '2026-10-11 22:27:25'),
+(2, 14, 6, '2026-10-11 22:27:25', '2026-10-11 22:27:25'),
+(3, 14, 7, '2026-10-11 22:27:25', '2026-10-11 22:27:25');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `profils_professeurs`
+--
+
+CREATE TABLE `profils_professeurs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `prof_id` bigint(20) UNSIGNED NOT NULL,
+  `specialite` varchar(255) DEFAULT NULL,
+  `ville` varchar(255) DEFAULT NULL,
+  `annees_experiences` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `profils_professeurs`
+--
+
+INSERT INTO `profils_professeurs` (`id`, `prof_id`, `specialite`, `ville`, `annees_experiences`, `created_at`, `updated_at`) VALUES
+(1, 14, 'Professeur de guitare acoustique', 'Antananarivo', 5, '2026-10-11 22:27:23', '2026-10-11 22:27:23');
 
 -- --------------------------------------------------------
 
@@ -737,6 +864,7 @@ CREATE TABLE `soumissionsbackup` (
 
 CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `role_id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
   `firstname` varchar(255) NOT NULL,
   `bio` longtext DEFAULT NULL,
@@ -748,32 +876,32 @@ CREATE TABLE `users` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `photo` varchar(255) DEFAULT NULL,
   `telephone` varchar(255) DEFAULT NULL,
-  `statut` enum('actif','inactif','suspendu','bloqué') NOT NULL DEFAULT 'actif',
-  `role_id` bigint(20) UNSIGNED NOT NULL
+  `statut` enum('actif','inactif','suspendu','bloqué') NOT NULL DEFAULT 'actif'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `firstname`, `bio`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `photo`, `telephone`, `statut`, `role_id`) VALUES
-(1, 'Razafindralambo', 'Valisoa', NULL, 'valisoarazafindralambo@gmail.com', NULL, '$2y$12$XROKGQD9BQqmxGZgF4UPP.R7FZwuB3OfQ8WXMaIzD5U/exV2cMTEC', NULL, '2026-09-14 05:31:54', '2026-09-22 04:54:16', NULL, '0383456734', 'actif', 2),
-(2, 'admin', 'admin', NULL, 'admin@gmail.com', NULL, '$2y$12$hCA192AHk4fhRsRLj8ofTOH/BN3ekVMt8E3T0skNA1zk6bHirvh5O', NULL, '2026-09-14 05:33:00', '2026-09-14 05:33:00', NULL, NULL, 'actif', 1),
-(3, 'Razafindralambo', 'Heriniaina', NULL, 'heriniaina@gmail.com', NULL, '$2y$12$qbNpO6AcoN4MJ45H4.8mw.HWmWfx1yEwurSlxESza17uCclissf0e', NULL, '2026-09-14 05:36:09', '2026-09-14 05:36:09', NULL, NULL, 'actif', 3),
-(4, 'Razafindralambo', 'Nono', NULL, 'nono@gmail.com', NULL, '$2y$12$GXJoO82hDtF8xVrMZMbwOOPytszj5yQ3wlevACzQEVjCSqFU2D2ma', NULL, '2026-09-14 06:21:53', '2026-09-14 06:25:20', NULL, '0383456734', 'actif', 2),
-(5, 'Razafiarison', 'Harena', NULL, 'harenarazafiarison@gmail.com', NULL, '$2y$12$35XThGLjFShVm8A2P9eOHOLOpVNOOmf6QNBNEQooqAoiZ4c4APnXm', NULL, '2026-09-15 13:50:52', '2026-09-15 14:12:46', NULL, '0326746200', 'actif', 2),
-(6, 'Razafiarison', 'Sarobidy', NULL, 'sarobidyrazafiarison@gmail.com', NULL, '$2y$12$rdLDuwL8y59cMEdXSVP4pOAC3m6.DQfcgPayhOgU/cpMXx3RXgVQm', NULL, '2026-09-15 17:24:32', '2026-09-16 09:07:56', NULL, '0326746200', 'actif', 2),
-(7, 'Razafindralambo', 'Anysia', NULL, 'anysiarazafindralamabi@gmail.com', NULL, '$2y$12$4poD01Df5QpfofpN4a7K6uDGAQVibQiKDhXfg3duCaEK0vTJnE.h.', NULL, '2026-09-17 07:36:45', '2026-09-17 07:36:45', NULL, NULL, 'actif', 3),
-(8, 'Razafindralambo', 'Manavotra', NULL, 'manavotrarazafindralambo@gmail.com', NULL, '$2y$12$OkQ.UIKI8xwdZuZ2Y0ePLe8qj6mqDgJPDIxG8hRZMCPkvgz4LUSUu', NULL, '2026-09-19 03:36:54', '2026-09-19 03:37:53', NULL, '0326746200', 'actif', 2),
-(9, 'Ratovonarivo', 'Sitraka', NULL, 'sitrakaratovonarivo@gmail.com', NULL, '$2y$12$lH.eXkPGFHQPbFwvcANZBuZFbqWGafg0loaURhTYrk73lusG2/nYO', NULL, '2026-09-24 09:32:20', '2026-09-24 19:00:35', NULL, '0386789098', 'actif', 2),
-(10, 'Razafindralambo', 'Felix', NULL, 'felixrazafindralambo@gmail.com', NULL, '$2y$12$7vgg8gk/ieJp13SY.07Yj.rPlkQEd9R4Mrv16uDQLrZu1wTLSVScO', NULL, '2026-09-24 09:39:49', '2026-09-24 09:39:49', NULL, NULL, 'actif', 3),
-(11, 'Andrianantenaina', 'Marinah', NULL, 'marinahandrianantenaina@gmail.com', NULL, '$2y$12$nuVPcejLd05qEYJKWVV9hem7AnxuIXI6BZHHoeIwDsZjVyPAj5vjm', NULL, '2026-09-24 10:58:50', '2026-09-24 18:34:42', NULL, '0346062701', 'actif', 2),
-(12, 'Nomenjanahary', 'Santaniaina', NULL, 'santaniainanomenjanahary@gmail.com', NULL, '$2y$12$95qRnMRlRaENQHttUuk0NuatTaMxgCnf2K.tzQyXrIAVPCtxtrDsu', NULL, '2026-09-24 11:00:51', '2026-09-24 18:16:43', NULL, '0386789098', 'actif', 2),
-(13, 'Andriambololona', 'Miaritsiory', NULL, 'miaritsioryandriambololona@gmail.com', NULL, '$2y$12$/WOq.5.pqwlYWxTR5j1YkO6Dt6iO9z8UTSXwTP3bnn1DrXJ.bpV8u', NULL, '2026-09-24 11:02:09', '2026-09-24 11:02:09', NULL, NULL, 'actif', 3),
-(14, 'Rajoelison', 'Mandresy', NULL, 'mandresyrajoelison@gmail.com', NULL, '$2y$12$o6VYTAnC7VEiRoaxJ69BWeb3WsE1c25WiFQapqYEewAZD6OF7I9ba', NULL, '2026-09-24 16:51:49', '2026-09-24 16:51:49', NULL, NULL, 'actif', 3),
-(15, 'Ramamonjisoa', 'Sitraka', NULL, 'sitrakaramamonjisoa@gmail.com', NULL, '$2y$12$Ojn8.dFW1j8iMd/2POJPQOzuNDsTsiVwwJbS09Xi8pBtj1fT1U6Re', NULL, '2026-09-25 17:41:23', '2026-09-25 17:42:07', NULL, '0386789098', 'actif', 2),
-(16, 'Andrianoromiraho', 'Cedrico', NULL, 'cedricoandrianoromiraho@gmail.com', NULL, '$2y$12$M4H2cK0h3CAx.CuuwkLViecD5.lRMfDKYLQY8hHDp4fyrbAcn2XGC', NULL, '2026-09-25 18:18:13', '2026-09-25 18:19:09', NULL, '0383456734', 'actif', 2),
-(17, 'Tahinjanahary', 'Kevin', NULL, 'kevintahinjanahary@gmail.com', NULL, '$2y$12$WyCnwVYw4GAKtabzknw/AO6ORofRllHo0EVlFxy4PFtbBfLdFP5yu', NULL, '2026-09-25 19:20:58', '2026-09-25 19:20:58', NULL, NULL, 'actif', 2);
+INSERT INTO `users` (`id`, `role_id`, `name`, `firstname`, `bio`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `photo`, `telephone`, `statut`) VALUES
+(1, 2, 'Razafindralambo', 'Valisoa', NULL, 'valisoarazafindralambo@gmail.com', NULL, '$2y$12$XROKGQD9BQqmxGZgF4UPP.R7FZwuB3OfQ8WXMaIzD5U/exV2cMTEC', NULL, '2026-09-14 05:31:54', '2026-09-22 04:54:16', NULL, '0383456734', 'actif'),
+(2, 1, 'admin', 'admin', NULL, 'admin@gmail.com', NULL, '$2y$12$hCA192AHk4fhRsRLj8ofTOH/BN3ekVMt8E3T0skNA1zk6bHirvh5O', NULL, '2026-09-14 05:33:00', '2026-09-14 05:33:00', NULL, NULL, 'actif'),
+(3, 3, 'Razafindralambo', 'Heriniaina', NULL, 'heriniaina@gmail.com', NULL, '$2y$12$qbNpO6AcoN4MJ45H4.8mw.HWmWfx1yEwurSlxESza17uCclissf0e', NULL, '2026-09-14 05:36:09', '2026-09-14 05:36:09', NULL, NULL, 'actif'),
+(4, 2, 'Razafindralambo', 'Nono', NULL, 'nono@gmail.com', NULL, '$2y$12$GXJoO82hDtF8xVrMZMbwOOPytszj5yQ3wlevACzQEVjCSqFU2D2ma', NULL, '2026-09-14 06:21:53', '2026-09-29 11:20:40', NULL, '0383456734', 'actif'),
+(5, 2, 'Razafiarison', 'Harena', NULL, 'harenarazafiarison@gmail.com', NULL, '$2y$12$35XThGLjFShVm8A2P9eOHOLOpVNOOmf6QNBNEQooqAoiZ4c4APnXm', NULL, '2026-09-15 13:50:52', '2026-09-15 14:12:46', NULL, '0326746200', 'actif'),
+(6, 2, 'Razafiarison', 'Sarobidy', NULL, 'sarobidyrazafiarison@gmail.com', NULL, '$2y$12$rdLDuwL8y59cMEdXSVP4pOAC3m6.DQfcgPayhOgU/cpMXx3RXgVQm', NULL, '2026-09-15 17:24:32', '2026-09-16 09:07:56', NULL, '0326746200', 'actif'),
+(7, 3, 'Razafindralambo', 'Anysia', NULL, 'anysiarazafindralamabi@gmail.com', NULL, '$2y$12$4poD01Df5QpfofpN4a7K6uDGAQVibQiKDhXfg3duCaEK0vTJnE.h.', NULL, '2026-09-17 07:36:45', '2026-09-17 07:36:45', NULL, NULL, 'actif'),
+(8, 2, 'Razafindralambo', 'Manavotra', NULL, 'manavotrarazafindralambo@gmail.com', NULL, '$2y$12$OkQ.UIKI8xwdZuZ2Y0ePLe8qj6mqDgJPDIxG8hRZMCPkvgz4LUSUu', NULL, '2026-09-19 03:36:54', '2026-09-19 03:37:53', NULL, '0326746200', 'actif'),
+(9, 2, 'Ratovonarivo', 'Sitraka', NULL, 'sitrakaratovonarivo@gmail.com', NULL, '$2y$12$lH.eXkPGFHQPbFwvcANZBuZFbqWGafg0loaURhTYrk73lusG2/nYO', NULL, '2026-09-24 09:32:20', '2026-09-24 19:00:35', NULL, '0386789098', 'actif'),
+(10, 3, 'Razafindralambo', 'Felix', NULL, 'felixrazafindralambo@gmail.com', NULL, '$2y$12$7vgg8gk/ieJp13SY.07Yj.rPlkQEd9R4Mrv16uDQLrZu1wTLSVScO', NULL, '2026-09-24 09:39:49', '2026-09-24 09:39:49', NULL, NULL, 'actif'),
+(11, 2, 'Andrianantenaina', 'Marinah', NULL, 'marinahandrianantenaina@gmail.com', NULL, '$2y$12$nuVPcejLd05qEYJKWVV9hem7AnxuIXI6BZHHoeIwDsZjVyPAj5vjm', NULL, '2026-09-24 10:58:50', '2026-09-24 18:34:42', NULL, '0346062701', 'actif'),
+(12, 2, 'Nomenjanahary', 'Santaniaina', NULL, 'santaniainanomenjanahary@gmail.com', NULL, '$2y$12$95qRnMRlRaENQHttUuk0NuatTaMxgCnf2K.tzQyXrIAVPCtxtrDsu', NULL, '2026-09-24 11:00:51', '2026-09-24 18:16:43', NULL, '0386789098', 'actif'),
+(13, 3, 'Andriambololona', 'Miaritsiory', NULL, 'miaritsioryandriambololona@gmail.com', NULL, '$2y$12$/WOq.5.pqwlYWxTR5j1YkO6Dt6iO9z8UTSXwTP3bnn1DrXJ.bpV8u', NULL, '2026-09-24 11:02:09', '2026-09-24 11:02:09', NULL, NULL, 'actif'),
+(14, 3, 'Rajoelison', 'Mandresy', 'Test avec : \"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quae, magni similique sit ipsa id possimus?\"', 'mandresyrajoelison@gmail.com', NULL, '$2y$12$o6VYTAnC7VEiRoaxJ69BWeb3WsE1c25WiFQapqYEewAZD6OF7I9ba', NULL, '2026-09-24 16:51:49', '2026-10-11 22:27:23', 'avatar/vSWIpCamqiadxHus9hEjD1jDtj8OPws8b0zwQUi4.jpg', '0326746200', 'actif'),
+(15, 2, 'Ramamonjisoa', 'Sitraka', NULL, 'sitrakaramamonjisoa@gmail.com', NULL, '$2y$12$Ojn8.dFW1j8iMd/2POJPQOzuNDsTsiVwwJbS09Xi8pBtj1fT1U6Re', NULL, '2026-09-25 17:41:23', '2026-09-25 17:42:07', NULL, '0386789098', 'actif'),
+(16, 2, 'Andrianoromiraho', 'Cedrico', 'Test avec : \"Lorem ipsum, dolor sit amet consectetur adipisicing elit. Obcaecati non minima amet, nam eos quis.\"', 'cedricoandrianoromiraho@gmail.com', NULL, '$2y$12$M4H2cK0h3CAx.CuuwkLViecD5.lRMfDKYLQY8hHDp4fyrbAcn2XGC', NULL, '2026-09-25 18:18:13', '2026-10-12 10:51:24', 'avatar/E5hmFkrAbGYZE45NODk7hZyWVC4p5aTpX0C2TaCL.jpg', '0383456734', 'actif'),
+(17, 2, 'Tahinjanahary', 'Kevin', NULL, 'kevintahinjanahary@gmail.com', NULL, '$2y$12$WyCnwVYw4GAKtabzknw/AO6ORofRllHo0EVlFxy4PFtbBfLdFP5yu', NULL, '2026-09-25 19:20:58', '2026-09-25 19:20:58', NULL, NULL, 'actif'),
+(18, 2, 'Rakotoarison', 'Avotra', NULL, 'avotrarakotoarison@gmail.com', NULL, '$2y$12$XqnuXOjxpibNTYlsB.0zJuahN/.Mtdod4V8p5SfoOdicLhslJTS8W', NULL, '2026-10-12 07:46:15', '2026-10-12 07:55:34', NULL, '0386789098', 'actif');
 
 --
 -- Index pour les tables déchargées
@@ -816,6 +944,13 @@ ALTER TABLE `cours`
 ALTER TABLE `exercices`
   ADD PRIMARY KEY (`id`),
   ADD KEY `exercices_lesson_id_foreign` (`lesson_id`);
+
+--
+-- Index pour la table `experiences_professeurs`
+--
+ALTER TABLE `experiences_professeurs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `experiences_professeurs_prof_id_foreign` (`prof_id`);
 
 --
 -- Index pour la table `failed_jobs`
@@ -921,6 +1056,13 @@ ALTER TABLE `paiementsbackup`
   ADD KEY `paiementsbackup_inscription_id_foreign` (`inscription_id`);
 
 --
+-- Index pour la table `parcours_professeurs`
+--
+ALTER TABLE `parcours_professeurs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `parcours_professeurs_prof_id_foreign` (`prof_id`);
+
+--
 -- Index pour la table `password_reset_tokens`
 --
 ALTER TABLE `password_reset_tokens`
@@ -934,6 +1076,21 @@ ALTER TABLE `personal_access_tokens`
   ADD UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`),
   ADD KEY `personal_access_tokens_expires_at_index` (`expires_at`);
+
+--
+-- Index pour la table `professeur_instrument`
+--
+ALTER TABLE `professeur_instrument`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `professeur_instrument_prof_id_instrument_id_unique` (`prof_id`,`instrument_id`),
+  ADD KEY `professeur_instrument_instrument_id_foreign` (`instrument_id`);
+
+--
+-- Index pour la table `profils_professeurs`
+--
+ALTER TABLE `profils_professeurs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `profils_professeurs_prof_id_unique` (`prof_id`);
 
 --
 -- Index pour la table `resources`
@@ -1001,6 +1158,12 @@ ALTER TABLE `exercices`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
+-- AUTO_INCREMENT pour la table `experiences_professeurs`
+--
+ALTER TABLE `experiences_professeurs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT pour la table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
@@ -1016,25 +1179,25 @@ ALTER TABLE `favoris`
 -- AUTO_INCREMENT pour la table `inscriptions`
 --
 ALTER TABLE `inscriptions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT pour la table `inscription_instrument`
 --
 ALTER TABLE `inscription_instrument`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT pour la table `instruments`
 --
 ALTER TABLE `instruments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT pour la table `jobs`
 --
 ALTER TABLE `jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT pour la table `lessons`
@@ -1058,19 +1221,19 @@ ALTER TABLE `levels`
 -- AUTO_INCREMENT pour la table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT pour la table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT pour la table `paiements`
 --
 ALTER TABLE `paiements`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT pour la table `paiementsbackup`
@@ -1079,10 +1242,28 @@ ALTER TABLE `paiementsbackup`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT pour la table `parcours_professeurs`
+--
+ALTER TABLE `parcours_professeurs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT pour la table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
+
+--
+-- AUTO_INCREMENT pour la table `professeur_instrument`
+--
+ALTER TABLE `professeur_instrument`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT pour la table `profils_professeurs`
+--
+ALTER TABLE `profils_professeurs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `resources`
@@ -1112,7 +1293,7 @@ ALTER TABLE `soumissionsbackup`
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Contraintes pour les tables déchargées
@@ -1138,6 +1319,12 @@ ALTER TABLE `cours`
 --
 ALTER TABLE `exercices`
   ADD CONSTRAINT `exercices_lesson_id_foreign` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `experiences_professeurs`
+--
+ALTER TABLE `experiences_professeurs`
+  ADD CONSTRAINT `experiences_professeurs_prof_id_foreign` FOREIGN KEY (`prof_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `favoris`
@@ -1178,6 +1365,25 @@ ALTER TABLE `messages`
 --
 ALTER TABLE `paiementsbackup`
   ADD CONSTRAINT `paiementsbackup_inscription_id_foreign` FOREIGN KEY (`inscription_id`) REFERENCES `inscriptions` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `parcours_professeurs`
+--
+ALTER TABLE `parcours_professeurs`
+  ADD CONSTRAINT `parcours_professeurs_prof_id_foreign` FOREIGN KEY (`prof_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `professeur_instrument`
+--
+ALTER TABLE `professeur_instrument`
+  ADD CONSTRAINT `professeur_instrument_instrument_id_foreign` FOREIGN KEY (`instrument_id`) REFERENCES `instruments` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `professeur_instrument_prof_id_foreign` FOREIGN KEY (`prof_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `profils_professeurs`
+--
+ALTER TABLE `profils_professeurs`
+  ADD CONSTRAINT `profils_professeurs_prof_id_foreign` FOREIGN KEY (`prof_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `resources`

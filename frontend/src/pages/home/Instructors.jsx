@@ -30,7 +30,7 @@ export default function Instructors() {
             <AnimatedSection
               key={t.id}
               delay={Math.min(i, 6) * 70}
-              className="group rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/20 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brick/10"
+              className="group rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brick/10"
             >
               <div className="flex items-start justify-between">
                 <div className={`grid h-16 w-16 place-items-center rounded-full font-display text-xl font-semibold text-ivory bg-brick`}>

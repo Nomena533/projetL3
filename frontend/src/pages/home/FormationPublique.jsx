@@ -72,7 +72,7 @@ export default function FormationPublique() {
             <AnimatedSection
               key={n.id}
               delay={i * 90}
-              className="flex flex-col gap-4 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/20 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brick/10 sm:flex-row sm:items-center sm:gap-6 sm:p-6"
+              className="flex flex-col gap-4 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brick/10 sm:flex-row sm:items-center sm:gap-6 sm:p-6"
             >
               {/* pastille niveau */}
               <div

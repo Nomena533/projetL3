@@ -16,7 +16,9 @@ class InscriptionController extends Controller
      */
     public function index()
     {
-        //
+        $inscription = Inscription::all();
+
+        return response()->json($inscription);
     }
 
     /**

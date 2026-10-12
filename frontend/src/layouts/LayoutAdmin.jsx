@@ -73,9 +73,9 @@ export default function LayoutAdmin() {
     : "AD";
 
   return (
-    <div className="min-h-screen bg-stone-100 font-body flex">
+    <div className="min-h-screen bg-stone-100 dark:bg-ivory font-body flex">
       <aside
-        className={`fixed z-30 inset-y-0 left-0 h-screen w-64 overflow-y-auto bg-teal-950 text-stone-200 flex flex-col transform transition-transform ${
+        className={`fixed z-30 inset-y-0 left-0 h-screen w-64 overflow-y-auto bg-teal-950 dark:bg-ivory-dark text-stone-200 flex flex-col transform transition-transform ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}
       >
@@ -150,14 +150,14 @@ export default function LayoutAdmin() {
       )}
 
       <div className="flex-1 flex flex-col min-w-0 md:ml-64">
-        <header className="bg-stone-50 border-b border-stone-200 px-4 md:px-8 py-4 flex items-center gap-4">
+        <header className="bg-stone-50 dark:bg-ivory-dark/90 border-b border-stone-200 dark:border-ivory-dark/20 px-4 md:px-8 py-4 flex items-center gap-4">
           <button
             className="md:hidden text-teal-950"
             onClick={() => setMobileOpen(true)}
           >
             <Menu size={20} />
           </button>
-          <h1 className="font-display text-xl text-teal-950">
+          <h1 className="font-display text-xl text-teal-950 dark:text-ink">
             {current?.label || "Kalon'ny"}
           </h1>
           <div className="ml-auto flex items-center gap-1.5 sm:gap-3">

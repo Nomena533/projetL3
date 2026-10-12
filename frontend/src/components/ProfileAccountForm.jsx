@@ -16,6 +16,8 @@ import SettingsSection from "./SettingsSection";
 // Ce formulaire commun permet aux élèves et aux administrateurs d'enregistrer les champs partagés.
 export default function ProfileAccountForm({ description, roleLabel, showBio = false }) {
   const { user, setUser } = useAuth();
+  console.log("user : ", user);
+  
   const [form, setForm] = useState(() => user ? {
     firstname: user.firstname || "",
     name: user.name || "",
@@ -199,6 +201,7 @@ export default function ProfileAccountForm({ description, roleLabel, showBio = f
                 label={label}
                 name={name}
                 type={type}
+                // value={form[name]}
                 value={form[name]}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, [name]: event.target.value }))
@@ -220,7 +223,7 @@ export default function ProfileAccountForm({ description, roleLabel, showBio = f
                     setForm((current) => ({ ...current, bio: event.target.value }))
                   }
                   placeholder="Quelques lignes sur toi…"
-                  className="w-full rounded-xl border border-ivory-dark bg-white/70 px-4 py-3 font-body text-sm text-ink outline-none focus:border-coral"
+                  className="w-full rounded-xl border border-ivory-dark bg-white/70 dark:bg-white/15 px-4 py-3 font-body text-sm text-ink outline-none focus:border-coral"
                 />
               </label>
             )}

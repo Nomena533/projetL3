@@ -52,9 +52,9 @@ export default function NotificationBell({
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-50 mt-2 w-80 max-w-[90vw] origin-top-right overflow-hidden rounded-lg border border-stone-200 bg-white shadow-lg shadow-black/5"
+          className="absolute right-0 z-50 mt-2 w-80 max-w-[90vw] origin-top-right overflow-hidden rounded-lg border border-stone-200 bg-ivory dark:border-ivory-dark shadow-lg shadow-black/5"
         >
-          <div className="flex items-center justify-between border-b border-stone-100 px-4 py-3">
+          <div className="flex items-center justify-between border-b border-stone-100 dark:border-ivory-dark px-4 py-3">
             <p className="font-display text-sm text-ink">Notifications</p>
             {count > 0 && (
               // <span className="font-mono text-xs text-stone-400">
@@ -81,7 +81,7 @@ export default function NotificationBell({
               items.map((n) => (
                 <div
                   key={n.id}
-                  className="border-b border-stone-50 px-4 py-3 last:border-b-0 hover:bg-stone-50 flex items-start justify-between"
+                  className="border-b border-stone-50 dark:border-ivory-dark px-4 py-3 last:border-b-0 hover:bg-stone-50 dark:hover:bg-ivory-dark flex items-start justify-between"
                   id="notifList"
                 >
                   <div>

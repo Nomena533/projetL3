@@ -80,7 +80,7 @@ export default function ProfMessages() {
 
       <AnimatedSection
         delay={80}
-        className="grid overflow-hidden rounded-2xl border border-ivory-dark bg-white/70 md:grid-cols-3"
+        className="grid overflow-hidden rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 md:grid-cols-3"
         style={{ minHeight: "440px" }}
       >
         <div className="divide-y divide-ivory-dark border-b border-ivory-dark md:border-b-0 md:border-r">
@@ -196,7 +196,7 @@ export default function ProfMessages() {
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   placeholder="Écrire un message…"
-                  className="flex-1 rounded-full border border-ivory-dark bg-white/70 px-4 py-2.5 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
+                  className="flex-1 rounded-full border border-ivory-dark bg-white/70 dark:bg-white/10 px-4 py-2.5 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
                 />
                 <button
                   onClick={handleSend}

@@ -28,35 +28,41 @@ import MessageProvider from "./app/provider/MessageProvider";
 import { LangProvider } from "./app/provider/LangProvider";
 import SoumissionProvider from "./app/provider/SoumissionProvider";
 import NotificationProvider from "./app/provider/NotificationProvider";
+import ThemeProvider from "./app/provider/ThemeProvider";
+import InscriptionProvider from "./app/provider/InscriptionProvider";
 // import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <LangProvider>
-      <SoumissionProvider>
-        <NotificationProvider>
-          <MessageProvider>
-            <PaiementProvider>
-              <UserProvider>
-                <InstrumentProvider>
-                  <LevelProvider>
-                    <LessonProvider>
-                      <CourProvider>
-                        <BrowserRouter>
-                          {/* AuthProvider englobe toute l'application, tous les composants enfants peuvent accéder à user, logout, setUser */}
-                          <AuthProvider>
-                            <App />
-                          </AuthProvider>
-                        </BrowserRouter>
-                      </CourProvider>
-                    </LessonProvider>
-                  </LevelProvider>
-                </InstrumentProvider>
-              </UserProvider>
-            </PaiementProvider>
-          </MessageProvider>
-        </NotificationProvider>
-      </SoumissionProvider>
-    </LangProvider>
+    <ThemeProvider>
+      <LangProvider>
+        <InscriptionProvider>
+          <SoumissionProvider>
+            <NotificationProvider>
+              <MessageProvider>
+                <PaiementProvider>
+                  <UserProvider>
+                    <InstrumentProvider>
+                      <LevelProvider>
+                        <LessonProvider>
+                          <CourProvider>
+                            <BrowserRouter>
+                              {/* AuthProvider englobe toute l'application, tous les composants enfants peuvent accéder à user, logout, setUser */}
+                              <AuthProvider>
+                                <App />
+                              </AuthProvider>
+                            </BrowserRouter>
+                          </CourProvider>
+                        </LessonProvider>
+                      </LevelProvider>
+                    </InstrumentProvider>
+                  </UserProvider>
+                </PaiementProvider>
+              </MessageProvider>
+            </NotificationProvider>
+          </SoumissionProvider>
+        </InscriptionProvider>
+      </LangProvider>
+    </ThemeProvider>
   </React.StrictMode>,
 );

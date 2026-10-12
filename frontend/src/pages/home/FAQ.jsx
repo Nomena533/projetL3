@@ -47,7 +47,7 @@ export default function FAQ() {
           </p>
         </AnimatedSection>
 
-        <AnimatedSection delay={100} className="mt-12 rounded-2xl border border-ivory-dark bg-white/50 px-6 sm:px-8">
+        <AnimatedSection delay={100} className="mt-12 rounded-2xl border border-ivory-dark bg-white/50 dark:bg-white/10 px-6 sm:px-8">
           {faqItems.map((item, i) => (
             <FaqRow
               key={item.q}

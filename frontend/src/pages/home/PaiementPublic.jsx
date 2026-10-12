@@ -208,7 +208,7 @@ export default function PaiementPublic() {
         {/* Colonne gauche : formulaire */}
         <div className="space-y-6">
           {/* Inscription réalisée */}
-          <AnimatedSection className="rounded-2xl border border-ivory-dark bg-white/70 p-6">
+          <AnimatedSection className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <h3 className="font-display text-base font-semibold text-ink">
@@ -264,7 +264,7 @@ export default function PaiementPublic() {
           {/* Mensualité */}
           <AnimatedSection
             delay={80}
-            className="rounded-2xl border border-ivory-dark bg-white/70 p-6"
+            className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6"
           >
             <h3 className="font-display text-base font-semibold text-ink">
               Mensualité
@@ -296,7 +296,7 @@ export default function PaiementPublic() {
                     : Math.min(Math.max(val, 1), niveau.duree.split(" ")[0]);
                   setNombreMois(borne);
                 }}
-                className="w-28 rounded-lg border border-ivory-dark bg-white px-3 py-2.5 font-body text-sm text-ink focus:border-coral focus:outline-none"
+                className="w-28 rounded-lg border border-ivory-dark  px-3 py-2.5 font-body text-sm text-ink focus:border-coral focus:outline-none"
               />
               <span className="font-body text-sm text-ink-soft">
                 {nombreMois > 1 ? "mois" : "mois"} · {formatAriary(sousTotal)}
@@ -307,7 +307,7 @@ export default function PaiementPublic() {
           {/* Mode de paiement */}
           <AnimatedSection
             delay={160}
-            className="rounded-2xl border border-ivory-dark bg-white/70 p-6"
+            className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6"
           >
             <h3 className="font-display text-base font-semibold text-ink">
               Mode de paiement
@@ -325,7 +325,7 @@ export default function PaiementPublic() {
                   className={`rounded-full border px-4 py-2 font-body text-sm font-medium transition-colors duration-200 ${
                     modePaiement === m.id
                       ? "border-coral bg-coral text-ivory"
-                      : "border-ivory-dark bg-white text-ink-soft hover:border-coral hover:text-coral-dark"
+                      : "border-ivory-dark text-ink-soft hover:border-coral hover:text-coral-dark"
                   }`}
                 >
                   {m.nom}
@@ -343,7 +343,7 @@ export default function PaiementPublic() {
                 className={`rounded-full border px-4 py-2 font-body text-sm font-medium transition-colors duration-200 ${
                   modePaiement === modeCarte.id
                     ? "border-coral bg-coral text-ivory"
-                    : "border-ivory-dark bg-white text-ink-soft hover:border-coral hover:text-coral-dark"
+                    : "border-ivory-dark text-ink-soft hover:border-coral hover:text-coral-dark"
                 }`}
               >
                 {modeCarte.nom}
@@ -419,7 +419,7 @@ export default function PaiementPublic() {
         {/* Colonne droite : récapitulatif, fixé à côté du formulaire */}
         <AnimatedSection
           delay={120}
-          className="rounded-2xl border border-ivory-dark bg-white/70 p-6 lg:sticky lg:top-24"
+          className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 lg:sticky lg:top-24"
         >
           <h3 className="flex items-center gap-1.5 font-display text-base font-semibold text-ink">
             <HiOutlineBanknotes size={18} /> Récapitulatif

@@ -172,7 +172,7 @@ export default function Home() {
                 key={instr.id}
                 delay={i * 80}
                 as={Link}
-                className="group block rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/20 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-coral/40 hover:shadow-xl hover:shadow-coral/10"
+                className="group block rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-coral/40 hover:shadow-xl hover:shadow-coral/10"
               >
                 {/* <span className="text-3xl">{instr.emoji}</span> */}
                 <h3 className="mt-4 font-display text-lg font-semibold text-ink group-hover:text-coral-dark">
@@ -302,7 +302,7 @@ export default function Home() {
               <AnimatedSection
                 key={t.id}
                 delay={i * 100}
-                className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/20 p-6"
+                className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
               >
                 <div className="flex gap-0.5 text-amber">
                   {Array.from({ length: 5 }).map((_, s) => (

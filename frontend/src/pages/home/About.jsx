@@ -58,7 +58,7 @@ export default function About() {
               <AnimatedSection
                 key={v.titre}
                 delay={i * 120}
-                className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/20 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-coral/10"
+                className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-coral/10"
               >
                 <div className="grid h-12 w-12 place-items-center rounded-xl bg-coral/10 text-coral-dark">
                   <v.icon size={22} />
@@ -83,7 +83,7 @@ export default function About() {
       </section>
 
       <section className="px-5 py-20 sm:px-8">
-        <AnimatedSection className="mx-auto flex max-w-4xl flex-col items-center gap-6 rounded-4xl border border-ivory-dark bg-white/60 dark:bg-white/20 px-8 py-14 text-center">
+        <AnimatedSection className="mx-auto flex max-w-4xl flex-col items-center gap-6 rounded-4xl border border-ivory-dark bg-white/60 dark:bg-white/10 px-8 py-14 text-center">
           <h2 className="font-display text-3xl font-semibold text-ink">Envie de rejoindre l'aventure ?</h2>
           <p className="max-w-md font-body text-ink-soft">
             Que vous soyez élève curieux ou professeur passionné, Kalon'ny se construit avec vous.

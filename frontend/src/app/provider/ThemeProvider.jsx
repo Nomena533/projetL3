@@ -1,10 +1,14 @@
-import React, { Children } from 'react'
-import { ThemeContext } from '../context/ThemeContext'
+import React, { Children } from "react";
+import { ThemeContext } from "../context/ThemeContext";
+import useDarkMode from "../hooks/useDarkMode";
 
-function ThemeProvider(children) {
+function ThemeProvider({children}) {
+  const [isDark, toggleDark] = useDarkMode();
   return (
-    <ThemeContext.Provider>{children}</ThemeContext.Provider>
-  )
+    <ThemeContext.Provider value={{ isDark, toggleDark }}>
+      {children}
+    </ThemeContext.Provider>
+  );
 }
 
-export default ThemeProvider
+export default ThemeProvider;

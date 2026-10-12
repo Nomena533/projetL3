@@ -180,7 +180,7 @@ export default function Inscription() {
             démarre dès validation de ton inscription.
           </p>
 
-          <div className="mt-10 space-y-4 rounded-2xl border border-ivory-dark bg-white/60 p-6">
+          <div className="mt-10 space-y-4 rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6">
             <p className="font-mono text-[11px] uppercase tracking-wide text-coral-dark">
               Formation concernée
             </p>
@@ -228,7 +228,7 @@ export default function Inscription() {
 
         <AnimatedSection
           delay={120}
-          className="rounded-[1.75rem] border border-ivory-dark bg-white/60 p-8 sm:p-10"
+          className="rounded-[1.75rem] border border-ivory-dark bg-white/60 dark:bg-white/10 p-8 sm:p-10"
         >
           {sent ? (
             <div className="flex flex-col items-center gap-3 py-10 text-center animate-fade-in">

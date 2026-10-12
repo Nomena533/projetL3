@@ -126,7 +126,7 @@ export default function ProfDashboard() {
               delay={i * 90}
               as={Link}
               to={`/professeur/cours/${c.id}/details`}
-              className="group flex gap-4 rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/20 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-coral/40 hover:shadow-xl hover:shadow-coral/10"
+              className="group flex gap-4 rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-coral/40 hover:shadow-xl hover:shadow-coral/10"
             >
               <div
                 className={`grid h-16 w-16 shrink-0 place-items-center rounded-xl text-2xl bg-coral/90`}
@@ -219,7 +219,7 @@ export default function ProfDashboard() {
             delay={i * 80}
             as={Link}
             to={l.to}
-            className="group flex items-center gap-3 rounded-2xl border border-ivory-dark bg-ivory-dark/40 px-5 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-coral/40 hover:bg-white"
+            className="group flex items-center gap-3 rounded-2xl border border-ivory-dark bg-ivory-dark/40 px-5 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-coral/40 hover:bg-white dark:hover:bg-ivory-dark"
           >
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-coral/10 text-coral-dark transition-colors duration-300 group-hover:bg-coral group-hover:text-ivory">
               <l.icon size={17} />

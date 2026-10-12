@@ -187,7 +187,7 @@ export default function FormationDetail() {
         <p className="mt-2 max-w-xl font-body text-sm text-ink-soft"></p>
       </AnimatedSection>
 
-      <AnimatedSection className="rounded-2xl border border-ivory-dark bg-white/60 p-6">
+      <AnimatedSection className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="font-display text-lg font-semibold text-ink">
             Progression du niveau
@@ -289,7 +289,7 @@ export default function FormationDetail() {
       {/* Examen de passage */}
       <AnimatedSection
         delay={60}
-        className="rounded-2xl border border-ivory-dark bg-white/60 p-6"
+        className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
       >
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -359,7 +359,7 @@ export default function FormationDetail() {
               <AnimatedSection
                 key={instrument.name}
                 delay={i * 90}
-                className="rounded-2xl border border-ivory-dark bg-white/60 p-6"
+                className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
               >
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
@@ -383,7 +383,7 @@ export default function FormationDetail() {
                     </h4>
                     <div className="divide-y divide-ivory-dark overflow-hidden rounded-xl border border-ivory-dark bg-ivory/40">
                       {courFormation.length === 0 ? (
-                        <div className="flex items-center justify-center gap-2.5 px-4 py-3 transition-colors duration-200 bg-amber-100 hover:bg-amber-200">
+                        <div className="flex items-center justify-center gap-2.5 px-4 py-3 transition-colors duration-200 bg-amber-200/40 hover:bg-amber-300/40 border border-amber-400 ">
                           <span className="font-body text-sm text-ink text-center">
                             Aucune cour publiée pour l'instant
                           </span>

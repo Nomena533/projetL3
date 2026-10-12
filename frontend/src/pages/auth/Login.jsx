@@ -27,10 +27,10 @@ import { login } from "../../app/api/authApi";
 import { useAuth } from "../../app/hooks/useAuth";
 import { useUser } from "../../app/hooks/useUser";
 import { LogoBlanc, LogoVert } from "../../components/Logo";
-import useDarkMode from "../../app/hooks/useDarkMode";
+import useTheme from "../../app/hooks/useTheme";
 
 export default function Login() {
-  const [isDark, toggleDark] = useDarkMode();
+  const {isDark} = useTheme();
   const { setUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
