@@ -58,7 +58,7 @@ export default function Contact() {
           </ul>
         </AnimatedSection>
 
-        <AnimatedSection delay={120} className="rounded-[1.75rem] border border-ivory-dark bg-white/60 p-8 sm:p-10">
+        <AnimatedSection delay={120} className="rounded-[1.75rem] border border-ivory-dark bg-white/60 dark:bg-white/10 p-8 sm:p-10">
           {sent ? (
             <div className="flex flex-col items-center gap-3 py-10 text-center animate-fade-in">
               <HiOutlineCheckCircle className="text-coral-dark" size={44} />

@@ -126,7 +126,7 @@ export default function ProfDashboard() {
               delay={i * 90}
               as={Link}
               to={`/professeur/cours/${c.id}/details`}
-              className="group flex gap-4 rounded-2xl border border-ivory-dark bg-white/60 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-coral/40 hover:shadow-xl hover:shadow-coral/10"
+              className="group flex gap-4 rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/20 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-coral/40 hover:shadow-xl hover:shadow-coral/10"
             >
               <div
                 className={`grid h-16 w-16 shrink-0 place-items-center rounded-xl text-2xl bg-coral/90`}

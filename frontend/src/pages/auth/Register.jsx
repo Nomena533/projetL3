@@ -17,7 +17,8 @@ import ValihaMotif from "../../components/ValihaMotif";
 import FormField from "../../components/FormField";
 import { register } from "../../app/api/authApi";
 import { getRoles } from "../../app/api/roleApi";
-import { LogoBlanc } from "../../components/Logo";
+import { LogoBlanc, LogoVert } from "../../components/Logo";
+import useDarkMode from "../../app/hooks/useDarkMode";
 
 const ROLES_ICONS = {
   professeur: HiOutlineMusicalNote,
@@ -25,6 +26,7 @@ const ROLES_ICONS = {
 };
 
 export default function Register() {
+  const [isDark, toggleDark] = useDarkMode();
   // Liste des rôles récupérés depuis laravel
   const [roles, setRoles] = useState([]);
 
@@ -138,7 +140,7 @@ export default function Register() {
         <AnimatedSection className="relative hidden flex-col justify-between overflow-hidden bg-linear-to-br from-brick via-coral to-amber p-1 md:flex">
           <div className="flex h-full flex-col justify-between rounded-[1.85rem] bg-ink/90 p-10">
             <div className="flex justify-center">
-              <LogoBlanc width="200px" />
+              {isDark ? <LogoVert width="200px"/> : <LogoBlanc width="200px"/>}
             </div>
             <div>
               <ValihaMotif count={24} tone="amber" className="h-20" />
@@ -169,7 +171,7 @@ export default function Register() {
         </AnimatedSection>
 
         {/* ---------- FORMULAIRE ---------- */}
-        <AnimatedSection delay={100} className="bg-white/90 p-8 sm:p-10">
+        <AnimatedSection delay={100} className="bg-white/90 dark:bg-white/10 p-8 sm:p-10">
           <div className="mb-8 flex gap-6 border-b border-ivory-dark">
             <NavLink
               to={"/connexionCompte"}

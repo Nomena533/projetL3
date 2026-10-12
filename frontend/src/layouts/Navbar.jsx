@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
-import { LogoVert } from "../components/Logo";
+import { LogoBlanc, LogoVert } from "../components/Logo";
 import { useAuth } from "../app/hooks/useAuth";
 import { LogOut, Sun, Moon, Grid, Settings, User } from "../lib/icons";
 import UserMenu from "../components/UserMenu";
@@ -80,9 +80,8 @@ export default function Navbar() {
           : "bg-ivory/0"
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 sm:px-8">
-        <LogoVert />
-
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 sm:px-8">     
+        {isDark ? <LogoBlanc /> : <LogoVert />}
         <nav
           className="hidden items-center gap-7 lg:flex"
           aria-label="Navigation principale"
@@ -157,7 +156,7 @@ export default function Navbar() {
       >
         <div className="min-h-0">
           <nav
-            className="flex flex-col gap-1 border-t border-ivory-dark bg-ivory px-5 pb-5 pt-3"
+            className="flex flex-col gap-1 border-t border-ivory-dark bg-ivory dark:bg-white/20 px-5 pb-5 pt-3"
             aria-label="Navigation mobile"
           >
             {LINKS.map((l) => (
@@ -177,7 +176,7 @@ export default function Navbar() {
               </NavLink>
             ))}
             {user ? (
-              <div className="mt-2 flex flex-col gap-1 border-t border-ivory-dark pt-3">
+              <div className="mt-2 flex flex-col gap-1 border-t border-ivory-dark dark:bg-white/20 pt-3">
                 {userMenuItems.map(({ to, label, icon: Icon }) => (
                   <NavLink
                     key={to}

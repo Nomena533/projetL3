@@ -31,7 +31,7 @@ function SelectField({ label, name, value, onChange, options }) {
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full rounded-xl border border-ivory-dark bg-white/70 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
+        className="w-full rounded-xl border border-ivory-dark bg-white/70 dark:bg-white/15 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
       >
         {options.map((option) => (
           <option key={option.id} value={option.id}>
@@ -73,7 +73,7 @@ function ImageField({ label, name, defaultValue, onChange, onPreviewChange }) {
 
       <div
         // onClick={() => inputRef.current?.click()}
-        className="group relative flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-ivory-dark bg-white/70 transition-colors duration-300 hover:border-coral/50 lg:h-[calc(100%-1.75rem)]"
+        className="group relative flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-ivory-dark bg-white/70 dark:bg-white/15 transition-colors duration-300 hover:border-coral/50 lg:h-[calc(100%-1.75rem)]"
       >
         {preview ? (
           <>
@@ -126,7 +126,7 @@ function TextAreaField({ label, name, value, onChange }) {
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full rounded-xl border border-ivory-dark bg-white/70 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
+        className="w-full rounded-xl border border-ivory-dark bg-white/70 dark:bg-white/15 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
       />
     </label>
   );
@@ -347,7 +347,7 @@ export default function ProfCourEditeur() {
           {/* Formulaire du cours */}
           <AnimatedSection
             delay={60}
-            className="w-full rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7"
+            className="w-full rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7"
           >
             <div className="grid w-full gap-6 lg:grid-cols-[320px_1fr]">
               {/* Image */}
@@ -444,7 +444,7 @@ export default function ProfCourEditeur() {
         <div className="space-y-6 lg:sticky lg:top-6">
           <AnimatedSection
             delay={80}
-            className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 p-6"
+            className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6"
           >
             <span className="font-mono text-xs uppercase tracking-wide text-ink-soft">
               Aperçu de la fiche
@@ -481,7 +481,7 @@ export default function ProfCourEditeur() {
 
           <AnimatedSection
             delay={110}
-            className="space-y-3 rounded-2xl border border-ivory-dark bg-white/70 p-6"
+            className="space-y-3 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6"
           >
             <span className="font-mono text-xs uppercase tracking-wide text-ink-soft">
               Conseils

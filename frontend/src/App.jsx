@@ -69,6 +69,7 @@ import PaiementPublic from "./pages/home/PaiementPublic";
 import Paiement from "./pages/eleve/Paiement";
 import AdminProfil from "./pages/admin/Profil";
 import CorrectionDetail from "./pages/professeur/CorrectionDetail";
+import DetailProf from "./pages/home/DetailProf";
 
 /** Remonte en haut de page à chaque changement de route */
 function ScrollToTop() {
@@ -110,6 +111,7 @@ export default function App() {
         <Route path="/tarifs" element={<Pricing />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="professeurs/:id" element={<DetailProf />} />
         <Route
           path="/inscription"
           element={

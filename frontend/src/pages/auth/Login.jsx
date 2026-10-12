@@ -26,9 +26,11 @@ import Modal from "../../components/Modal";
 import { login } from "../../app/api/authApi";
 import { useAuth } from "../../app/hooks/useAuth";
 import { useUser } from "../../app/hooks/useUser";
-import { LogoBlanc } from "../../components/Logo";
+import { LogoBlanc, LogoVert } from "../../components/Logo";
+import useDarkMode from "../../app/hooks/useDarkMode";
 
 export default function Login() {
+  const [isDark, toggleDark] = useDarkMode();
   const { setUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -170,40 +172,40 @@ export default function Login() {
       <div className="relative mx-auto w-full max-w-5xl overflow-hidden rounded-4xl shadow-2xl shadow-brick/20 md:grid md:grid-cols-2">
         {/* ---------- PANNEAU ÉDITORIAL ---------- */}
         <AnimatedSection className="relative hidden flex-col justify-between overflow-hidden bg-linear-to-br from-brick via-coral to-amber p-1 md:flex">
-                  <div className="flex h-full flex-col justify-between rounded-[1.85rem] bg-ink/90 p-10">
-                    <div className="flex justify-center">
-                      <LogoBlanc width="200px" />
-                    </div>
-                    <div>
-                      <ValihaMotif count={24} tone="amber" className="h-20" />
-                      <p className="mt-4 font-body text-sm leading-relaxed text-ivory/60">
-                        Apprends un instrument avec de vrais professeurs, à ton rythme,
-                        où que tu sois à Madagascar.
-                      </p>
-                      <div className="mt-6 flex items-center gap-3">
-                        <div className="flex -space-x-2">
-                          {[0, 1, 2].map((i) => (
-                            <span
-                              key={i}
-                              className="h-8 w-8 rounded-full border-2 border-ink bg-linear-to-br from-coral to-amber"
-                            />
-                          ))}
-                        </div>
-                        <div>
-                          <p className="flex items-center gap-1 font-body text-sm font-semibold text-ivory">
-                            4.8 <HiStar className="text-amber" size={13} />
-                          </p>
-                          <p className="font-mono text-[10px] uppercase tracking-wide text-ivory/50">
-                            +1 000 élèves nous font confiance
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </AnimatedSection>
+          <div className="flex h-full flex-col justify-between rounded-[1.85rem] bg-ink/90  p-10">
+            <div className="flex justify-center">
+              {isDark ? <LogoVert width="200px" /> : <LogoBlanc width="200px"/>}
+            </div>
+            <div>
+              <ValihaMotif count={24} tone="amber" className="h-20" />
+              <p className="mt-4 font-body text-sm leading-relaxed text-ivory/60">
+                Apprends un instrument avec de vrais professeurs, à ton rythme,
+                où que tu sois à Madagascar.
+              </p>
+              <div className="mt-6 flex items-center gap-3">
+                <div className="flex -space-x-2">
+                  {[0, 1, 2].map((i) => (
+                    <span
+                      key={i}
+                      className="h-8 w-8 rounded-full border-2 border-ink bg-linear-to-br from-coral to-amber"
+                    />
+                  ))}
+                </div>
+                <div>
+                  <p className="flex items-center gap-1 font-body text-sm font-semibold text-ivory">
+                    4.8 <HiStar className="text-amber" size={13} />
+                  </p>
+                  <p className="font-mono text-[10px] uppercase tracking-wide text-ivory/50">
+                    +1 000 élèves nous font confiance
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </AnimatedSection>
 
         {/* ---------- FORMULAIRE ---------- */}
-        <AnimatedSection delay={100} className="bg-white/90 p-8 sm:p-10">
+        <AnimatedSection delay={100} className="bg-white/90 dark:bg-white/10 p-8 sm:p-10">
           <div className="mb-8 flex gap-6 border-b border-ivory-dark">
             <NavLink
               to={"/connexionCompte"}

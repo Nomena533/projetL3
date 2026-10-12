@@ -73,7 +73,7 @@ export default function UserMenu({
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-50 mt-2 w-64 origin-top-right overflow-hidden rounded-lg border border-stone-200 bg-white shadow-lg shadow-black/5"
+          className="absolute right-0 z-50 mt-2 w-64 origin-top-right overflow-hidden rounded-lg border border-stone-200 dark:border-stone-900 bg-white dark:bg-ivory-dark shadow-lg shadow-black/5"
         >
           {(displayName || subLabel) && (
             <div className="border-b border-stone-100 px-4 py-3">
@@ -83,7 +83,7 @@ export default function UserMenu({
                 </p>
               )}
               {subLabel && (
-                <p className="truncate font-body text-xs text-stone-500">
+                <p className="truncate font-body text-xs text-stone-500 dark:text-ink-soft">
                   {subLabel}
                 </p>
               )}
@@ -98,9 +98,9 @@ export default function UserMenu({
                   to={to}
                   role="menuitem"
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2 font-body text-sm text-stone-600 transition-colors hover:bg-stone-50 hover:text-teal-950"
+                  className="flex items-center gap-2.5 px-4 py-2 font-body text-sm text-stone-600 transition-colors hover:bg-stone-50 dark:hover:bg-white/5 hover:text-teal-950 dark:hover:text-ink-soft dark:text-ink"
                 >
-                  {Icon && <Icon size={16} className="shrink-0 text-stone-400" />}
+                  {Icon && <Icon size={16} className="shrink-0 text-stone-400  dark:text-ink" />}
                   {label}
                 </Link>
               ))}
@@ -116,7 +116,7 @@ export default function UserMenu({
                   setOpen(false);
                   onLogout();
                 }}
-                className="flex w-full items-center gap-2.5 px-4 py-2 font-body text-sm text-red-500 transition-colors hover:bg-red-50"
+                className="flex w-full items-center gap-2.5 px-4 py-2 font-body text-sm text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950"
               >
                 <LogOut size={16} className="shrink-0" />
                 Déconnexion

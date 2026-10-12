@@ -14,16 +14,16 @@ export default function FormField({ label, icon: Icon, type = "text", value, rig
         {label}
       </label>
       <div
-        className={`flex items-center gap-2 rounded-xl border bg-white/70 px-4 py-3 transition-colors duration-300 focus-within:border-coral ${
+        className={`flex items-center gap-2 rounded-xl border bg-white/70 dark:bg-white/15  px-4 py-3 transition-colors duration-300 focus-within:border-coral ${
           error ? "border-brick/60" : "border-ivory-dark"
         }`}
       >
-        {Icon && <Icon size={16} className="shrink-0 text-ink-soft" />}
+        {Icon && <Icon size={16} className="shrink-0 text-ink-soft dark:text-ink" />}
         <input
           id={id}
           type={type}
           value={value}
-          className="w-full bg-transparent font-body text-sm text-ink placeholder:text-ink-soft/60 outline-none"
+          className="w-full bg-transparent font-body text-sm text-ink outline-none"
           {...props}
         />
         {rightElement}

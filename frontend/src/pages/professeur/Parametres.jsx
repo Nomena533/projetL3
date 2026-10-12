@@ -25,10 +25,10 @@ function SelectField({ label, defaultValue, options }) {
       <span className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">{label}</span>
       <select
         defaultValue={defaultValue}
-        className="w-full rounded-xl border border-ivory-dark bg-white/70 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
+        className="w-full rounded-xl border border-ivory-dark bg-white/70 dark:bg-white/10 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
       >
         {options.map((o) => (
-          <option key={o}>{o}</option>
+          <option key={o} >{o}</option>
         ))}
       </select>
     </label>

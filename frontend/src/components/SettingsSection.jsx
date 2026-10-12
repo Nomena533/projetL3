@@ -6,7 +6,7 @@
  */
 export default function SettingsSection({ icon: Icon, title, description, delay = 0, className = "", children }) {
   return (
-    <div className={`rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7 ${className}`}>
+    <div className={`rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7 ${className}`}>
       <div className="flex items-start gap-3">
         <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-coral/10 text-coral-dark">
           <Icon size={18} />

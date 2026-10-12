@@ -27,5 +27,17 @@ class Instrument extends Model
             "instrument_id"
         )->withTimestamps();
     }
+    
+    public function professeurs()
+    {
+        // inscription_instrument : table pivot entre inscription et instrument
+        // withTimestamps() permet de gérer automatiquement les cols created_at et update_at dans la table pivot
+        return $this->belongsToMany(
+            User::class,
+            "professeur_instrument",
+            "prof_id",
+            "instrument_id"
+        )->withTimestamps();
+    }
 
 }

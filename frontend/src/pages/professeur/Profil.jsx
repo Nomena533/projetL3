@@ -1,71 +1,171 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   HiOutlineUserCircle,
   HiOutlineIdentification,
   HiOutlineLockClosed,
   HiOutlineCheckCircle,
   HiOutlineCamera,
+  HiOutlineBriefcase,
+  HiOutlineAcademicCap,
+  HiOutlinePlus,
+  HiOutlineTrash,
+  HiOutlineEye,
 } from "react-icons/hi2";
+import { Link } from "react-router-dom";
 import AnimatedSection from "../../components/AnimatedSection";
 import SettingsSection from "../../components/SettingsSection";
 import FormField from "../../components/FormField";
 import { useAuth } from "../../app/hooks/useAuth";
 import { updateProfile } from "../../app/api/authApi";
 import { BASE_URL } from "../../app/api/api";
+import { useUser } from "../../app/hooks/useUser";
+import {
+  parseList,
+  EMPTY_EXPERIENCE,
+  EMPTY_PARCOURS,
+} from "../../lib/profPortfolio";
+import { useInstrument } from "../../app/hooks/useInstrument";
+import Select from "react-select";
+
+const INPUT_CLS =
+  "w-full rounded-xl border border-ivory-dark bg-white/70 dark:bg-white/15 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral";
+
+// Style du Select aligné sur INPUT_CLS (+ mode sombre)
+const SELECT_CLASSNAMES = {
+  control: ({ isFocused }) =>
+    `w-full rounded-xl border bg-white/70 dark:bg-white/15 px-4 py-2 font-body text-sm text-ink transition-colors duration-300 ${
+      isFocused ? "border-coral" : "border-ivory-dark"
+    }`,
+  valueContainer: () => "gap-1.5 py-0.5",
+  placeholder: () => "text-ink-soft",
+  input: () => "text-ink",
+  multiValue: () =>
+    "flex items-center gap-1 rounded-full bg-coral/10 dark:bg-coral/20 pl-2.5 pr-1 py-0.5",
+  multiValueLabel: () => "text-xs font-semibold text-coral-dark",
+  multiValueRemove: () =>
+    "rounded-full p-0.5 text-coral-dark hover:bg-coral/20 hover:text-brick cursor-pointer",
+  indicatorsContainer: () => "gap-1",
+  clearIndicator: () => "p-1 text-ink-soft hover:text-brick cursor-pointer",
+  dropdownIndicator: () => "p-1 text-ink-soft hover:text-coral cursor-pointer",
+  indicatorSeparator: () => "hidden",
+  menu: () =>
+    "mt-2 overflow-hidden rounded-xl border border-ivory-dark bg-white dark:bg-zinc-900 shadow-lg",
+  menuList: () => "max-h-60 overflow-y-auto p-1.5",
+  option: ({ isFocused, isSelected }) =>
+    `cursor-pointer rounded-lg px-3 py-2 font-body text-sm transition-colors ${
+      isSelected
+        ? "bg-coral text-ivory"
+        : isFocused
+          ? "bg-coral/10 dark:bg-white/10 text-ink"
+          : "text-ink"
+    }`,
+  noOptionsMessage: () => "px-3 py-2 font-body text-sm text-ink-soft",
+};
 
 export default function ProfProfil() {
-  const { user } = useAuth();
+  const { instruments } = useInstrument();
+  const instrumentOptions = useMemo(
+    () => (instruments ?? []).map((instrument) => ({
+      value: instrument.id,
+      label: instrument.name,
+    })),
+    [instruments],
+  );
+  const { user, setUser } = useAuth();
+  // Après sauvegarde, recharge la liste partagée utilisée par la page publique du professeur.
+  const { fetchUserList } = useUser();
   const [saved, setSaved] = useState(false);
-  const [form, setForm] = useState(null);
+  const [selectedInstrumentIds, setSelectedInstrumentIds] = useState(
+    () => (user?.instruments ?? []).map((instrument) => instrument.id),
+  );
+  const [form, setForm] = useState(() => user ? {
+    name: user.name || "",
+    firstname: user.firstname || "",
+    bio: user.bio || "",
+    email: user.email || "",
+    password: "",
+    telephone: user.telephone || "",
+    photo: null,
+    // --- Portfolio (page publique detailProf) ---
+    titre: user.titre || "",
+    ville: user.ville || "",
+    annees_experiences: user.annees_experiences || "",
+    experiences: parseList(user.experiences).map((experience) => ({
+      ...EMPTY_EXPERIENCE,
+      ...experience,
+      periode_debut: experience.periode_debut || "",
+      periode_fin: experience.periode_fin || "",
+    })),
+    parcours: parseList(user.parcours).map((parcours) => ({
+      ...EMPTY_PARCOURS,
+      ...parcours,
+      periode_debut: parcours.periode_debut || "",
+      periode_fin: parcours.periode_fin || "",
+    })),
+  } : null);
+  const [photoPreview, setPhotoPreview] = useState(
+    () => user?.photo ? `${BASE_URL}/storage/${user.photo}` : null,
+  );
+  const photoObjectUrl = useRef(null);
+  const photoInput = useRef(null);
+  const [removePhoto, setRemovePhoto] = useState(false);
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const initials = user
     ? `${user.firstname?.[0] || ""}${user.name?.[0] || ""}`.toUpperCase()
     : "?";
 
+  // L'aperçu local est révoqué lorsque l'utilisateur quitte le formulaire.
   useEffect(() => {
-    if (user) {
-      setForm({
-        name: user.name || "",
-        firstname: user.firstname || "",
-        bio: user.bio || "",
-        email: user.email || "",
-        password: user.password || "",
-        telephone: user.telephone || "",
-        photo: null,
-      });
-    }
-  }, [user]);
+    return () => {
+      if (photoObjectUrl.current) URL.revokeObjectURL(photoObjectUrl.current);
+    };
+  }, []);
 
-  console.log("form 1 : ", form)
+  // Les options restent contrôlées même si la liste des instruments arrive après le profil.
+  const selection = instrumentOptions.filter((option) =>
+    selectedInstrumentIds.includes(option.value),
+  );
+
+  // --- Listes dynamiques (expériences / parcours) ---
+  const updateItem = (key, index, field, value) =>
+    setForm((f) => ({
+      ...f,
+      [key]: f[key].map((it, i) =>
+        i === index ? { ...it, [field]: value } : it,
+      ),
+    }));
+  const addItem = (key, empty) =>
+    setForm((f) => ({ ...f, [key]: [...f[key], { ...empty }] }));
+  const removeItem = (key, index) =>
+    setForm((f) => ({ ...f, [key]: f[key].filter((_, i) => i !== index) }));
 
   // Modification des champs texte/select
   const handleChange = (e) => {
-    setForm({
-      /**
-       * ...form : spread operator => reprends tous les propriétés actuellement présentes dans form
-       */
-      ...form,
-      // e.target : représente l'élément HTML qui a déclenché l'évènement => ici <input/>
-      [e.target.name]:e.target.value,// remplace la valeur dans form{prof_id, etc} par la valeur saisi par l'user
-    });
+    // La mise à jour fonctionnelle évite d'écraser une saisie si plusieurs champs changent rapidement.
+    setForm((current) => ({ ...current, [e.target.name]: e.target.value }));
   };
 
   // Modification de l'image
   const handleImageChange = (e) => {
-    setForm({
-      ...form,
-      /**
-       * e.target.files[0] => même si l'user sélectionne une seul image, le navigateur fournit une collection de fichier
-       *  => DONC , e.target.files[0] prend le premier fichier sélectionné
-       */
-      photo:e.target.files[0]
-    });
+    // Une nouvelle image annule une demande de suppression faite précédemment.
+    const selectedPhoto = e.target.files?.[0] || null;
+    if (photoObjectUrl.current) URL.revokeObjectURL(photoObjectUrl.current);
+    photoObjectUrl.current = selectedPhoto ? URL.createObjectURL(selectedPhoto) : null;
+    setForm((current) => ({ ...current, photo: selectedPhoto }));
+    setPhotoPreview(photoObjectUrl.current);
+    setRemovePhoto(false);
   };
 
   const handleSave = async (e) => {
-    console.log("tonga");
     e.preventDefault();
-    // setSaved(true);
+
+    if (saving) return;
+    setSaving(true);
+    setSaved(false);
+    setErrorMessage("");
 
     const formData = new FormData();
     formData.append("name", form.name);
@@ -73,30 +173,62 @@ export default function ProfProfil() {
     formData.append("email", form.email);
     formData.append("telephone", form.telephone);
     formData.append("bio", form.bio);
+    // Portfolio
+    formData.append("titre", form.titre);
+    formData.append("ville", form.ville);
+    formData.append("annees_experiences", form.annees_experiences);
+    formData.append(
+      "instrument_ids",
+      JSON.stringify(selectedInstrumentIds),
+    );
+    // On n'envoie que les lignes réellement remplies
+    formData.append(
+      "experiences",
+      JSON.stringify(form.experiences.filter((experience) => experience.poste.trim())),
+    );
+    formData.append(
+      "parcours",
+      JSON.stringify(form.parcours.filter((parcours) => parcours.diplome.trim())),
+    );
     if (form.photo) {
       formData.append("photo", form.photo);
     }
+    if (removePhoto) {
+      formData.append("remove_photo", "1");
+    }
     if (form.password) {
       formData.append("password", form.password);
+      formData.append("password_confirmation", passwordConfirmation);
     }
 
-    console.log("form : ", form);
-    return;
-
     try {
-      // convertit un method post en put
-      // nécessaire pour l'envoi de fichier avec multipart/formdata
-      // n'est pas nécessaire si il n'y a pas d'envoi de fichier car dans courApi.js c'est déjà put, on ne convertit donc pas un post en put
+      // Laravel reçoit les uploads multipart en POST et utilise ce champ pour router la requête comme un PUT.
       formData.append("_method", "PUT");
       const response = await updateProfile(formData);
-      console.log("Modification profil réussie", response.data);
-    } catch (error) {
-      console.error(
-        "Erreur lors de la modification du profil",
-        error.response?.data,
+      // Le serveur renvoie le profil enrichi : il met à jour le formulaire et le stockage de session.
+      setUser(response.data.user);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      setSelectedInstrumentIds((response.data.user.instruments ?? []).map((instrument) => instrument.id));
+      setPhotoPreview(response.data.user.photo ? `${BASE_URL}/storage/${response.data.user.photo}` : null);
+      if (photoObjectUrl.current) URL.revokeObjectURL(photoObjectUrl.current);
+      photoObjectUrl.current = null;
+      setForm((current) => ({ ...current, password: "", photo: null }));
+      if (photoInput.current) photoInput.current.value = "";
+      await fetchUserList();
+      setPasswordConfirmation("");
+      setRemovePhoto(false);
+      setSaved(true);
+    } catch (requestError) {
+      const validationMessages = requestError.response?.data?.errors;
+      setErrorMessage(
+        validationMessages
+          ? Object.values(validationMessages).flat().join(" ")
+          : requestError.response?.data?.message ||
+              "La modification du profil a échoué. Réessaie.",
       );
     } finally {
-      setTimeout(() => setSaved(false), 2500);
+      setSaving(false);
+      window.setTimeout(() => setSaved(false), 2500);
     }
   };
 
@@ -112,6 +244,14 @@ export default function ProfProfil() {
         <p className="mt-2 font-body text-sm text-ink-soft">
           Ces informations sont visibles par tes élèves sur ta fiche professeur.
         </p>
+        {user?.id && (
+          <Link
+            to={`/professeurs/${user.id}`}
+            className="mt-3 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark hover:text-brick"
+          >
+            <HiOutlineEye size={16} /> Voir ma fiche publique
+          </Link>
+        )}
       </AnimatedSection>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -122,13 +262,11 @@ export default function ProfProfil() {
             description="Une photo claire aide les élèves à te reconnaître."
           >
             <div className="flex items-center gap-4 py-5">
-              {form?.photo ? (
-                <div className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-coral/10 font-display text-lg text-coral-dark">
+              {photoPreview ? (
+                <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-coral/10 font-display text-lg text-coral-dark">
                   <img
-                    src={`${BASE_URL}/storage/${form?.photo}`}
+                    src={photoPreview}
                     alt="photo de profil"
-                    
-                    srcset=""
                     className="h-full w-full object-cover"
                   />
                 </div>
@@ -146,6 +284,7 @@ export default function ProfProfil() {
                   Changer la photo
                 </label>
                 <input
+                  ref={photoInput}
                   id="professeur-profile-photo"
                   type="file"
                   name="photo"
@@ -155,6 +294,13 @@ export default function ProfProfil() {
                 />
                 <button
                   type="button"
+                  onClick={() => {
+                    if (photoObjectUrl.current) URL.revokeObjectURL(photoObjectUrl.current);
+                    photoObjectUrl.current = null;
+                    setForm((current) => ({ ...current, photo: null }));
+                    setPhotoPreview(null);
+                    setRemovePhoto(true);
+                  }}
                   className="font-body text-xs font-medium text-ink-soft transition-colors hover:text-brick"
                 >
                   Supprimer la photo
@@ -175,12 +321,15 @@ export default function ProfProfil() {
                 label="Nouveau mot de passe"
                 type="password"
                 name="password"
-                valud={form?.password}
+                value={form?.password ?? ""}
+                onChange={handleChange}
                 placeholder="••••••••"
               />
               <FormField
                 label="Confirmer le mot de passe"
                 type="password"
+                value={passwordConfirmation}
+                onChange={(event) => setPasswordConfirmation(event.target.value)}
                 placeholder="••••••••"
               />
             </div>
@@ -188,6 +337,7 @@ export default function ProfProfil() {
         </AnimatedSection>
       </div>
 
+      {/* Information personnel */}
       <AnimatedSection delay={140}>
         <SettingsSection
           icon={HiOutlineIdentification}
@@ -234,24 +384,247 @@ export default function ProfProfil() {
               <textarea
                 rows={4}
                 name="bio"
+                value={form?.bio ?? ""}
                 onChange={handleChange}
                 placeholder="Quelques lignes sur ton parcours et ta pédagogie…"
-                className="w-full rounded-xl border border-ivory-dark bg-white/70 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
-              >
-                {form?.bio}
-              </textarea>
+                className={INPUT_CLS}
+              />
             </div>
           </div>
         </SettingsSection>
       </AnimatedSection>
 
+      {/* Présnetation professionnelle */}
+      <AnimatedSection delay={160}>
+        <SettingsSection
+          icon={HiOutlineBriefcase}
+          title="Présentation professionnelle"
+          description="Affichée en tête de ta fiche publique."
+        >
+          <div className="grid gap-4 py-5 sm:grid-cols-2">
+            <FormField
+              label="Titre / spécialité principale"
+              name="titre"
+              value={form?.titre}
+              onChange={handleChange}
+              placeholder="Ex. Professeur de valiha"
+            />
+            <FormField
+              label="Ville"
+              name="ville"
+              value={form?.ville}
+              onChange={handleChange}
+              placeholder="Antananarivo"
+            />
+            <FormField
+              label="Années d'expérience"
+              type="number"
+              name="annees_experiences"
+              value={form?.annees_experiences}
+              onChange={handleChange}
+              placeholder="10"
+              min="1"
+            />
+            <div>
+              <label className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">
+                Instruments enseignés
+              </label>
+              <Select
+                isMulti
+                unstyled
+                options={instrumentOptions}
+                value={selection}
+                onChange={(selectedOptions) =>
+                  setSelectedInstrumentIds((selectedOptions ?? []).map((option) => option.value))
+                }
+                placeholder="Séléctionner les instruments"
+                noOptionsMessage={() => "Aucun instrument disponible"}
+                // Le menu est rendu dans <body> : il n'est plus rogné par
+                // l'overflow des sections ni recouvert par les blocs suivants
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
+                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                classNames={SELECT_CLASSNAMES}
+              />
+            </div>
+          </div>
+        </SettingsSection>
+      </AnimatedSection>
+
+      {/* Expériences */}
+      <AnimatedSection delay={170}>
+        <SettingsSection
+          icon={HiOutlineBriefcase}
+          title="Expériences"
+          description="Tes postes, scènes, enseignements et projets marquants."
+        >
+          <div className="space-y-4 py-5">
+            {form?.experiences.map((exp, i) => (
+              <div
+                key={i}
+                className="grid gap-3 rounded-xl border border-ivory-dark p-4 sm:grid-cols-2"
+              >
+                <FormField
+                  label="Poste / rôle"
+                  name={`exp-poste-${i}`}
+                  value={exp.poste}
+                  onChange={(e) =>
+                    updateItem("experiences", i, "poste", e.target.value)
+                  }
+                  placeholder="Ex. Professeur de valiha"
+                />
+                <FormField
+                  label="Lieu / organisation"
+                  name={`exp-lieu-${i}`}
+                  value={exp.lieu}
+                  onChange={(e) =>
+                    updateItem("experiences", i, "lieu", e.target.value)
+                  }
+                  placeholder="Ex. Conservatoire d'Antananarivo"
+                />
+                <FormField
+                  label="Période début"
+                  type="date"
+                  name={`exp-periode-${i}`}
+                  value={exp.periode_debut}
+                  onChange={(e) =>
+                    updateItem("experiences", i, "periode_debut", e.target.value)
+                  }
+                  placeholder="2018"
+                />
+                <FormField
+                  label="Période fin"
+                  type="date"
+                  name={`exp-periode-fin-${i}`}
+                  value={exp.periode_fin}
+                  onChange={(e) =>
+                    updateItem("experiences", i, "periode_fin", e.target.value)
+                  }
+                  placeholder="2023"
+                />
+                <div className="sm:col-span-2">
+                  <span className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">
+                    Description
+                  </span>
+                  <textarea
+                    rows={2}
+                    value={exp.description}
+                    onChange={(e) =>
+                      updateItem(
+                        "experiences",
+                        i,
+                        "description",
+                        e.target.value,
+                      )
+                    }
+                    placeholder="Missions, réalisations…"
+                    className={INPUT_CLS}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeItem("experiences", i)}
+                  className="inline-flex items-center gap-1.5 justify-self-start font-body text-xs font-medium text-ink-soft transition-colors hover:text-brick"
+                >
+                  <HiOutlineTrash size={14} /> Supprimer
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => addItem("experiences", EMPTY_EXPERIENCE)}
+              className="inline-flex items-center gap-2 rounded-full border border-ivory-dark px-4 py-2 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:border-coral/40"
+            >
+              <HiOutlinePlus size={16} /> Ajouter une expérience
+            </button>
+          </div>
+        </SettingsSection>
+      </AnimatedSection>
+
+      {/* Parcours */}
+      <AnimatedSection delay={175}>
+        <SettingsSection
+          icon={HiOutlineAcademicCap}
+          title="Parcours"
+          description="Diplômes, formations et apprentissages."
+        >
+          <div className="space-y-4 py-5">
+            {form?.parcours.map((p, i) => (
+              <div
+                key={i}
+                className="grid gap-3 rounded-xl border border-ivory-dark p-4 sm:grid-cols-2"
+              >
+                <FormField
+                  label="Diplôme / formation"
+                  name={`parcours-diplome-${i}`}
+                  value={p.diplome}
+                  onChange={(e) =>
+                    updateItem("parcours", i, "diplome", e.target.value)
+                  }
+                  placeholder="Ex. Licence en musicologie"
+                />
+                <FormField
+                  label="Établissement"
+                  name={`parcours-etab-${i}`}
+                  value={p.etablissement}
+                  onChange={(e) =>
+                    updateItem("parcours", i, "etablissement", e.target.value)
+                  }
+                  placeholder="Ex. EGM"
+                />
+                <FormField
+                  label="Période début"
+                  type="date"
+                  name={`parcours-periode-debut-${i}`}
+                  value={p.periode_debut}
+                  onChange={(e) =>
+                    updateItem("parcours", i, "periode_debut", e.target.value)
+                  }
+                  placeholder="2012"
+                />
+                <FormField
+                  label="Période fin"
+                  type="date"
+                  name={`parcours-periode-fin-${i}`}
+                  value={p.periode_fin}
+                  onChange={(e) =>
+                    updateItem("parcours", i, "periode_fin", e.target.value)
+                  }
+                  placeholder="2015"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeItem("parcours", i)}
+                  className="inline-flex items-center gap-1.5 self-end justify-self-start font-body text-xs font-medium text-ink-soft transition-colors hover:text-brick"
+                >
+                  <HiOutlineTrash size={14} /> Supprimer
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => addItem("parcours", EMPTY_PARCOURS)}
+              className="inline-flex items-center gap-2 rounded-full border border-ivory-dark px-4 py-2 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:border-coral/40"
+            >
+              <HiOutlinePlus size={16} /> Ajouter une formation
+            </button>
+          </div>
+        </SettingsSection>
+      </AnimatedSection>
+
       <AnimatedSection delay={180}>
+        {errorMessage && (
+          <p role="alert" className="mb-4 font-body text-sm text-brick">
+            {errorMessage}
+          </p>
+        )}
         <button
           onClick={handleSave}
+          disabled={saving || !form}
           className="inline-flex items-center gap-2 rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
         >
           {saved && <HiOutlineCheckCircle size={16} />}
-          {saved ? "Profil enregistré" : "Enregistrer les modifications"}
+          {saving ? "Enregistrement…" : saved ? "Profil enregistré" : "Enregistrer les modifications"}
         </button>
       </AnimatedSection>
     </div>

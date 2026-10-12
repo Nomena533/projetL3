@@ -72,7 +72,7 @@ export default function FormationPublique() {
             <AnimatedSection
               key={n.id}
               delay={i * 90}
-              className="flex flex-col gap-4 rounded-2xl border border-ivory-dark bg-white/70 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brick/10 sm:flex-row sm:items-center sm:gap-6 sm:p-6"
+              className="flex flex-col gap-4 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/20 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brick/10 sm:flex-row sm:items-center sm:gap-6 sm:p-6"
             >
               {/* pastille niveau */}
               <div
@@ -136,7 +136,7 @@ export default function FormationPublique() {
                 {inscrit ? (
                   <Link
                     to={`/eleve/formation/${n.name}`}
-                    className="group inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-coral px-4 py-2.5 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick sm:w-auto"
+                    className="group inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-coral px-4 py-2.5 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick "
                   >
                     Voir
                     <HiOutlineArrowRight
@@ -147,7 +147,7 @@ export default function FormationPublique() {
                 ) : ouvertInscription === true ? (
                   <Link
                     to={`/inscription?niveau=${n.name}`}
-                    className="group inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-coral px-4 py-2.5 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick sm:w-auto"
+                    className="group inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-coral px-4 py-2.5 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick "
                   >
                     S'inscrire
                     <HiOutlineArrowRight
@@ -156,7 +156,7 @@ export default function FormationPublique() {
                     />
                   </Link>
                 ) : (
-                  <span className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-dashed border-ivory-dark px-4 py-2.5 font-body text-sm font-medium text-ink-soft sm:w-auto">
+                  <span className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-dashed border-ivory-dark px-4 py-2.5 font-body text-sm font-medium text-ink-soft ">
                     <HiOutlineLockClosed size={14} />
                     Débloqué par progression
                   </span>

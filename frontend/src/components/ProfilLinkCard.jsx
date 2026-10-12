@@ -11,7 +11,7 @@ import AnimatedSection from "./AnimatedSection";
  */
 export default function ProfilLinkCard({ to = "/profil", delay = 0 }) {
   return (
-    <AnimatedSection delay={delay} className="flex h-full flex-col justify-between rounded-2xl border border-ivory-dark bg-white/70 p-6 sm:p-7">
+    <AnimatedSection delay={delay} className="flex h-full flex-col justify-between rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7">
       <div className="flex items-start gap-3">
         <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-coral/10 text-coral-dark">
           <HiOutlineUserCircle size={18} />

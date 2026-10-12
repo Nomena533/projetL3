@@ -37,7 +37,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Récupérer le profil de l'utilisateur connecté
     Route::get('/profile', [AuthController::class, 'profile']);
-    Route::get('/updateProfile', [AuthController::class, 'updateProfile']);
+    // La modification est réservée à l'utilisateur authentifié et accepte le PUT simulé par le formulaire multipart.
+    Route::put('/updateProfile', [AuthController::class, 'updateProfile']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/getCour', [CourController::class, 'index']);

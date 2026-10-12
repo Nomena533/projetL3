@@ -46,9 +46,10 @@ function UserProvider({ children }) {
     fetchUserList();
   }, []);
 
+  // Exposer le rechargement permet aux modifications de profil d'actualiser les fiches publiques.
   return (
     <UserContext.Provider
-      value={{ userListInscription, userList, fetchUserListInscription }}
+      value={{ userListInscription, userList, fetchUserListInscription, fetchUserList }}
     >
       {children}
     </UserContext.Provider>
