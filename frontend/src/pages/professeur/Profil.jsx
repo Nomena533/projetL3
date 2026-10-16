@@ -26,6 +26,7 @@ import {
 } from "../../lib/profPortfolio";
 import { useInstrument } from "../../app/hooks/useInstrument";
 import Select from "react-select";
+import { useLang } from "../../app/hooks/useLang";
 
 const INPUT_CLS =
   "w-full rounded-xl border border-ivory-dark bg-white/70 dark:bg-white/15 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral";
@@ -63,6 +64,7 @@ const SELECT_CLASSNAMES = {
 };
 
 export default function ProfProfil() {
+  const { t } = useLang();
   const { instruments } = useInstrument();
   const instrumentOptions = useMemo(
     () => (instruments ?? []).map((instrument) => ({
@@ -224,7 +226,7 @@ export default function ProfProfil() {
         validationMessages
           ? Object.values(validationMessages).flat().join(" ")
           : requestError.response?.data?.message ||
-              "La modification du profil a échoué. Réessaie.",
+              t("La modification du profil a échoué. Réessaie."),
       );
     } finally {
       setSaving(false);
@@ -235,22 +237,15 @@ export default function ProfProfil() {
   return (
     <div className="space-y-8">
       <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-          Mon compte
-        </span>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
-          Mon profil
-        </h2>
-        <p className="mt-2 font-body text-sm text-ink-soft">
-          Ces informations sont visibles par tes élèves sur ta fiche professeur.
-        </p>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Mon compte")}</span>
+        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Mon profil")}</h2>
+        <p className="mt-2 font-body text-sm text-ink-soft">{t("Ces informations sont visibles par tes élèves sur ta fiche professeur.")}</p>
         {user?.id && (
           <Link
             to={`/professeurs/${user.id}`}
             className="mt-3 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark hover:text-brick"
           >
-            <HiOutlineEye size={16} /> Voir ma fiche publique
-          </Link>
+            <HiOutlineEye size={16} />{" "}{t("Voir ma fiche publique")}</Link>
         )}
       </AnimatedSection>
 
@@ -258,15 +253,15 @@ export default function ProfProfil() {
         <AnimatedSection delay={60}>
           <SettingsSection
             icon={HiOutlineUserCircle}
-            title="Photo de profil"
-            description="Une photo claire aide les élèves à te reconnaître."
+            title={t("Photo de profil")}
+            description={t("Une photo claire aide les élèves à te reconnaître.")}
           >
             <div className="flex items-center gap-4 py-5">
               {photoPreview ? (
                 <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-coral/10 font-display text-lg text-coral-dark">
                   <img
                     src={photoPreview}
-                    alt="photo de profil"
+                    alt={t("photo de profil")}
                     className="h-full w-full object-cover"
                   />
                 </div>
@@ -280,9 +275,7 @@ export default function ProfProfil() {
                   htmlFor="professeur-profile-photo"
                   className="inline-flex items-center gap-2 rounded-full border border-ivory-dark px-4 py-2 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:border-coral/40"
                 >
-                  <HiOutlineCamera size={16} />
-                  Changer la photo
-                </label>
+                  <HiOutlineCamera size={16} />{t("Changer la photo")}</label>
                 <input
                   ref={photoInput}
                   id="professeur-profile-photo"
@@ -302,9 +295,7 @@ export default function ProfProfil() {
                     setRemovePhoto(true);
                   }}
                   className="font-body text-xs font-medium text-ink-soft transition-colors hover:text-brick"
-                >
-                  Supprimer la photo
-                </button>
+                >{t("Supprimer la photo")}</button>
               </div>
             </div>
           </SettingsSection>
@@ -313,12 +304,12 @@ export default function ProfProfil() {
         <AnimatedSection delay={100}>
           <SettingsSection
             icon={HiOutlineLockClosed}
-            title="Sécurité"
-            description="Modifie le mot de passe de ton compte."
+            title={t("Sécurité")}
+            description={t("Modifie le mot de passe de ton compte.")}
           >
             <div className="grid gap-4 py-5 sm:grid-cols-2">
               <FormField
-                label="Nouveau mot de passe"
+                label={t("Nouveau mot de passe")}
                 type="password"
                 name="password"
                 value={form?.password ?? ""}
@@ -326,7 +317,7 @@ export default function ProfProfil() {
                 placeholder="••••••••"
               />
               <FormField
-                label="Confirmer le mot de passe"
+                label={t("Confirmer le mot de passe")}
                 type="password"
                 value={passwordConfirmation}
                 onChange={(event) => setPasswordConfirmation(event.target.value)}
@@ -341,23 +332,23 @@ export default function ProfProfil() {
       <AnimatedSection delay={140}>
         <SettingsSection
           icon={HiOutlineIdentification}
-          title="Informations personnelles"
-          description="Ton identité et ta présentation publique."
+          title={t("Informations personnelles")}
+          description={t("Ton identité et ta présentation publique.")}
         >
           <div className="grid gap-4 py-5 sm:grid-cols-2">
             <FormField
-              label="Prénom"
+              label={t("Prénom")}
               name="firstname"
               value={form?.firstname}
               onChange={handleChange}
-              placeholder="Prénom"
+              placeholder={t("Prénom")}
             />
             <FormField
-              label="Nom"
+              label={t("Nom")}
               name="name"
               value={form?.name}
               onChange={handleChange}
-              placeholder="Nom"
+              placeholder={t("Nom")}
             />
             <FormField
               label="E-mail"
@@ -368,7 +359,7 @@ export default function ProfProfil() {
               placeholder="email@exemple.com"
             />
             <FormField
-              label="Téléphone"
+              label={t("Téléphone")}
               type="tel"
               name="telephone"
               value={form?.telephone}
@@ -377,16 +368,14 @@ export default function ProfProfil() {
             />
             <div className="sm:col-span-2">
               <label className="block">
-                <span className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">
-                  Présentation publique
-                </span>
+                <span className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">{t("Présentation publique")}</span>
               </label>
               <textarea
                 rows={4}
                 name="bio"
                 value={form?.bio ?? ""}
                 onChange={handleChange}
-                placeholder="Quelques lignes sur ton parcours et ta pédagogie…"
+                placeholder={t("Quelques lignes sur ton parcours et ta pédagogie…")}
                 className={INPUT_CLS}
               />
             </div>
@@ -398,26 +387,26 @@ export default function ProfProfil() {
       <AnimatedSection delay={160}>
         <SettingsSection
           icon={HiOutlineBriefcase}
-          title="Présentation professionnelle"
-          description="Affichée en tête de ta fiche publique."
+          title={t("Présentation professionnelle")}
+          description={t("Affichée en tête de ta fiche publique.")}
         >
           <div className="grid gap-4 py-5 sm:grid-cols-2">
             <FormField
-              label="Titre / spécialité principale"
+              label={t("Titre / spécialité principale")}
               name="titre"
               value={form?.titre}
               onChange={handleChange}
-              placeholder="Ex. Professeur de valiha"
+              placeholder={t("Ex. Professeur de valiha")}
             />
             <FormField
-              label="Ville"
+              label={t("Ville")}
               name="ville"
               value={form?.ville}
               onChange={handleChange}
-              placeholder="Antananarivo"
+              placeholder={t("Antananarivo")}
             />
             <FormField
-              label="Années d'expérience"
+              label={t("Années d'expérience")}
               type="number"
               name="annees_experiences"
               value={form?.annees_experiences}
@@ -426,9 +415,7 @@ export default function ProfProfil() {
               min="1"
             />
             <div>
-              <label className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">
-                Instruments enseignés
-              </label>
+              <label className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">{t("Instruments enseignés")}</label>
               <Select
                 isMulti
                 unstyled
@@ -437,8 +424,8 @@ export default function ProfProfil() {
                 onChange={(selectedOptions) =>
                   setSelectedInstrumentIds((selectedOptions ?? []).map((option) => option.value))
                 }
-                placeholder="Séléctionner les instruments"
-                noOptionsMessage={() => "Aucun instrument disponible"}
+                placeholder={t("Séléctionner les instruments")}
+                noOptionsMessage={() => t("Aucun instrument disponible")}
                 // Le menu est rendu dans <body> : il n'est plus rogné par
                 // l'overflow des sections ni recouvert par les blocs suivants
                 menuPortalTarget={document.body}
@@ -455,8 +442,8 @@ export default function ProfProfil() {
       <AnimatedSection delay={170}>
         <SettingsSection
           icon={HiOutlineBriefcase}
-          title="Expériences"
-          description="Tes postes, scènes, enseignements et projets marquants."
+          title={t("Expériences")}
+          description={t("Tes postes, scènes, enseignements et projets marquants.")}
         >
           <div className="space-y-4 py-5">
             {form?.experiences.map((exp, i) => (
@@ -465,25 +452,25 @@ export default function ProfProfil() {
                 className="grid gap-3 rounded-xl border border-ivory-dark p-4 sm:grid-cols-2"
               >
                 <FormField
-                  label="Poste / rôle"
+                  label={t("Poste / rôle")}
                   name={`exp-poste-${i}`}
                   value={exp.poste}
                   onChange={(e) =>
                     updateItem("experiences", i, "poste", e.target.value)
                   }
-                  placeholder="Ex. Professeur de valiha"
+                  placeholder={t("Ex. Professeur de valiha")}
                 />
                 <FormField
-                  label="Lieu / organisation"
+                  label={t("Lieu / organisation")}
                   name={`exp-lieu-${i}`}
                   value={exp.lieu}
                   onChange={(e) =>
                     updateItem("experiences", i, "lieu", e.target.value)
                   }
-                  placeholder="Ex. Conservatoire d'Antananarivo"
+                  placeholder={t("Ex. Conservatoire d'Antananarivo")}
                 />
                 <FormField
-                  label="Période début"
+                  label={t("Période début")}
                   type="date"
                   name={`exp-periode-${i}`}
                   value={exp.periode_debut}
@@ -493,7 +480,7 @@ export default function ProfProfil() {
                   placeholder="2018"
                 />
                 <FormField
-                  label="Période fin"
+                  label={t("Période fin")}
                   type="date"
                   name={`exp-periode-fin-${i}`}
                   value={exp.periode_fin}
@@ -503,9 +490,7 @@ export default function ProfProfil() {
                   placeholder="2023"
                 />
                 <div className="sm:col-span-2">
-                  <span className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">
-                    Description
-                  </span>
+                  <span className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">{t("Description")}</span>
                   <textarea
                     rows={2}
                     value={exp.description}
@@ -517,7 +502,7 @@ export default function ProfProfil() {
                         e.target.value,
                       )
                     }
-                    placeholder="Missions, réalisations…"
+                    placeholder={t("Missions, réalisations…")}
                     className={INPUT_CLS}
                   />
                 </div>
@@ -526,8 +511,7 @@ export default function ProfProfil() {
                   onClick={() => removeItem("experiences", i)}
                   className="inline-flex items-center gap-1.5 justify-self-start font-body text-xs font-medium text-ink-soft transition-colors hover:text-brick"
                 >
-                  <HiOutlineTrash size={14} /> Supprimer
-                </button>
+                  <HiOutlineTrash size={14} />{" "}{t("Supprimer")}</button>
               </div>
             ))}
             <button
@@ -535,8 +519,7 @@ export default function ProfProfil() {
               onClick={() => addItem("experiences", EMPTY_EXPERIENCE)}
               className="inline-flex items-center gap-2 rounded-full border border-ivory-dark px-4 py-2 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:border-coral/40"
             >
-              <HiOutlinePlus size={16} /> Ajouter une expérience
-            </button>
+              <HiOutlinePlus size={16} />{" "}{t("Ajouter une expérience")}</button>
           </div>
         </SettingsSection>
       </AnimatedSection>
@@ -545,8 +528,8 @@ export default function ProfProfil() {
       <AnimatedSection delay={175}>
         <SettingsSection
           icon={HiOutlineAcademicCap}
-          title="Parcours"
-          description="Diplômes, formations et apprentissages."
+          title={t("Parcours")}
+          description={t("Diplômes, formations et apprentissages.")}
         >
           <div className="space-y-4 py-5">
             {form?.parcours.map((p, i) => (
@@ -555,25 +538,25 @@ export default function ProfProfil() {
                 className="grid gap-3 rounded-xl border border-ivory-dark p-4 sm:grid-cols-2"
               >
                 <FormField
-                  label="Diplôme / formation"
+                  label={t("Diplôme / formation")}
                   name={`parcours-diplome-${i}`}
                   value={p.diplome}
                   onChange={(e) =>
                     updateItem("parcours", i, "diplome", e.target.value)
                   }
-                  placeholder="Ex. Licence en musicologie"
+                  placeholder={t("Ex. Licence en musicologie")}
                 />
                 <FormField
-                  label="Établissement"
+                  label={t("Établissement")}
                   name={`parcours-etab-${i}`}
                   value={p.etablissement}
                   onChange={(e) =>
                     updateItem("parcours", i, "etablissement", e.target.value)
                   }
-                  placeholder="Ex. EGM"
+                  placeholder={t("Ex. EGM")}
                 />
                 <FormField
-                  label="Période début"
+                  label={t("Période début")}
                   type="date"
                   name={`parcours-periode-debut-${i}`}
                   value={p.periode_debut}
@@ -583,7 +566,7 @@ export default function ProfProfil() {
                   placeholder="2012"
                 />
                 <FormField
-                  label="Période fin"
+                  label={t("Période fin")}
                   type="date"
                   name={`parcours-periode-fin-${i}`}
                   value={p.periode_fin}
@@ -597,8 +580,7 @@ export default function ProfProfil() {
                   onClick={() => removeItem("parcours", i)}
                   className="inline-flex items-center gap-1.5 self-end justify-self-start font-body text-xs font-medium text-ink-soft transition-colors hover:text-brick"
                 >
-                  <HiOutlineTrash size={14} /> Supprimer
-                </button>
+                  <HiOutlineTrash size={14} />{" "}{t("Supprimer")}</button>
               </div>
             ))}
             <button
@@ -606,8 +588,7 @@ export default function ProfProfil() {
               onClick={() => addItem("parcours", EMPTY_PARCOURS)}
               className="inline-flex items-center gap-2 rounded-full border border-ivory-dark px-4 py-2 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:border-coral/40"
             >
-              <HiOutlinePlus size={16} /> Ajouter une formation
-            </button>
+              <HiOutlinePlus size={16} />{" "}{t("Ajouter une formation")}</button>
           </div>
         </SettingsSection>
       </AnimatedSection>
@@ -624,7 +605,7 @@ export default function ProfProfil() {
           className="inline-flex items-center gap-2 rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
         >
           {saved && <HiOutlineCheckCircle size={16} />}
-          {saving ? "Enregistrement…" : saved ? "Profil enregistré" : "Enregistrer les modifications"}
+          {saving ? t("Enregistrement…") : saved ? t("Profil enregistré") : t("Enregistrer les modifications")}
         </button>
       </AnimatedSection>
     </div>

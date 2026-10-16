@@ -21,6 +21,7 @@ import { User } from "../../lib/icons";
 import { useAuth } from "../../app/hooks/useAuth";
 import { useSoumission } from "../../app/hooks/useSoumission";
 import { BASE_URL } from "../../app/api/api";
+import { useLang } from "../../app/hooks/useLang";
 
 const STATUT_OPTIONS = [
   { value: "en attente", label: "En attente" },
@@ -28,6 +29,7 @@ const STATUT_OPTIONS = [
 ];
 
 export default function ProfCorrections() {
+  const { t } = useLang();
   const location = useLocation();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
@@ -80,18 +82,14 @@ export default function ProfCorrections() {
   return (
     <div className="space-y-6">
       <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-          Espace professeur
-        </span>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
-          Corrections
-        </h2>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Espace professeur")}</span>
+        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Corrections")}</h2>
       </AnimatedSection>
 
       {alert && (
         <Alert
           type={alert.type}
-          message={alert.message}
+          message={t(alert.message)}
           onClose={() => setAlert(null)}
         />
       )}
@@ -100,11 +98,11 @@ export default function ProfCorrections() {
         <FilterBar
           searchValue={search}
           onSearchChange={setSearch}
-          searchPlaceholder="Rechercher un exercice, un élève…"
+          searchPlaceholder={t("Rechercher un exercice, un élève…")}
           filters={[
             {
               name: "statut",
-              label: "Tous les statuts",
+              label: t("Tous les statuts"),
               value: statutFilter,
               onChange: setStatutFilter,
               options: STATUT_OPTIONS,
@@ -123,8 +121,8 @@ export default function ProfCorrections() {
       {filtered.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-ivory-dark px-5 py-12 text-center font-body text-sm text-ink-soft">
           {soumission.length === 0
-            ? "Aucune soumission pour le moment."
-            : "Aucune soumission ne correspond à ta recherche."}
+            ? t("Aucune soumission pour le moment.")
+            : t("Aucune soumission ne correspond à ta recherche.")}
         </p>
       ) : (
         <div className="space-y-3">
@@ -152,7 +150,7 @@ export default function ProfCorrections() {
                         "en attente": "bg-amber/20 text-brick",
                         corriger: "bg-coral/10 text-coral-dark",
                       */}
-                      <Pill>{s.statut}</Pill>
+                      <Pill>{t(s.statut)}</Pill>
                     </div>
 
                     {/* Chemin niveau / cours / leçon — infos générales sur la soumission */}
@@ -203,9 +201,7 @@ export default function ProfCorrections() {
                     <Link
                       to={`/professeur/corrections/${s.id}`}
                       className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-wide text-ink-soft/70 transition-colors duration-200 hover:text-coral-dark"
-                    >
-                      Voir le détail
-                      <HiOutlineChevronRight size={11} />
+                    >{t("Voir le détail")}<HiOutlineChevronRight size={11} />
                     </Link>
                   </div>
 
@@ -213,12 +209,11 @@ export default function ProfCorrections() {
                   <div className="flex shrink-0 items-center gap-1.5 font-mono text-xs sm:pl-4">
                     {s.statut === "en attente" ? (
                       <span className="flex items-center gap-1.5 text-ink-soft">
-                        <HiOutlineClock size={16} /> En attente
-                      </span>
+                        <HiOutlineClock size={16} />{" "}{t("En attente")}</span>
                     ) : (
                       <span className="flex items-center gap-1.5 text-coral-dark">
                         <HiOutlineCheckCircle size={17} />{" "}
-                        {s.note ? `${s.note}/20` : "Corrigé"}
+                        {s.note ? `${s.note}/20` : t("Corrigé")}
                       </span>
                     )}
                   </div>

@@ -16,12 +16,14 @@ import { NIVEAUX_PARCOURS, MODES_PAIEMENT } from "../../lib/mockFormationData";
 import { useLevel } from "../../app/hooks/useLevel";
 import { formatAriary } from "../../lib/mockStudentData";
 import { storePaiement } from "../../app/api/paiementApi";
+import { useLang } from "../../app/hooks/useLang";
 
 // Cette page n'est accessible qu'après une inscription : elle attend `niveau`
 // (obligatoire) et éventuellement `instruments` dans l'URL, transmis par
 // home/Inscription.jsx juste après la validation du formulaire d'inscription
 // (ex. redirection vers /paiement?niveau=avance&instruments=valiha,kabosy).
 export default function PaiementPublic() {
+  const { t } = useLang();
   const [searchParams] = useSearchParams();
   const niveauName = searchParams.get("niveau");
   const instrumentsParam = searchParams.get("instruments");
@@ -102,7 +104,7 @@ export default function PaiementPublic() {
           ? "Choisis un nombre de mois valide (entre 1 et " +
               niveau.duree +
               ") et un mode de paiement."
-          : "Vérifie les informations de ta carte bancaire (numéro, expiration, CVV).",
+          : t("Vérifie les informations de ta carte bancaire (numéro, expiration, CVV)."),
       );
       return;
     }
@@ -115,7 +117,7 @@ export default function PaiementPublic() {
         nombre_mois: nombreMois,
         montant: total,
         mode_paiement: modePaiement,
-        description: "Premier paiement",
+        description: t("Premier paiement"),
         ...(paiementParCarte && {
           numero_carte: numeroCarte.replace(/\s/g, ""),
           expiration_carte: expirationCarte,
@@ -130,7 +132,7 @@ export default function PaiementPublic() {
       console.log("Paiement effectué avec succès : ", response.data);
     } catch (err) {
       console.error("Erreur lors du paiement", err.response?.data);
-      setErreur("Une erreur est survenue lors du paiement");
+      setErreur(t("Une erreur est survenue lors du paiement"));
     } finally {
       setEnCours(false);
       setTermine(true);
@@ -143,13 +145,12 @@ export default function PaiementPublic() {
       <div className="mx-auto max-w-lg px-4 py-16 text-center">
         <HiOutlineExclamationCircle className="mx-auto text-brick" size={36} />
         <p className="mt-3 font-body text-sm text-ink-soft">
-          {`Le niveau « ${niveau.name} » n'est pas ouvert à l'inscription directe.`}
+          {t("Le niveau « {{name}} » n'est pas ouvert à l'inscription directe.", { name: niveau.name })}
         </p>
         <Link
           to="/formation"
           className="mt-4 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark hover:text-brick"
-        >
-          Voir les niveaux disponibles <HiOutlineArrowRight size={14} />
+        >{t("Voir les niveaux disponibles")}{" "}<HiOutlineArrowRight size={14} />
         </Link>
       </div>
     );
@@ -159,21 +160,12 @@ export default function PaiementPublic() {
     return (
       <div className="mx-auto max-w-lg space-y-4 px-4 py-16 text-center">
         <HiOutlineCheckCircle className="mx-auto text-coral-dark" size={44} />
-        <h2 className="font-display text-2xl font-semibold text-ink">
-          Paiement enregistré
-        </h2>
-        <p className="font-body text-sm text-ink-soft">
-          Ton inscription au niveau{" "}
-          <span className="font-semibold text-ink">{niveau.name}</span> est
-          confirmée pour {nombreMois} mois. Tu pourras régler le reste depuis
-          ton espace élève.
-        </p>
+        <h2 className="font-display text-2xl font-semibold text-ink">{t("Paiement enregistré")}</h2>
+        <p className="font-body text-sm text-ink-soft">{t("Ton inscription au niveau")}{" "}<span className="font-semibold text-ink">{niveau.name}</span>{" "}{t("est confirmée pour {{nombreMois}} mois. Tu pourras régler le reste depuis ton espace élève.", { nombreMois })}</p>
         <Link
           to="/eleve/formation"
           className="group inline-flex items-center gap-1.5 rounded-full bg-coral px-5 py-2.5 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick"
-        >
-          Accéder à mon espace élève
-          <HiOutlineArrowRight
+        >{t("Accéder à mon espace élève")}<HiOutlineArrowRight
             size={14}
             className="transition-transform duration-300 group-hover:translate-x-1"
           />
@@ -191,17 +183,9 @@ export default function PaiementPublic() {
         readOnly
       />
       <AnimatedSection className="text-center">
-        <p className="font-body text-xs font-medium text-coral-dark">
-          Dernière étape
-        </p>
-        <h1 className="mt-2 font-display text-3xl font-semibold text-ink sm:text-4xl">
-          Finalise ton inscription
-        </h1>
-        <p className="mx-auto mt-3 max-w-xl font-body text-sm text-ink-soft">
-          Choisis combien de mois régler aujourd'hui pour le niveau{" "}
-          <span className="font-semibold text-ink">{niveau.name}</span>, le
-          reste se gère ensuite depuis ton espace élève.
-        </p>
+        <p className="font-body text-xs font-medium text-coral-dark">{t("Dernière étape")}</p>
+        <h1 className="mt-2 font-display text-3xl font-semibold text-ink sm:text-4xl">{t("Finalise ton inscription")}</h1>
+        <p className="mx-auto mt-3 max-w-xl font-body text-sm text-ink-soft">{t("Choisis combien de mois régler aujourd'hui pour le niveau")}{" "}<span className="font-semibold text-ink">{niveau.name}</span>{t(", le reste se gère ensuite depuis ton espace élève.")}</p>
       </AnimatedSection>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_380px] lg:items-start lg:gap-8">
@@ -211,22 +195,15 @@ export default function PaiementPublic() {
           <AnimatedSection className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <h3 className="font-display text-base font-semibold text-ink">
-                  Ton inscription
-                </h3>
-                <p className="mt-1 font-body text-sm text-ink-soft">
-                  Niveau {niveau.name} · {formatAriary(niveau.prix_mensuel)} /
-                  mois
-                </p>
+                <h3 className="font-display text-base font-semibold text-ink">{t("Ton inscription")}</h3>
+                <p className="mt-1 font-body text-sm text-ink-soft">{t("Niveau {{name}} · {{v0}} / mois", { name: niveau.name, v0: formatAriary(niveau.prix_mensuel) })}</p>
               </div>
               <span className="rounded-full bg-coral/10 px-3 py-1 font-body text-xs font-semibold text-coral-dark">
                 {niveau.name}
               </span>
             </div>
             <div className="border-t border-ivory-dark pt-4 mt-4">
-              <p className="mt-1 font-body text-sm text-ink-soft">
-                Instruments :{" "}
-                {instruments.map((instrument) => (
+              <p className="mt-1 font-body text-sm text-ink-soft">{t("Instruments :")}{" "}{instruments.map((instrument) => (
                   <span
                     key={instrument}
                     className="rounded-full bg-ivory px-2.5 py-0.5 font-body text-xs text-ink-soft"
@@ -235,16 +212,12 @@ export default function PaiementPublic() {
                   </span>
                 ))}
               </p>
-              <p className="mt-1 font-body text-sm text-ink-soft">
-                Montant total par mois :{" "}
-                {formatAriary(montantTotalInstrument)} / mois
-              </p>
+              <p className="mt-1 font-body text-sm text-ink-soft">{t("Montant total par mois : {{v0}} / mois", { v0: formatAriary(montantTotalInstrument) })}</p>
             </div>
 
             <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-ivory-dark pt-4">
               <span className="flex items-center gap-1.5 font-body text-xs text-ink-soft">
-                <HiOutlineClock size={14} /> Durée du niveau : {niveau.duree}
-              </span>
+                <HiOutlineClock size={14} />{" "}{t("Durée du niveau : {{duree}}", { duree: niveau.duree })}</span>
               {instruments.length > 0 && (
                 <div className="flex flex-wrap items-center gap-1.5">
                   <HiOutlineMusicalNote size={14} className="text-ink-soft" />
@@ -266,22 +239,14 @@ export default function PaiementPublic() {
             delay={80}
             className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6"
           >
-            <h3 className="font-display text-base font-semibold text-ink">
-              Mensualité
-            </h3>
-            <p className="mt-1 font-body text-sm text-ink-soft">
-              Montant mensuel de ce niveau :{" "}
-              <span className="font-semibold text-ink">
-                {formatAriary(montantTotalInstrument)} / mois
-              </span>
+            <h3 className="font-display text-base font-semibold text-ink">{t("Mensualité")}</h3>
+            <p className="mt-1 font-body text-sm text-ink-soft">{t("Montant mensuel de ce niveau :")}{" "}<span className="font-semibold text-ink">{t("{{v0}} / mois", { v0: formatAriary(montantTotalInstrument) })}</span>
             </p>
 
             <label
               className="mt-5 block font-body text-xs font-medium text-ink-soft"
               htmlFor="nombreMois"
-            >
-              Nombre de mois à payer maintenant (max {niveau.duree})
-            </label>
+            >{t("Nombre de mois à payer maintenant (max {{duree}})", { duree: niveau.duree })}</label>
             <div className="mt-2 flex items-center gap-3">
               <input
                 id="nombreMois"
@@ -309,13 +274,10 @@ export default function PaiementPublic() {
             delay={160}
             className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6"
           >
-            <h3 className="font-display text-base font-semibold text-ink">
-              Mode de paiement
-            </h3>
+            <h3 className="font-display text-base font-semibold text-ink">{t("Mode de paiement")}</h3>
 
             <p className="mt-4 flex items-center gap-1.5 font-body text-xs font-medium text-ink-soft">
-              <HiOutlineDevicePhoneMobile size={14} /> Mobile Money
-            </p>
+              <HiOutlineDevicePhoneMobile size={14} />{" "}{t("Mobile Money")}</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {modesMobileMoney.map((m) => (
                 <button
@@ -334,8 +296,7 @@ export default function PaiementPublic() {
             </div>
 
             <p className="mt-5 flex items-center gap-1.5 font-body text-xs font-medium text-ink-soft">
-              <HiOutlineCreditCard size={14} /> Carte bancaire
-            </p>
+              <HiOutlineCreditCard size={14} />{" "}{t("Carte bancaire")}</p>
             <div className="mt-2">
               <button
                 type="button"
@@ -356,9 +317,7 @@ export default function PaiementPublic() {
                   <label
                     className="block font-body text-xs font-medium text-ink-soft"
                     htmlFor="numeroCarte"
-                  >
-                    Numéro de carte
-                  </label>
+                  >{t("Numéro de carte")}</label>
                   <input
                     id="numeroCarte"
                     type="text"
@@ -374,9 +333,7 @@ export default function PaiementPublic() {
                   <label
                     className="block font-body text-xs font-medium text-ink-soft"
                     htmlFor="expirationCarte"
-                  >
-                    Expiration (MM/AA)
-                  </label>
+                  >{t("Expiration (MM/AA)")}</label>
                   <input
                     id="expirationCarte"
                     type="text"
@@ -392,9 +349,7 @@ export default function PaiementPublic() {
                   <label
                     className="block font-body text-xs font-medium text-ink-soft"
                     htmlFor="cvvCarte"
-                  >
-                    CVV
-                  </label>
+                  >{t("CVV")}</label>
                   <input
                     id="cvvCarte"
                     type="password"
@@ -410,9 +365,7 @@ export default function PaiementPublic() {
             )}
 
             <p className="mt-5 flex items-center gap-1.5 border-t border-ivory-dark pt-4 font-body text-xs text-ink-soft">
-              <HiOutlineShieldCheck size={14} className="text-coral-dark" />
-              Paiement sécurisé, traité une seule fois par mensualité choisie.
-            </p>
+              <HiOutlineShieldCheck size={14} className="text-coral-dark" />{t("Paiement sécurisé, traité une seule fois par mensualité choisie.")}</p>
           </AnimatedSection>
         </div>
 
@@ -422,33 +375,29 @@ export default function PaiementPublic() {
           className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 lg:sticky lg:top-24"
         >
           <h3 className="flex items-center gap-1.5 font-display text-base font-semibold text-ink">
-            <HiOutlineBanknotes size={18} /> Récapitulatif
-          </h3>
+            <HiOutlineBanknotes size={18} />{" "}{t("Récapitulatif")}</h3>
 
           <dl className="mt-4 space-y-3 font-body text-sm">
             <div className="flex items-center justify-between">
-              <dt className="text-ink-soft">
-                {nombreMois} mois × {formatAriary(niveau.prix_mensuel)} × {instruments.length} instrument{instruments.length > 1 ? "s" : " "}
+              <dt className="text-ink-soft">{t(instruments.length > 1 ? "{{nombreMois}} mois × {{v0}} × {{length}} instruments" : "{{nombreMois}} mois × {{v0}} × {{length}} instrument", { nombreMois, v0: formatAriary(niveau.prix_mensuel), length: instruments.length })}
               </dt>
               <dd className="text-ink">{formatAriary(sousTotal)}</dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-ink-soft">Droit d'inscription au niveau</dt>
+              <dt className="text-ink-soft">{t("Droit d'inscription au niveau")}</dt>
               <dd className="text-ink">
                 {formatAriary(niveau.droit_inscription)}
               </dd>
             </div>
             <div className="flex items-center justify-between border-t border-ivory-dark pt-3 text-base font-semibold">
-              <dt className="text-ink">Total à payer</dt>
+              <dt className="text-ink">{t("Total à payer")}</dt>
               <dd className="text-coral-dark">{formatAriary(total)}</dd>
             </div>
           </dl>
 
-          <p className="mt-4 font-body text-xs text-ink-soft">
-            Mode choisi :{" "}
-            <span className="font-medium text-ink">
+          <p className="mt-4 font-body text-xs text-ink-soft">{t("Mode choisi :")}{" "}<span className="font-medium text-ink">
               {MODES_PAIEMENT.find((m) => m.id === modePaiement)?.nom ||
-                "aucun pour l'instant"}
+                t("aucun pour l'instant")}
             </span>
           </p>
 
@@ -464,7 +413,7 @@ export default function PaiementPublic() {
             disabled={enCours}
             className="group mt-5 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-coral px-5 py-3 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick disabled:opacity-60"
           >
-            {enCours ? "Traitement…" : "Confirmer le paiement"}
+            {enCours ? t("Traitement…") : t("Confirmer le paiement")}
             {!enCours && (
               <HiOutlineArrowRight
                 size={14}

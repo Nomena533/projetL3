@@ -19,7 +19,7 @@ const LANGUAGES = [
 export default function LanguageMenu() {
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
-  const { lang, setLang } = useLang();
+  const { lang, setLang, t } = useLang();
 
   useEffect(() => {
     if (!open) return;
@@ -44,8 +44,8 @@ export default function LanguageMenu() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        title="Choisir la langue"
-        aria-label="Choisir la langue"
+        title={t("Choisir la langue")}
+        aria-label={t("Choisir la langue")}
         aria-haspopup="menu"
         aria-expanded={open}
         className="grid h-10 w-10 place-items-center rounded-full text-ink transition-colors hover:bg-ivory-dark"

@@ -30,8 +30,10 @@ import useUnreadCounts from "../app/hooks/useUnreadCounts";
 import { useNotification } from "../app/hooks/useNotification";
 import { markAllNotificationAsRead, markNotificationAsRead } from "../app/api/notificationApi";
 import useTheme from "../app/hooks/useTheme";
+import { useLang } from "../app/hooks/useLang";
 
 export default function LayoutAdmin() {
+  const { t } = useLang();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -110,7 +112,7 @@ export default function LayoutAdmin() {
               }
             >
               <Icon size={17} />
-              {label}
+              {t(label)}
             </NavLink>
           ))}
         </nav>
@@ -130,7 +132,7 @@ export default function LayoutAdmin() {
               <div className="flex items-center gap-1.5 text-xs text-stone-400">
                 <ShieldCheck size={12} className="text-emerald-500 shrink-0" />
                 <span className="truncate">
-                  {user?.email || "Accès administrateur"}
+                  {user?.email || t("Accès administrateur")}
                 </span>
               </div>
             </div>
@@ -141,9 +143,7 @@ export default function LayoutAdmin() {
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm text-stone-300 hover:bg-teal-900/60 hover:text-amber-400 transition-colors"
           >
-            <LogOut size={17} />
-            Déconnexion
-          </button>
+            <LogOut size={17} />{t("Déconnexion")}</button>
         </div>
       </aside>
 
@@ -163,15 +163,15 @@ export default function LayoutAdmin() {
             <Menu size={20} />
           </button>
           <h1 className="font-display text-xl text-teal-950 dark:text-ink">
-            {current?.label || "Kalon'ny"}
+            {current?.label || t("Kalon'ny")}
           </h1>
           <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
             <button
               type="button"
               onClick={toggleDark}
-              title={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
+              title={isDark ? t("Passer en mode clair") : t("Passer en mode sombre")}
               aria-label={
-                isDark ? "Passer en mode clair" : "Passer en mode sombre"
+                isDark ? t("Passer en mode clair") : t("Passer en mode sombre")
               }
               className="relative grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-stone-100 dark:hover:bg-stone-600 hover:text-teal-950 dark:hover:text-teal-100"
             >
@@ -187,14 +187,14 @@ export default function LayoutAdmin() {
               initials={initials}
               displayName={
                 `${user?.firstname || ""} ${user?.name || ""}`.trim() ||
-                "Administrateur"
+                t("Administrateur")
               }
-              subLabel={user?.email || "Accès administrateur"}
+              subLabel={user?.email || t("Accès administrateur")}
               items={[
-                { to: "/administrateur/profil", label: "Profil", icon: User },
+                { to: "/administrateur/profil", label: t("Profil"), icon: User },
                 {
                   to: "/administrateur/parametres",
-                  label: "Paramètres",
+                  label: t("Paramètres"),
                   icon: Settings,
                 },
               ]}

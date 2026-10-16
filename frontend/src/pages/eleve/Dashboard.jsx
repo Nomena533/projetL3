@@ -23,6 +23,8 @@ import { useUser } from "../../app/hooks/useUser";
 import { useLevel } from "../../app/hooks/useLevel";
 import { useMessage } from "../../app/hooks/useMessage";
 import usePaiement from "../../app/hooks/usePaiement";
+import { useLang } from "../../app/hooks/useLang";
+import { dateLocale, getRuntimeLang, tr } from "../../lib/i18nRuntime";
 
 /* ------------------------------------------------------------------ */
 /* Helpers (affichage uniquement — aucune écriture vers l'API)         */
@@ -36,7 +38,8 @@ function dureeEnMois(level) {
   return Number.isNaN(n) ? 0 : n;
 }
 
-const pluriel = (n, mot) => `${n} ${mot}${n > 1 ? "s" : ""}`;
+const pluriel = (n, mot) =>
+  getRuntimeLang() === "mg" ? `${n} ${tr(mot)}` : `${n} ${mot}${n > 1 ? "s" : ""}`;
 
 // Même calcul que FormationDetail.jsx : mois écoulés depuis date_debut.
 function calculProgression(dateDebut, dureeTotale) {
@@ -68,7 +71,7 @@ function formatDate(date) {
   if (!date) return "—";
   const d = date instanceof Date ? date : new Date(date);
   if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+  return d.toLocaleDateString(dateLocale(), { day: "2-digit", month: "short", year: "numeric" });
 }
 
 // Même libellés que FormationDetail.jsx pour l'examen de passage.
@@ -77,9 +80,9 @@ function infoExamen(dateExamen) {
   const d = new Date(dateExamen);
   if (Number.isNaN(d.getTime())) return null;
   const jours = Math.ceil((d - new Date()) / JOUR_MS);
-  if (jours < 0) return { label: "Passé", urgent: false };
-  if (jours === 0) return { label: "Aujourd'hui", urgent: true };
-  return { label: `Dans ${pluriel(jours, "jour")}`, urgent: jours <= 14 };
+  if (jours < 0) return { label: tr("Passé"), urgent: false };
+  if (jours === 0) return { label: tr("Aujourd'hui"), urgent: true };
+  return { label: tr("Dans {{n}}", { n: pluriel(jours, "jour") }), urgent: jours <= 14 };
 }
 
 const STATUT_NIVEAU = {
@@ -102,6 +105,7 @@ const QUICK_LINKS = [
 /* ------------------------------------------------------------------ */
 
 export default function Dashboard() {
+  const { t } = useLang();
   const { user } = useAuth();
   const { userListInscription, fetchUserListInscription, userList } = useUser();
   const { paiementList } = usePaiement();
@@ -151,10 +155,10 @@ export default function Dashboard() {
     aFaire.push({
       id: "paiement",
       icon: HiOutlineBanknotes,
-      titre: `${pluriel(niveauEnCours.moisAPayer, "mois")} à régler`,
-      detail: `Niveau ${capitalize(niveauEnCours.niveau.name)}`,
+      titre: t("{{v0}} à régler", { v0: pluriel(niveauEnCours.moisAPayer, "mois") }),
+      detail: t("Niveau {{v0}}", { v0: capitalize(niveauEnCours.niveau.name) }),
       to: "/eleve/formation",
-      cta: "Payer",
+      cta: t("Payer"),
       urgent: true,
     });
   }
@@ -162,10 +166,10 @@ export default function Dashboard() {
     aFaire.push({
       id: "examen",
       icon: HiOutlineCalendarDays,
-      titre: `Examen de passage : ${examen.label.toLowerCase()}`,
+      titre: t("Examen de passage : {{v0}}", { v0: examen.label.toLowerCase() }),
       detail: formatDate(niveauEnCours.inscription.date_examen),
       to: `/eleve/formation/${niveauEnCours.niveau.name}`,
-      cta: "Voir le niveau",
+      cta: t("Voir le niveau"),
       urgent: examen.urgent,
     });
   }
@@ -174,9 +178,9 @@ export default function Dashboard() {
       id: "attente",
       icon: HiOutlineLockClosed,
       titre: "Inscription en attente de validation",
-      detail: `Niveau ${capitalize(niveauEnAttente.niveau.name)}`,
+      detail: t("Niveau {{v0}}", { v0: capitalize(niveauEnAttente.niveau.name) }),
       to: "/eleve/formation",
-      cta: "Voir mon parcours",
+      cta: t("Voir mon parcours"),
       urgent: false,
     });
   }
@@ -184,10 +188,10 @@ export default function Dashboard() {
     aFaire.push({
       id: "messages",
       icon: HiOutlineChatBubbleLeftRight,
-      titre: `${pluriel(messagesNonLus, "message")} non lu${messagesNonLus > 1 ? "s" : ""}`,
+      titre: t(messagesNonLus > 1 ? "{{v0}} non lus" : "{{v0}} non lu", { v0: pluriel(messagesNonLus, "message") }),
       detail: "De tes professeurs",
       to: "/eleve/messages",
-      cta: "Lire",
+      cta: t("Lire"),
       urgent: false,
     });
   }
@@ -198,16 +202,19 @@ export default function Dashboard() {
   let heroCta;
   if (niveauEnCours) {
     const { moisActuel, duree, moisRestants, niveau } = niveauEnCours;
-    heroTitre = `Mois ${moisActuel} sur ${duree} du niveau ${capitalize(niveau.name)}. ${
-      moisRestants > 0 ? `Encore ${pluriel(moisRestants, "mois")} pour le terminer.` : "C'est le dernier mois, tiens bon."
-    }`;
-    heroCta = { to: `/eleve/formation/${niveau.name}`, label: "Reprendre ma formation" };
+    heroTitre = t("Mois {{moisActuel}} sur {{duree}} du niveau {{niveauNom}}. {{suite}}", {
+      moisActuel,
+      duree,
+      niveauNom: capitalize(niveau.name),
+      suite: moisRestants > 0 ? t("Encore {{v0}} pour le terminer.", { v0: pluriel(moisRestants, "mois") }) : t("C'est le dernier mois, tiens bon."),
+    });
+    heroCta = { to: `/eleve/formation/${niveau.name}`, label: t("Reprendre ma formation") };
   } else if (niveauEnAttente) {
-    heroTitre = `Ton inscription au niveau ${capitalize(niveauEnAttente.niveau.name)} est en attente de validation. Tu pourras commencer dès qu'elle sera validée.`;
-    heroCta = { to: "/eleve/formation", label: "Voir mon parcours" };
+    heroTitre = t("Ton inscription au niveau {{v0}} est en attente de validation. Tu pourras commencer dès qu'elle sera validée.", { v0: capitalize(niveauEnAttente.niveau.name) });
+    heroCta = { to: "/eleve/formation", label: t("Voir mon parcours") };
   } else {
-    heroTitre = "Choisis ton niveau et commence à tresser tes progrès.";
-    heroCta = { to: "/eleve/formation", label: "Voir les niveaux" };
+    heroTitre = t("Choisis ton niveau et commence à tresser tes progrès.");
+    heroCta = { to: "/eleve/formation", label: t("Voir les niveaux") };
   }
 
   const moisPayesTotal = niveauEnCours ? `${niveauEnCours.moisPayes} / ${niveauEnCours.duree}` : "—";
@@ -218,15 +225,14 @@ export default function Dashboard() {
       <AnimatedSection className="relative overflow-hidden rounded-4xl bg-linear-to-br from-brick via-coral to-amber p-1 shadow-2xl shadow-brick/20">
         <div className="relative overflow-hidden rounded-[1.85rem] bg-ink/90 p-8 sm:p-10">
           <div className="relative z-10 max-w-lg">
-            <p className="font-mono text-xs uppercase tracking-widest text-amber-light">
-              Bonjour{prenom ? ` ${prenom}` : ""}
+            <p className="font-mono text-xs uppercase tracking-widest text-amber-light">{t("Bonjour")}{prenom ? ` ${prenom}` : ""}
             </p>
             <h2 className="mt-3 font-display text-2xl font-semibold leading-snug text-ivory sm:text-3xl">{heroTitre}</h2>
             <Link
               to={heroCta.to}
               className="group mt-7 inline-flex items-center gap-2 rounded-full bg-ivory px-6 py-3 font-body text-sm font-semibold text-brick shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
             >
-              {heroCta.label}
+              {t(heroCta.label)}
               <HiOutlineArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </div>
@@ -238,12 +244,12 @@ export default function Dashboard() {
       <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={HiOutlineMusicalNote}
-          label="Niveaux terminés"
+          label={t("Niveaux terminés")}
           value={`${niveauxTermines} / ${(levels || []).length}`}
         />
-        <StatCard icon={HiOutlineBanknotes} label="Mois payés (niveau en cours)" value={moisPayesTotal} delay={80} />
-        <StatCard icon={HiOutlineChatBubbleLeftRight} label="Messages non lus" value={messagesNonLus} delay={160} />
-        <StatCard icon={HiOutlineAcademicCap} label="Certificats obtenus" value={CERTIFICATS.length} delay={240} />
+        <StatCard icon={HiOutlineBanknotes} label={t("Mois payés (niveau en cours)")} value={moisPayesTotal} delay={80} />
+        <StatCard icon={HiOutlineChatBubbleLeftRight} label={t("Messages non lus")} value={messagesNonLus} delay={160} />
+        <StatCard icon={HiOutlineAcademicCap} label={t("Certificats obtenus")} value={CERTIFICATS.length} delay={240} />
       </section>
 
       {/* ---------- CORPS : 2 colonnes ---------- */}
@@ -253,12 +259,11 @@ export default function Dashboard() {
           {/* --- Niveau en cours --- */}
           <section>
             <AnimatedSection className="flex flex-wrap items-end justify-between gap-4">
-              <h3 className="font-display text-xl font-semibold text-ink">Mon niveau en cours</h3>
+              <h3 className="font-display text-xl font-semibold text-ink">{t("Mon niveau en cours")}</h3>
               <Link
                 to="/eleve/formation"
                 className="inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark transition-colors hover:text-brick"
-              >
-                Mon parcours <HiOutlineArrowRight size={15} />
+              >{t("Mon parcours")}{" "}<HiOutlineArrowRight size={15} />
               </Link>
             </AnimatedSection>
 
@@ -278,9 +283,7 @@ export default function Dashboard() {
                       ))}
                     </div>
                   </div>
-                  <span className="rounded-full bg-coral/15 px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wide text-coral-dark">
-                    Mois {niveauEnCours.moisActuel} / {niveauEnCours.duree}
-                  </span>
+                  <span className="rounded-full bg-coral/15 px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wide text-coral-dark">{t("Mois {{moisActuel}} / {{duree}}", { moisActuel: niveauEnCours.moisActuel, duree: niveauEnCours.duree })}</span>
                 </div>
 
                 <div className="mt-6 h-2 w-full rounded-full bg-ivory-dark">
@@ -290,31 +293,24 @@ export default function Dashboard() {
                   />
                 </div>
                 <div className="mt-2 flex items-center justify-between font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                  <span>Début {formatDate(niveauEnCours.inscription.date_debut)}</span>
-                  <span>
-                    Fin {formatDate(dateFinNiveau(niveauEnCours.inscription.date_debut, niveauEnCours.duree))}
-                  </span>
+                  <span>{t("Début {{v0}}", { v0: formatDate(niveauEnCours.inscription.date_debut) })}</span>
+                  <span>{t("Fin {{v0}}", { v0: formatDate(dateFinNiveau(niveauEnCours.inscription.date_debut, niveauEnCours.duree)) })}</span>
                 </div>
 
                 <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-ivory-dark/30 px-4 py-3">
                   <p className="flex items-center gap-1.5 font-body text-sm text-ink">
                     {niveauEnCours.moisAPayer === 0 ? (
                       <>
-                        <HiOutlineCheckCircle size={16} className="text-coral-dark" /> Paiement à jour
-                      </>
+                        <HiOutlineCheckCircle size={16} className="text-coral-dark" />{" "}{t("Paiement à jour")}</>
                     ) : (
                       <>
-                        <HiOutlineClock size={16} className="text-coral-dark" />
-                        {pluriel(niveauEnCours.moisAPayer, "mois")} restant{niveauEnCours.moisAPayer > 1 ? "s" : ""} à payer
-                      </>
+                        <HiOutlineClock size={16} className="text-coral-dark" />{t(niveauEnCours.moisAPayer > 1 ? "{{v0}} restants à payer" : "{{v0}} restant à payer", { v0: pluriel(niveauEnCours.moisAPayer, "mois") })}</>
                     )}
                   </p>
                   <Link
                     to={`/eleve/formation/${niveauEnCours.niveau.name}`}
                     className="group inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark transition-colors hover:text-brick"
-                  >
-                    Voir le détail
-                    <HiOutlineArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
+                  >{t("Voir le détail")}<HiOutlineArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
                 </div>
               </AnimatedSection>
@@ -323,14 +319,14 @@ export default function Dashboard() {
                 <HiOutlineMusicalNote size={22} className="mx-auto text-ink-soft" />
                 <p className="mt-3 font-body text-sm text-ink-soft">
                   {niveauEnAttente
-                    ? "Ton niveau démarrera dès que ton inscription sera validée."
-                    : "Tu n'as pas encore de niveau en cours."}
+                    ? t("Ton niveau démarrera dès que ton inscription sera validée.")
+                    : t("Tu n'as pas encore de niveau en cours.")}
                 </p>
                 <Link
                   to="/eleve/formation"
                   className="mt-4 inline-block font-body text-sm font-semibold text-coral-dark hover:text-brick"
                 >
-                  {niveauEnAttente ? "Voir mon parcours" : "Choisir un niveau"} →
+                  {niveauEnAttente ? t("Voir mon parcours") : t("Choisir un niveau")} →
                 </Link>
               </AnimatedSection>
             )}
@@ -379,13 +375,13 @@ export default function Dashboard() {
           {/* --- À faire --- */}
           <section>
             <AnimatedSection>
-              <h3 className="font-display text-xl font-semibold text-ink">À faire</h3>
+              <h3 className="font-display text-xl font-semibold text-ink">{t("À faire")}</h3>
             </AnimatedSection>
 
             {aFaire.length === 0 ? (
               <AnimatedSection className="mt-6 rounded-2xl border border-dashed border-ivory-dark p-6 text-center">
                 <HiOutlineCheckCircle size={22} className="mx-auto text-coral-dark" />
-                <p className="mt-3 font-body text-sm text-ink-soft">Rien d'urgent : tout est à jour.</p>
+                <p className="mt-3 font-body text-sm text-ink-soft">{t("Rien d'urgent : tout est à jour.")}</p>
               </AnimatedSection>
             ) : (
               <div className="mt-6 space-y-3">
@@ -406,9 +402,9 @@ export default function Dashboard() {
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-body text-sm font-semibold text-ink">{a.titre}</span>
-                      <span className="block truncate font-body text-xs text-ink-soft">{a.detail}</span>
+                      <span className="block truncate font-body text-xs text-ink-soft">{t(a.detail)}</span>
                     </span>
-                    <span className="shrink-0 font-body text-xs font-semibold text-coral-dark">{a.cta}</span>
+                    <span className="shrink-0 font-body text-xs font-semibold text-coral-dark">{t(a.cta)}</span>
                   </AnimatedSection>
                 ))}
               </div>
@@ -418,19 +414,18 @@ export default function Dashboard() {
           {/* --- Messages récents --- */}
           <section>
             <AnimatedSection className="flex items-end justify-between gap-4">
-              <h3 className="font-display text-xl font-semibold text-ink">Messages récents</h3>
+              <h3 className="font-display text-xl font-semibold text-ink">{t("Messages récents")}</h3>
               <Link
                 to="/eleve/messages"
                 className="inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark transition-colors hover:text-brick"
-              >
-                Ouvrir <HiOutlineArrowRight size={15} />
+              >{t("Ouvrir")}{" "}<HiOutlineArrowRight size={15} />
               </Link>
             </AnimatedSection>
 
             {conversationsRecentes.length === 0 ? (
               <AnimatedSection className="mt-6 rounded-2xl border border-dashed border-ivory-dark p-6 text-center">
                 <HiOutlineChatBubbleLeftRight size={22} className="mx-auto text-ink-soft" />
-                <p className="mt-3 font-body text-sm text-ink-soft">Écris à un professeur pour poser une question sur ton cours.</p>
+                <p className="mt-3 font-body text-sm text-ink-soft">{t("Écris à un professeur pour poser une question sur ton cours.")}</p>
               </AnimatedSection>
             ) : (
               <div className="mt-6 divide-y divide-ivory-dark overflow-hidden rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10">
@@ -450,10 +445,10 @@ export default function Dashboard() {
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate font-body text-sm font-semibold text-ink">
-                          {prof ? `${prof.name} ${prof.firstname}` : "Professeur"}
+                          {prof ? `${prof.name} ${prof.firstname}` : t("Professeur")}
                         </span>
                         <span className="block truncate font-body text-xs text-ink-soft">
-                          {envoyeParMoi ? "Toi : " : ""}
+                          {envoyeParMoi ? t("Toi : ") : ""}
                           {dernier?.content}
                         </span>
                       </span>
@@ -475,12 +470,11 @@ export default function Dashboard() {
       {parcours.length > 0 && (
         <section>
           <AnimatedSection className="flex flex-wrap items-end justify-between gap-4">
-            <h3 className="font-display text-xl font-semibold text-ink">Mon parcours</h3>
+            <h3 className="font-display text-xl font-semibold text-ink">{t("Mon parcours")}</h3>
             <Link
               to="/eleve/formation"
               className="inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark transition-colors hover:text-brick"
-            >
-              Tout voir <HiOutlineArrowRight size={15} />
+            >{t("Tout voir")}{" "}<HiOutlineArrowRight size={15} />
             </Link>
           </AnimatedSection>
 
@@ -503,7 +497,7 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between gap-2">
                     <p className="truncate font-display text-base font-semibold text-ink">{capitalize(p.niveau.name)}</p>
                     <span className={`shrink-0 rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide ${s.badge}`}>
-                      {s.label}
+                      {t(s.label)}
                     </span>
                   </div>
                   <p className="mt-1 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
@@ -534,7 +528,7 @@ export default function Dashboard() {
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-coral/10 text-coral-dark transition-colors duration-300 group-hover:bg-coral group-hover:text-ivory">
               <l.icon size={17} />
             </span>
-            <span className="font-body text-sm font-semibold text-ink">{l.label}</span>
+            <span className="font-body text-sm font-semibold text-ink">{t(l.label)}</span>
             <HiOutlineArrowRight className="ml-auto text-ink-soft opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100" size={15} />
           </AnimatedSection>
         ))}

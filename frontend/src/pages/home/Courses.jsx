@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { HiOutlineSearch, HiOutlineArrowRight, HiStar, HiOutlineX } from "react-icons/hi";
 import AnimatedSection from "../../components/AnimatedSection";
 import { courses, instruments, niveaux } from "../../lib/mockHomeData";
+import { useLang } from "../../app/hooks/useLang";
 
 function formatAriary(n) {
   return new Intl.NumberFormat("fr-MG").format(n) + " Ar";
@@ -12,6 +13,7 @@ const CARD_BG = { coral: "bg-coral/90", amber: "bg-amber/90", brick: "bg-brick/9
 const BG_BY_INSTRUMENT = { Valiha: "coral", Kabosy: "amber", Guitare: "brick", Piano: "coral", Chant: "amber", Batterie: "brick" };
 
 export default function Courses() {
+  const { t } = useLang();
   const [params, setParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const activeInstrument = params.get("instrument") || "";
@@ -39,13 +41,9 @@ export default function Courses() {
     <section className="px-5 py-16 sm:px-8 sm:py-20">
       <div className="mx-auto max-w-7xl">
         <AnimatedSection className="max-w-2xl">
-          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">Catalogue</span>
-          <h1 className="mt-3 font-display text-4xl font-semibold text-ink sm:text-5xl">
-            Trouvez le cours qui vous ressemble
-          </h1>
-          <p className="mt-4 font-body text-ink-soft">
-            {courses.length} cours disponibles, enseignés par des professeurs sélectionnés pour leur pédagogie.
-          </p>
+          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Catalogue")}</span>
+          <h1 className="mt-3 font-display text-4xl font-semibold text-ink sm:text-5xl">{t("Trouvez le cours qui vous ressemble")}</h1>
+          <p className="mt-4 font-body text-ink-soft">{t("{{length}} cours disponibles, enseignés par des professeurs sélectionnés pour leur pédagogie.", { length: courses.length })}</p>
         </AnimatedSection>
 
         {/* Barre de recherche */}
@@ -55,7 +53,7 @@ export default function Courses() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher un cours, un professeur…"
+            placeholder={t("Rechercher un cours, un professeur…")}
             className="w-full rounded-full border border-ivory-dark bg-white/70 py-3 pl-11 pr-4 font-body text-sm text-ink outline-none transition-all duration-300 focus:border-coral focus:bg-white"
           />
         </AnimatedSection>
@@ -67,9 +65,7 @@ export default function Courses() {
             className={`rounded-full px-4 py-2 font-body text-sm font-medium transition-colors duration-300 ${
               !activeInstrument ? "bg-ink text-ivory" : "bg-ivory-dark text-ink-soft hover:bg-ivory-dark/70"
             }`}
-          >
-            Tous les instruments
-          </button>
+          >{t("Tous les instruments")}</button>
           {instruments.map((i) => (
             <button
               key={i.id}
@@ -85,7 +81,7 @@ export default function Courses() {
 
         {/* Filtres niveau */}
         <AnimatedSection delay={160} className="mt-3 flex flex-wrap items-center gap-2">
-          <span className="font-mono text-xs uppercase tracking-wide text-ink-soft">Niveau :</span>
+          <span className="font-mono text-xs uppercase tracking-wide text-ink-soft">{t("Niveau :")}</span>
           {niveaux.map((n) => (
             <button
               key={n}
@@ -94,7 +90,7 @@ export default function Courses() {
                 niveau === n ? "border-brick bg-brick/10 text-brick" : "border-ivory-dark text-ink-soft hover:bg-ivory-dark/50"
               }`}
             >
-              {n}
+              {t(n)}
             </button>
           ))}
           {(activeInstrument || niveau || search) && (
@@ -102,8 +98,7 @@ export default function Courses() {
               onClick={() => { setInstrument(""); setNiveau(""); setSearch(""); }}
               className="inline-flex items-center gap-1 font-body text-xs font-medium text-coral-dark hover:text-brick"
             >
-              <HiOutlineX size={14} /> Réinitialiser
-            </button>
+              <HiOutlineX size={14} />{" "}{t("Réinitialiser")}</button>
           )}
         </AnimatedSection>
 
@@ -122,17 +117,16 @@ export default function Courses() {
                   {instruments.find((x) => x.nom === c.instrument)?.emoji}
                 </span>
                 <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink">
-                  {c.niveau}
+                  {t(c.niveau)}
                 </span>
               </div>
               <div className="p-5">
                 <p className="font-mono text-[11px] uppercase tracking-wide text-coral-dark">{c.instrument}</p>
                 <h3 className="mt-1.5 font-display text-base font-semibold text-ink group-hover:text-coral-dark">{c.titre}</h3>
-                <p className="mt-1 font-body text-sm text-ink-soft">avec {c.prof}</p>
+                <p className="mt-1 font-body text-sm text-ink-soft">{t("avec {{prof}}", { prof: c.prof })}</p>
                 <div className="mt-4 flex items-center justify-between border-t border-ivory-dark pt-4">
                   <span className="flex items-center gap-1 font-body text-sm text-ink-soft">
-                    <HiStar className="text-amber" size={15} /> {c.note} · {c.lecons} leçons
-                  </span>
+                    <HiStar className="text-amber" size={15} />{" "}{t("{{note}} · {{lecons}} leçons", { note: c.note, lecons: c.lecons })}</span>
                   <span className="font-mono text-sm font-semibold text-ink">{formatAriary(c.prix)}</span>
                 </div>
               </div>
@@ -142,13 +136,12 @@ export default function Courses() {
 
         {filtered.length === 0 && (
           <AnimatedSection className="mt-16 flex flex-col items-center gap-3 text-center">
-            <p className="font-display text-lg text-ink">Aucun cours ne correspond à ces critères</p>
-            <p className="font-body text-sm text-ink-soft">Essayez d'élargir votre recherche ou vos filtres.</p>
+            <p className="font-display text-lg text-ink">{t("Aucun cours ne correspond à ces critères")}</p>
+            <p className="font-body text-sm text-ink-soft">{t("Essayez d'élargir votre recherche ou vos filtres.")}</p>
             <button
               onClick={() => { setInstrument(""); setNiveau(""); setSearch(""); }}
               className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-coral px-5 py-2.5 font-body text-sm font-semibold text-ivory transition-colors hover:bg-coral-dark"
-            >
-              Réinitialiser les filtres <HiOutlineArrowRight size={14} />
+            >{t("Réinitialiser les filtres")}{" "}<HiOutlineArrowRight size={14} />
             </button>
           </AnimatedSection>
         )}

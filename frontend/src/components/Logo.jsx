@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
+import { useLang } from "../app/hooks/useLang";
 
 export function LogoVert() {
+  const { t } = useLang();
 
   return (
-    <Link to="/" className="group flex items-center gap-3 shrink-0" aria-label="Kalon'ny — Accueil">
+    <Link to="/" className="group flex items-center gap-3 shrink-0" aria-label={t("Kalon'ny — Accueil")}>
       {/* Ne marche pas */}
       {/* <img src="../assets/logo/logoVert.png" alt="Logo 2AM" srcset="" /> */}
 
@@ -11,14 +13,15 @@ export function LogoVert() {
           1- Mettre l'image dans le dossier public et src deviendra src="/logo/logoVert.png"
           2- Si elle est dans ../assets/logo/logoVert.png, on fait une import logoVert from "../assets/logo/logoVert.png" et src deviendra src={logovert}
       */}
-      <img src="/logo/logoVert.png" alt="Logo 2AM" srcset="" width={"150px"}/>
+      <img src="/logo/logoVert.png" alt={t("Logo 2AM")} srcset="" width={"150px"}/>
     </Link>
   );
 }
 
 export function LogoBlanc({width = "150px"}) {
+  const { t } = useLang();
   return (
-    <Link to="/" className="group flex items-center gap-3 shrink-0" aria-label="Kalon'ny — Accueil">
+    <Link to="/" className="group flex items-center gap-3 shrink-0" aria-label={t("Kalon'ny — Accueil")}>
       {/* Ne marche pas */}
       {/* <img src="../assets/logo/logoVert.png" alt="Logo 2AM" srcset="" /> */}
   
@@ -26,7 +29,7 @@ export function LogoBlanc({width = "150px"}) {
           1- Mettre l'image dans le dossier public et src deviendra src="/logo/logoVert.png"
           2- Si elle est dans ../assets/logo/logoVert.png, on fait une import logoVert from "../assets/logo/logoVert.png" et src deviendra src={logovert}
       */}
-      <img src="/logo/logoBlanc.png" alt="Logo 2AM" srcset="" width={width}/>
+      <img src="/logo/logoBlanc.png" alt={t("Logo 2AM")} srcset="" width={width}/>
     </Link>
   );
 }

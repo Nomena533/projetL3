@@ -8,6 +8,7 @@ import { useUser } from "../../app/hooks/useUser";
 import { useLevel } from "../../app/hooks/useLevel";
 import { capitalize } from "../../lib/formatFunction";
 import { ChevronDown } from "../../lib/icons";
+import { useLang } from "../../app/hooks/useLang";
 
 const STATUTS_PAIEMENT = ["validé", "En attente", "Échoué"];
 
@@ -22,6 +23,7 @@ function styleStatut(statut) {
 }
 
 export default function AdminPaiements() {
+  const { t } = useLang();
   const { paiementList } = usePaiement();
   const { userList } = useUser();
   const { levels } = useLevel();
@@ -64,9 +66,9 @@ export default function AdminPaiements() {
         ...prev,
         [paiement.id]: ancienStatut,
       }));
-      setError("Le statut du paiement n'a pas pu être modifié.");
+      setError(t("Le statut du paiement n'a pas pu être modifié."));
       console.error(
-        "Erreur lors de la modification du statut du paiement",
+        t("Erreur lors de la modification du statut du paiement"),
         requestError.response?.data,
       );
     } finally {
@@ -122,12 +124,8 @@ export default function AdminPaiements() {
   return (
     <div className="space-y-6">
       <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-          Administration
-        </span>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
-          Paiements
-        </h2>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Administration")}</span>
+        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Paiements")}</h2>
       </AnimatedSection>
 
       {error && (
@@ -173,17 +171,14 @@ export default function AdminPaiements() {
                       <h3 className="font-display text-sm font-semibold text-ink">
                         {eleve
                           ? `${eleve.name} ${eleve.firstname}`
-                          : "Élève inconnu"}
+                          : t("Élève inconnu")}
                       </h3>
                       {nbEnAttente > 0 && (
                           <span className="inline-flex items-center gap-1 rounded-full border border-amber/40 bg-amber/20 px-2 py-2 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink">
-                            <span>{nbEnAttente}</span> en attente
-                          </span>
+                            <span>{nbEnAttente}</span>{" "}{t("en attente")}</span>
                       )}
                     </div>
-                    <p className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                      {paiements.length} paiement
-                      {paiements.length > 1 ? "s" : ""}
+                    <p className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">{t(paiements.length > 1 ? "{{length}} paiements" : "{{length}} paiement", { length: paiements.length })}
                     </p>
                   </div>
                 </div>
@@ -203,11 +198,11 @@ export default function AdminPaiements() {
                     <table className="w-full">
                       <thead className="border-b border-ivory-dark">
                         <tr>
-                          <Th>Niveau</Th>
-                          <Th>Montant</Th>
-                          <Th>Description</Th>
-                          <Th>Mode</Th>
-                          <Th>Statut</Th>
+                          <Th>{t("Niveau")}</Th>
+                          <Th>{t("Montant")}</Th>
+                          <Th>{t("Description")}</Th>
+                          <Th>{t("Mode")}</Th>
+                          <Th>{t("Statut")}</Th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-ivory-dark">
@@ -233,7 +228,7 @@ export default function AdminPaiements() {
                                   {estEnAttente(p) && (
                                     <span
                                       className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber"
-                                      title="Nouveau paiement à valider"
+                                      title={t("Nouveau paiement à valider")}
                                     />
                                   )}
                                   {niveau ? capitalize(niveau.name) : "—"}
@@ -257,7 +252,7 @@ export default function AdminPaiements() {
                                       statut: e.target.value,
                                     })
                                   }
-                                  aria-label={`Modifier le statut du paiement ${p.id}`}
+                                  aria-label={t("Modifier le statut du paiement {{id}}", { id: p.id })}
                                   className={`rounded-full border px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wide outline-none transition-colors duration-200 focus:border-coral disabled:cursor-wait disabled:opacity-60 
                                     ${styleStatut(statut)} 
                                     ${
@@ -269,7 +264,7 @@ export default function AdminPaiements() {
                                 >
                                   {options.map((s) => (
                                     <option key={s} value={s}>
-                                      {s}
+                                      {t(s)}
                                     </option>
                                   ))}
                                 </select>
@@ -287,9 +282,7 @@ export default function AdminPaiements() {
         })}
 
         {groupesParEleve.length === 0 && (
-          <p className="font-body text-sm text-ink-soft">
-            Aucun paiement pour le moment.
-          </p>
+          <p className="font-body text-sm text-ink-soft">{t("Aucun paiement pour le moment.")}</p>
         )}
       </div>
     </div>

@@ -10,6 +10,7 @@ import {
   updateExercice,
 } from "../../app/api/exerciceApi";
 import useLesson from "../../app/hooks/useLesson";
+import { useLang } from "../../app/hooks/useLang";
 
 function TextAreaField({ label, name, value, onChange }) {
   return (
@@ -33,34 +34,30 @@ function TextAreaField({ label, name, value, onChange }) {
 // pour pouvoir être enregistré en même temps que la leçon, en un seul clic,
 // tout en restant visuellement un formulaire à part.
 function ExerciceEditeur({ isEditing, form, onChange }) {
+  const { t } = useLang();
   return (
     <AnimatedSection
       delay={120}
       className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7"
     >
       <div>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-          Exercice
-        </span>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Exercice")}</span>
         <h3 className="mt-1 font-display text-lg font-semibold text-ink">
-          {isEditing ? "Modifier l'exercice" : "Ajouter un exercice"}
+          {isEditing ? t("Modifier l'exercice") : t("Ajouter un exercice")}
         </h3>
-        <p className="mt-1 font-body text-xs text-ink-soft">
-          Facultatif : laisse les champs vides si cette leçon n'a pas d'exercice
-          à corriger.
-        </p>
+        <p className="mt-1 font-body text-xs text-ink-soft">{t("Facultatif : laisse les champs vides si cette leçon n'a pas d'exercice à corriger.")}</p>
       </div>
 
       <FormField
-        label="Titre de l'exercice"
-        placeholder="Ex. Rejoue la mélodie du morceau"
+        label={t("Titre de l'exercice")}
+        placeholder={t("Ex. Rejoue la mélodie du morceau")}
         name="titre"
         value={form.titre}
         onChange={onChange}
       />
 
       <TextAreaField
-        label="Description"
+        label={t("Description")}
         name="description"
         value={form.description}
         onChange={onChange}
@@ -70,6 +67,7 @@ function ExerciceEditeur({ isEditing, form, onChange }) {
 }
 
 export default function ProfLeconEditeur() {
+  const { t } = useLang();
   const { id: courId, lessonId } = useParams();
   const navigate = useNavigate();
 
@@ -123,7 +121,7 @@ export default function ProfLeconEditeur() {
         }
       } catch (err) {
         console.error(
-          "Erreur lors de la récupération de l'exercice :",
+          t("Erreur lors de la récupération de l'exercice :"),
           err.response?.data,
         );
       }
@@ -196,8 +194,8 @@ export default function ProfLeconEditeur() {
         {
           state: {
             success: lessonId
-              ? "La leçon a été modifiée avec succès !"
-              : "La leçon (et son exercice) a été créée avec succès !",
+              ? t("La leçon a été modifiée avec succès !")
+              : t("La leçon (et son exercice) a été créée avec succès !"),
           },
         },
       );
@@ -226,7 +224,7 @@ export default function ProfLeconEditeur() {
 
     } catch (err) {
       console.error("Erreur lors de l'opération", err.response?.data);
-      setError("Une erreur est survenue lors de l'enregistrement de la leçon.");
+      setError(t("Une erreur est survenue lors de l'enregistrement de la leçon."));
     } finally {
       setSaving(false);
     }
@@ -234,7 +232,7 @@ export default function ProfLeconEditeur() {
 
   if (lessonId && lessonDetail == null) {
     return (
-      <p className="font-body text-sm text-ink-soft">Chargement de la leçon…</p>
+      <p className="font-body text-sm text-ink-soft">{t("Chargement de la leçon…")}</p>
     );
   }
 
@@ -244,23 +242,16 @@ export default function ProfLeconEditeur() {
         onClick={() => navigate(`/professeur/cours/${courId}/details`)}
         className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
       >
-        <HiOutlineChevronLeft size={13} /> Retour au cours
-      </button>
+        <HiOutlineChevronLeft size={13} />{" "}{t("Retour au cours")}</button>
 
       {lessonId ? (
         <AnimatedSection>
-          <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
-            Modifier la leçon
-          </h2>
+          <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Modifier la leçon")}</h2>
         </AnimatedSection>
       ) : (
         <AnimatedSection>
-          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-            Nouvelle leçon
-          </span>
-          <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
-            Ajouter une leçon
-          </h2>
+          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Nouvelle leçon")}</span>
+          <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Ajouter une leçon")}</h2>
         </AnimatedSection>
       )}
 
@@ -270,24 +261,20 @@ export default function ProfLeconEditeur() {
         className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7"
       >
         <div>
-          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-            Leçon
-          </span>
-          <h3 className="mt-1 font-display text-lg font-semibold text-ink">
-            Informations de la leçon
-          </h3>
+          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Leçon")}</span>
+          <h3 className="mt-1 font-display text-lg font-semibold text-ink">{t("Informations de la leçon")}</h3>
         </div>
 
         <FormField
-          label="Titre de la leçon"
-          placeholder="Ex. Accorder son valiha"
+          label={t("Titre de la leçon")}
+          placeholder={t("Ex. Accorder son valiha")}
           name="titre"
           value={form.titre}
           onChange={handleChange}
         />
 
         <TextAreaField
-          label="Description"
+          label={t("Description")}
           name="description"
           value={form.description}
           onChange={handleChange}
@@ -295,8 +282,8 @@ export default function ProfLeconEditeur() {
 
         <div className="grid gap-4 sm:grid-cols-1">
           <FormField
-            label="Durée"
-            placeholder="Ex. 12min"
+            label={t("Durée")}
+            placeholder={t("Ex. 12min")}
             name="duree"
             value={form.duree}
             onChange={handleChange}
@@ -304,10 +291,7 @@ export default function ProfLeconEditeur() {
         </div>
 
         {!lessonId && (
-          <p className="font-body text-xs text-ink-soft">
-            Une fois la leçon enregistrée, tu pourras y ajouter ses ressources
-            (vidéo, audio, PDF) depuis sa page de détail.
-          </p>
+          <p className="font-body text-xs text-ink-soft">{t("Une fois la leçon enregistrée, tu pourras y ajouter ses ressources (vidéo, audio, PDF) depuis sa page de détail.")}</p>
         )}
 
         {error && <p className="font-body text-sm text-brick">{error}</p>}
@@ -329,14 +313,12 @@ export default function ProfLeconEditeur() {
           className="flex items-center gap-2 rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark disabled:cursor-not-allowed disabled:opacity-60"
         >
           <HiOutlineCheckCircle size={16} />
-          {saving ? "Enregistrement…" : "Enregistrer la leçon et l'exercice"}
+          {saving ? t("Enregistrement…") : t("Enregistrer la leçon et l'exercice")}
         </button>
         <button
           onClick={() => navigate(`/professeur/cours/${courId}/details`)}
           className="rounded-full border border-ivory-dark px-6 py-3 font-body text-sm font-semibold text-ink transition-all duration-300 hover:border-coral/40"
-        >
-          Annuler
-        </button>
+        >{t("Annuler")}</button>
       </AnimatedSection>
     </div>
   );

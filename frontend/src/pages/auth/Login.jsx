@@ -28,8 +28,10 @@ import { useAuth } from "../../app/hooks/useAuth";
 import { useUser } from "../../app/hooks/useUser";
 import { LogoBlanc, LogoVert } from "../../components/Logo";
 import useTheme from "../../app/hooks/useTheme";
+import { useLang } from "../../app/hooks/useLang";
 
 export default function Login() {
+  const { t } = useLang();
   const {isDark} = useTheme();
   const { setUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
@@ -166,8 +168,7 @@ export default function Login() {
         to="/"
         className="absolute left-5 top-6 z-10 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-widest text-ink-soft transition-colors hover:text-coral-dark sm:left-8 sm:top-8"
       >
-        <HiOutlineArrowLeft size={13} /> Retour au site
-      </Link>
+        <HiOutlineArrowLeft size={13} />{" "}{t("Retour au site")}</Link>
 
       <div className="relative mx-auto w-full max-w-5xl overflow-hidden rounded-4xl shadow-2xl shadow-brick/20 md:grid md:grid-cols-2">
         {/* ---------- PANNEAU ÉDITORIAL ---------- */}
@@ -178,10 +179,7 @@ export default function Login() {
             </div>
             <div>
               <ValihaMotif count={24} tone="amber" className="h-20" />
-              <p className="mt-4 font-body text-sm leading-relaxed text-ivory/60">
-                Apprends un instrument avec de vrais professeurs, à ton rythme,
-                où que tu sois à Madagascar.
-              </p>
+              <p className="mt-4 font-body text-sm leading-relaxed text-ivory/60">{t("Apprends un instrument avec de vrais professeurs, à ton rythme, où que tu sois à Madagascar.")}</p>
               <div className="mt-6 flex items-center gap-3">
                 <div className="flex -space-x-2">
                   {[0, 1, 2].map((i) => (
@@ -195,9 +193,7 @@ export default function Login() {
                   <p className="flex items-center gap-1 font-body text-sm font-semibold text-ivory">
                     4.8 <HiStar className="text-amber" size={13} />
                   </p>
-                  <p className="font-mono text-[10px] uppercase tracking-wide text-ivory/50">
-                    +1 000 élèves nous font confiance
-                  </p>
+                  <p className="font-mono text-[10px] uppercase tracking-wide text-ivory/50">{t("+1 000 élèves nous font confiance")}</p>
                 </div>
               </div>
             </div>
@@ -214,9 +210,7 @@ export default function Login() {
                   isActive ? "text-ink" : "text-ink-soft hover:text-ink"
                 }`
               }
-            >
-              Se connecter
-              <span
+            >{t("Se connecter")}<span
                 className={({ isActive }) =>
                   `absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-coral transition-all duration-300 ${
                     isActive ? "text-ink" : "text-ink-soft hover:text-ink"
@@ -232,9 +226,7 @@ export default function Login() {
                   isActive ? "text-ink" : "text-ink-soft hover:text-ink"
                 }`
               }
-            >
-              Créer un compte
-              <span
+            >{t("Créer un compte")}<span
                 className={({ isActive }) =>
                   `absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-coral transition-all duration-300 ${
                     isActive ? "text-ink" : "text-ink-soft hover:text-ink"
@@ -249,7 +241,7 @@ export default function Login() {
             className="animate-fade-in items-center"
           >
             <FormField
-              label="Adresse e-mail"
+              label={t("Adresse e-mail")}
               type="email"
               name="email"
               value={form.email}
@@ -261,7 +253,7 @@ export default function Login() {
             />
 
             <FormField
-              label="Mot de passe"
+              label={t("Mot de passe")}
               type={showPassword ? "text" : "password"}
               name="password"
               value={form.password}
@@ -277,8 +269,8 @@ export default function Login() {
                   className="shrink-0 text-ink-soft transition-colors hover:text-ink"
                   aria-label={
                     showPassword
-                      ? "Masquer le mot de passe"
-                      : "Afficher le mot de passe"
+                      ? t("Masquer le mot de passe")
+                      : t("Afficher le mot de passe")
                   }
                 >
                   {showPassword ? (
@@ -294,26 +286,16 @@ export default function Login() {
               <button
                 type="button"
                 className="font-body text-xs font-medium text-coral-dark transition-colors hover:text-brick"
-              >
-                Mot de passe oublié ?
-              </button>
+              >{t("Mot de passe oublié ?")}</button>
             </div>
 
             <button
               type="submit"
               className="group mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-coral py-3.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark disabled:pointer-events-none disabled:opacity-70"
-            >
-              Se connecter
-            </button>
+            >{t("Se connecter")}</button>
           </form>
 
-          <p className="mt-6 text-center font-body text-xs text-ink-soft">
-            En continuant, tu acceptes les{" "}
-            <button className="font-semibold text-coral-dark hover:text-brick">
-              conditions d'utilisation
-            </button>{" "}
-            de la plateforme.
-          </p>
+          <p className="mt-6 text-center font-body text-xs text-ink-soft">{t("En continuant, tu acceptes les")}{" "}<button className="font-semibold text-coral-dark hover:text-brick">{t("conditions d'utilisation")}</button>{" "}{t("de la plateforme.")}</p>
         </AnimatedSection>
       </div>
 
@@ -321,7 +303,7 @@ export default function Login() {
       <Modal
         open={showAlreadyEnrolledModal}
         onClose={handleCloseAlreadyEnrolledModal}
-        title="Déjà inscrit(e) à ce niveau"
+        title={t("Déjà inscrit(e) à ce niveau")}
       >
         <div className="text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-light/50 text-amber-dark">
@@ -330,15 +312,11 @@ export default function Login() {
 
           <p className="font-body text-sm leading-relaxed text-ink-soft">
             {alreadyEnrolledNiveau ? (
-              <>
-                Tu es déjà inscrit(e) au niveau{" "}
-                <span className="font-semibold text-ink">
+              <>{t("Tu es déjà inscrit(e) au niveau")}{" "}<span className="font-semibold text-ink">
                   {alreadyEnrolledNiveau}
-                </span>
-                . Tu peux continuer ta formation depuis ton tableau de bord.
-              </>
+                </span>{t(". Tu peux continuer ta formation depuis ton tableau de bord.")}</>
             ) : (
-              "Tu es déjà inscrit(e) à ce niveau. Tu peux continuer ta formation depuis ton tableau de bord."
+              t("Tu es déjà inscrit(e) à ce niveau. Tu peux continuer ta formation depuis ton tableau de bord.")
             )}
           </p>
 
@@ -348,16 +326,12 @@ export default function Login() {
               onClick={handleGoToFormation}
               className="flex w-full items-center justify-center gap-2 rounded-full bg-coral py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
             >
-              <HiOutlineAcademicCap size={16} />
-              Voir ma formation
-            </button>
+              <HiOutlineAcademicCap size={16} />{t("Voir ma formation")}</button>
             <button
               type="button"
               onClick={handleGoHome}
               className="w-full rounded-full py-3 font-body text-sm font-semibold text-ink-soft transition-colors hover:text-ink"
-            >
-              Retour à l'accueil
-            </button>
+            >{t("Retour à l'accueil")}</button>
           </div>
         </div>
       </Modal>

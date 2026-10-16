@@ -13,12 +13,14 @@ import { storeInscription } from "../../app/api/inscriptionApi";
 import { getUserListInscription } from "../../app/api/userApi";
 import { useUser } from "../../app/hooks/useUser";
 import { FaMoneyBill, FaMoneyBillAlt, FaMoneyBillWave, FaMoneyCheck } from "react-icons/fa";
+import { useLang } from "../../app/hooks/useLang";
 
 function formatAriary(n) {
   return new Intl.NumberFormat("fr-MG").format(n) + " Ar";
 }
 
 export default function Inscription() {
+  const { t } = useLang();
   const [params] = useSearchParams();
   const niveauName = params.get("niveau") || "initiation";
   const navigate = useNavigate();
@@ -145,7 +147,7 @@ export default function Inscription() {
       setSent(true);
     } catch (err) {
       console.error("Erreur lors de l'inscription", err.response?.data);
-      setError("Une erreur est survenue lors de l'inscription.");
+      setError(t("Une erreur est survenue lors de l'inscription."));
     }
   };
 
@@ -158,7 +160,7 @@ export default function Inscription() {
       <section className="px-5 py-16 sm:px-8 sm:py-20">
         <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-[1fr_1.3fr]">
           <AnimatedSection>
-            <p className="font-body text-sm text-ink-soft">Chargement …</p>
+            <p className="font-body text-sm text-ink-soft">{t("Chargement …")}</p>
           </AnimatedSection>
         </div>
       </section>
@@ -169,31 +171,20 @@ export default function Inscription() {
     <section className="px-5 py-16 sm:px-8 sm:py-20">
       <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-[1fr_1.3fr]">
         <AnimatedSection>
-          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-            Inscription
-          </span>
-          <h1 className="mt-3 font-display text-4xl font-semibold text-ink sm:text-5xl">
-            Rejoins la formation
-          </h1>
-          <p className="mt-4 max-w-sm font-body text-ink-soft">
-            Choisis le ou les instruments que tu veux apprendre. Ton parcours
-            démarre dès validation de ton inscription.
-          </p>
+          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Inscription")}</span>
+          <h1 className="mt-3 font-display text-4xl font-semibold text-ink sm:text-5xl">{t("Rejoins la formation")}</h1>
+          <p className="mt-4 max-w-sm font-body text-ink-soft">{t("Choisis le ou les instruments que tu veux apprendre. Ton parcours démarre dès validation de ton inscription.")}</p>
 
           <div className="mt-10 space-y-4 rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6">
-            <p className="font-mono text-[11px] uppercase tracking-wide text-coral-dark">
-              Formation concernée
-            </p>
+            <p className="font-mono text-[11px] uppercase tracking-wide text-coral-dark">{t("Formation concernée")}</p>
             <div className="flex items-center gap-3.5">
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-coral/10 text-coral-dark">
                 <HiOutlineAcademicCap size={19} />
               </span>
               <div>
-                <p className="font-body text-sm font-semibold text-ink">
-                  Niveau {niveau.name}
-                </p>
+                <p className="font-body text-sm font-semibold text-ink">{t("Niveau {{name}}", { name: niveau.name })}</p>
                 <p className="font-body text-xs text-ink-soft">
-                  {niveau.description}
+                  {t(niveau.description)}
                 </p>
               </div>
             </div>
@@ -202,9 +193,7 @@ export default function Inscription() {
                 <HiOutlineClock size={19} />
               </span>
               <div>
-                <p className="font-body text-sm font-semibold text-ink">
-                  Durée : {niveau.duree}
-                </p>
+                <p className="font-body text-sm font-semibold text-ink">{t("Durée : {{duree}}", { duree: niveau.duree })}</p>
                 {/* <p className="font-body text-xs text-ink-soft">
                   {formatAriary(niveau.prix_mensuel)} par mois par instrument
                 </p> */}
@@ -215,12 +204,8 @@ export default function Inscription() {
                 <FaMoneyBillWave size={19} />
               </span>
               <div>
-                <p className="font-body text-sm font-semibold text-ink">
-                  Droit d'inscription : {formatAriary(niveau.droit_inscription)}
-                </p>
-                <p className="font-body text-xs text-ink-soft">
-                  {formatAriary(niveau.prix_mensuel)} par mois par instrument
-                </p>
+                <p className="font-body text-sm font-semibold text-ink">{t("Droit d'inscription : {{v0}}", { v0: formatAriary(niveau.droit_inscription) })}</p>
+                <p className="font-body text-xs text-ink-soft">{t("{{v0}} par mois par instrument", { v0: formatAriary(niveau.prix_mensuel) })}</p>
               </div>
             </div>
           </div>
@@ -233,60 +218,48 @@ export default function Inscription() {
           {sent ? (
             <div className="flex flex-col items-center gap-3 py-10 text-center animate-fade-in">
               <HiOutlineCheckCircle className="text-coral-dark" size={44} />
-              <h2 className="font-display text-xl font-semibold text-ink">
-                Inscription envoyée !
-              </h2>
-              <p className="max-w-sm font-body text-sm text-ink-soft">
-                Merci {form.prenom || ""}, ton inscription au niveau{" "}
-                {niveau.name} pour {nombreInstruments} instrument
-                {nombreInstruments > 1 ? "s" : ""} ({formatAriary(montantTotal)}
-                ) a bien été enregistrée. Un e-mail de confirmation arrive à{" "}
-                {form.email || "ton adresse"}.
+              <h2 className="font-display text-xl font-semibold text-ink">{t("Inscription envoyée !")}</h2>
+              <p className="max-w-sm font-body text-sm text-ink-soft">{t(
+                nombreInstruments > 1
+                  ? "Merci {{prenom}}, ton inscription au niveau {{name}} pour {{nombreInstruments}} instruments ({{montant}}) a bien été enregistrée. Un e-mail de confirmation arrive à {{email}}."
+                  : "Merci {{prenom}}, ton inscription au niveau {{name}} pour {{nombreInstruments}} instrument ({{montant}}) a bien été enregistrée. Un e-mail de confirmation arrive à {{email}}.",
+                { prenom: form.prenom || "", name: niveau.name, nombreInstruments, montant: formatAriary(montantTotal), email: form.email || t("ton adresse") },
+              )}
               </p>
               <button onClick={handlePaiement}
                 className="mt-3 font-body text-sm font-semibold text-coral-dark hover:text-brick"
-              >
-                Finaliser le paiement pour cette inscription
-              </button>
+              >{t("Finaliser le paiement pour cette inscription")}</button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Informations élève */}
               <div>
-                <h2 className="font-display text-lg font-semibold text-ink">
-                  Tes informations
-                </h2>
+                <h2 className="font-display text-lg font-semibold text-ink">{t("Tes informations")}</h2>
                 <div className="mt-4 grid gap-5 sm:grid-cols-2">
                   <label className="block">
-                    <span className="font-body text-sm font-medium text-ink">
-                      Nom
-                    </span>
+                    <span className="font-body text-sm font-medium text-ink">{t("Nom")}</span>
                     <input
                       name="nom"
                       value={user.name}
                       onChange={handleChange}
                       required
-                      placeholder="Rakoto"
+                      placeholder={t("Rakoto")}
                       className="mt-1.5 w-full rounded-xl border border-ivory-dark bg-ivory px-4 py-2.5 font-body text-sm text-ink outline-none transition-colors focus:border-coral"
                     />
                   </label>
                   <label className="block">
-                    <span className="font-body text-sm font-medium text-ink">
-                      Prénom
-                    </span>
+                    <span className="font-body text-sm font-medium text-ink">{t("Prénom")}</span>
                     <input
                       name="prenom"
                       value={user.firstname}
                       onChange={handleChange}
                       required
-                      placeholder="Fara"
+                      placeholder={t("Fara")}
                       className="mt-1.5 w-full rounded-xl border border-ivory-dark bg-ivory px-4 py-2.5 font-body text-sm text-ink outline-none transition-colors focus:border-coral"
                     />
                   </label>
                   <label className="block">
-                    <span className="font-body text-sm font-medium text-ink">
-                      Email
-                    </span>
+                    <span className="font-body text-sm font-medium text-ink">{t("Email")}</span>
                     <input
                       type="email"
                       name="email"
@@ -298,9 +271,7 @@ export default function Inscription() {
                     />
                   </label>
                   <label className="block">
-                    <span className="font-body text-sm font-medium text-ink">
-                      Téléphone
-                    </span>
+                    <span className="font-body text-sm font-medium text-ink">{t("Téléphone")}</span>
                     <input
                       type="tel"
                       name="telephone"
@@ -316,12 +287,8 @@ export default function Inscription() {
 
               {/* Choix des instruments */}
               <div>
-                <h2 className="font-display text-lg font-semibold text-ink">
-                  Instruments à apprendre
-                </h2>
-                <p className="mt-1 font-body text-xs text-ink-soft">
-                  Choix multiple possible.
-                </p>
+                <h2 className="font-display text-lg font-semibold text-ink">{t("Instruments à apprendre")}</h2>
+                <p className="mt-1 font-body text-xs text-ink-soft">{t("Choix multiple possible.")}</p>
                 {/* Liste verticale scrollable : reste lisible même si la liste
                     d'instruments s'agrandit une fois branchée sur la BDD. */}
                 <div className="mt-4 max-h-72 divide-y divide-ivory-dark overflow-y-auto rounded-2xl border border-ivory-dark bg-ivory">
@@ -367,17 +334,13 @@ export default function Inscription() {
               {/* Récapitulatif automatique */}
               <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-linear-to-br from-brick via-coral-dark to-coral p-5 text-ivory">
                 <div>
-                  <p className="font-mono text-[11px] uppercase tracking-wide text-ivory/70">
-                    Instruments sélectionnés
-                  </p>
+                  <p className="font-mono text-[11px] uppercase tracking-wide text-ivory/70">{t("Instruments sélectionnés")}</p>
                   <p className="font-display text-lg font-semibold">
                     {nombreInstruments}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-mono text-[11px] uppercase tracking-wide text-ivory/70">
-                    Montant total(Ecolage + droit d'inscription)
-                  </p>
+                  <p className="font-mono text-[11px] uppercase tracking-wide text-ivory/70">{t("Montant total(Ecolage + droit d'inscription)")}</p>
                   <p className="font-display text-lg font-semibold">
                     {formatAriary(montantTotal)}
                   </p>
@@ -390,8 +353,8 @@ export default function Inscription() {
                 className="w-full rounded-full bg-coral py-3.5 font-body text-sm font-semibold text-ivory shadow-md shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
               >
                 {nombreInstruments === 0
-                  ? "Sélectionne au moins un instrument"
-                  : "Confirmer mon inscription"}
+                  ? t("Sélectionne au moins un instrument")
+                  : t("Confirmer mon inscription")}
               </button>
             </form>
           )}

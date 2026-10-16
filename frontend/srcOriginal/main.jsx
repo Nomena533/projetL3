@@ -1,0 +1,68 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+
+/* Polices auto-hébergées via @fontsource : les fichiers .woff2 sont copiés
+   dans node_modules puis embarqués par Vite au build. Aucun appel réseau
+   externe n'est effectué, le site fonctionne donc hors connexion. */
+import "@fontsource/fraunces/400.css";
+import "@fontsource/fraunces/600.css";
+import "@fontsource/fraunces/700.css";
+import "@fontsource/fraunces/500-italic.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
+
+import "./index.css";
+import App from "./App";
+import AuthProvider from "./app/provider/AuthProvider";
+import CourProvider from "./app/provider/CourProvider";
+import LessonProvider from "./app/provider/LessonProvider";
+import LevelProvider from "./app/provider/LevelProvider";
+import InstrumentProvider from "./app/provider/InstrumentProvider";
+import UserProvider from "./app/provider/UserProvider";
+import PaiementProvider from "./app/provider/PaiementProvider";
+import MessageProvider from "./app/provider/MessageProvider";
+import { LangProvider } from "./app/provider/LangProvider";
+import SoumissionProvider from "./app/provider/SoumissionProvider";
+import NotificationProvider from "./app/provider/NotificationProvider";
+import ThemeProvider from "./app/provider/ThemeProvider";
+import InscriptionProvider from "./app/provider/InscriptionProvider";
+// import App from "./App";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <ThemeProvider>
+      <LangProvider>
+        <InscriptionProvider>
+          <SoumissionProvider>
+            <NotificationProvider>
+              <MessageProvider>
+                <PaiementProvider>
+                  <UserProvider>
+                    <InstrumentProvider>
+                      <LevelProvider>
+                        <LessonProvider>
+                          <CourProvider>
+                            <BrowserRouter>
+                              {/* AuthProvider englobe toute l'application, tous les composants enfants peuvent accéder à user, logout, setUser */}
+                              <AuthProvider>
+                                <App />
+                              </AuthProvider>
+                            </BrowserRouter>
+                          </CourProvider>
+                        </LessonProvider>
+                      </LevelProvider>
+                    </InstrumentProvider>
+                  </UserProvider>
+                </PaiementProvider>
+              </MessageProvider>
+            </NotificationProvider>
+          </SoumissionProvider>
+        </InscriptionProvider>
+      </LangProvider>
+    </ThemeProvider>
+  </React.StrictMode>,
+);

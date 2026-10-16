@@ -9,6 +9,7 @@ import {
 } from "../../lib/icons";
 import AnimatedSection from "../../components/AnimatedSection";
 import { NIVEAUX_PARCOURS, MODES_PAIEMENT, MOIS_PAYES_PAR_NIVEAU } from "../../lib/mockFormationData";
+import { useLang } from "../../app/hooks/useLang";
 
 // TODO: remplacer par l'appel API réel, ex. paiementApi.creerPaiement(payload)
 async function envoyerPaiement(payload) {
@@ -17,6 +18,7 @@ async function envoyerPaiement(payload) {
 }
 
 export default function Paiement() {
+  const { t } = useLang();
   // Copie locale mutable du mock ; à remplacer par l'état renvoyé par l'API.
   const [moisPayesParNiveau, setMoisPayesParNiveau] = useState(() => ({ ...MOIS_PAYES_PAR_NIVEAU }));
   // Sélections en cours par niveau : { [niveauId]: { mois: number[], mode: string|null } }
@@ -81,17 +83,15 @@ export default function Paiement() {
   return (
     <div className="space-y-10">
       <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">Paiement</span>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">Mes paiements</h2>
-        <p className="mt-2 max-w-xl font-body text-sm text-ink-soft">
-          Règle les mois restants de tes niveaux en cours, un ou plusieurs mois à la fois.
-        </p>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Paiement")}</span>
+        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Mes paiements")}</h2>
+        <p className="mt-2 max-w-xl font-body text-sm text-ink-soft">{t("Règle les mois restants de tes niveaux en cours, un ou plusieurs mois à la fois.")}</p>
       </AnimatedSection>
 
       {niveauxEnAttente.length === 0 ? (
         <AnimatedSection className="rounded-2xl border border-dashed border-ivory-dark bg-ivory-dark/20 p-8 text-center">
           <HiOutlineCheckCircle className="mx-auto text-coral-dark" size={32} />
-          <p className="mt-2 font-body text-sm text-ink-soft">Tous tes paiements sont à jour. 🎉</p>
+          <p className="mt-2 font-body text-sm text-ink-soft">{t("Tous tes paiements sont à jour. 🎉")}</p>
         </AnimatedSection>
       ) : (
         <div className="space-y-6">
@@ -111,25 +111,17 @@ export default function Paiement() {
                 <div className="flex flex-wrap items-center gap-3">
                   <h3 className="font-display text-lg font-semibold text-ink">{niveau.nom}</h3>
                   <span className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft">
-                    <HiOutlineClock size={13} /> Durée totale : {niveau.dureeMois} mois
-                  </span>
-                  <span className="font-mono text-xs uppercase tracking-wide text-ink-soft">
-                    {niveau.montantMensuel.toLocaleString("fr-MG")} Ar / mois
-                  </span>
+                    <HiOutlineClock size={13} />{" "}{t("Durée totale : {{dureeMois}} mois", { dureeMois: niveau.dureeMois })}</span>
+                  <span className="font-mono text-xs uppercase tracking-wide text-ink-soft">{t("{{v0}} Ar / mois", { v0: niveau.montantMensuel.toLocaleString("fr-MG") })}</span>
                 </div>
 
                 {confirmes[niveau.id] && (
                   <p className="mt-2 flex items-center gap-1.5 font-body text-xs font-medium text-coral-dark">
-                    <HiOutlineCheckCircle size={14} /> Paiement enregistré.
-                  </p>
+                    <HiOutlineCheckCircle size={14} />{" "}{t("Paiement enregistré.")}</p>
                 )}
 
-                <p className="mt-4 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                  Mois restants à payer ({moisRestants.length} / {niveau.dureeMois})
-                </p>
-                <p className="mt-1 font-body text-[11px] text-ink-soft/80">
-                  Les mois se paient dans l'ordre : sélectionner un mois inclut automatiquement les mois précédents non payés.
-                </p>
+                <p className="mt-4 font-mono text-[11px] uppercase tracking-wide text-ink-soft">{t("Mois restants à payer ({{length}} / {{dureeMois}})", { length: moisRestants.length, dureeMois: niveau.dureeMois })}</p>
+                <p className="mt-1 font-body text-[11px] text-ink-soft/80">{t("Les mois se paient dans l'ordre : sélectionner un mois inclut automatiquement les mois précédents non payés.")}</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {moisRestants.map((m) => (
                     <button
@@ -141,15 +133,13 @@ export default function Paiement() {
                           ? "border-coral bg-coral text-ivory"
                           : "border-ivory-dark bg-white text-ink-soft hover:border-coral hover:text-coral-dark"
                       }`}
-                    >
-                      Mois {m}
-                    </button>
+                    >{t("Mois {{m}}", { m })}</button>
                   ))}
                 </div>
 
                 {selection.mois.length > 0 && (
                   <>
-                    <p className="mt-5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">Mode de paiement</p>
+                    <p className="mt-5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">{t("Mode de paiement")}</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {[...modesMobileMoney, modeCarte].map((m) => (
                         <button
@@ -171,9 +161,7 @@ export default function Paiement() {
                     {/* Récapitulatif — pas de droit d'inscription, déjà réglé au premier paiement */}
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-ivory-dark/30 px-4 py-3">
                       <p className="flex items-center gap-1.5 font-body text-sm text-ink">
-                        <HiOutlineBanknotes size={16} />
-                        {selection.mois.length} mois × {niveau.montantMensuel.toLocaleString("fr-MG")} Ar ={" "}
-                        <span className="font-semibold text-coral-dark">{total.toLocaleString("fr-MG")} Ar</span>
+                        <HiOutlineBanknotes size={16} />{t("{{length}} mois × {{v0}} Ar =", { length: selection.mois.length, v0: niveau.montantMensuel.toLocaleString("fr-MG") })}{" "}<span className="font-semibold text-coral-dark">{t("{{v0}} Ar", { v0: total.toLocaleString("fr-MG") })}</span>
                       </p>
                       <button
                         type="button"
@@ -181,7 +169,7 @@ export default function Paiement() {
                         disabled={!selection.mode || enCours === niveau.id}
                         className="group inline-flex items-center gap-1.5 rounded-full bg-coral px-4 py-2 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick disabled:opacity-60"
                       >
-                        {enCours === niveau.id ? "Traitement…" : "Payer"}
+                        {enCours === niveau.id ? t("Traitement…") : t("Payer")}
                         {enCours !== niveau.id && (
                           <HiOutlineArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
                         )}

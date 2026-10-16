@@ -7,8 +7,10 @@ import {
 } from "../../app/api/messageApi";
 import { useUser } from "../../app/hooks/useUser";
 import { useMessage } from "../../app/hooks/useMessage";
+import { useLang } from "../../app/hooks/useLang";
 
 export default function Messages() {
+  const { t } = useLang();
   const [activeProf, setActiveProf] = useState(null);
   const [draft, setDraft] = useState("");
   const { conversations, fetchMessages, loading } = useMessage();
@@ -62,7 +64,7 @@ export default function Messages() {
       await fetchMessages();
     } catch (error) {
       console.error(
-        "Erreur lors de l'envoi du message :",
+        t("Erreur lors de l'envoi du message :"),
         error.response?.data || error.message,
       );
     }
@@ -77,12 +79,8 @@ export default function Messages() {
   return (
     <div className="space-y-6">
       <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-          Espace élève
-        </span>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
-          Messages
-        </h2>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Espace élève")}</span>
+        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Messages")}</h2>
       </AnimatedSection>
       <AnimatedSection
         className="grid overflow-hidden rounded-2xl border border-ivory-dark bg-white/70 md:grid-cols-3"
@@ -90,12 +88,8 @@ export default function Messages() {
       >
         <div className="divide-y divide-ivory-dark border-b border-ivory-dark md:border-b-0 md:border-r">
           <div className="border-b border-ivory-dark px-5 py-4">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-coral-dark">
-              Nouveau message
-            </p>
-            <p className="mt-1 font-display text-base font-semibold text-ink">
-              Choisir un professeur
-            </p>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-coral-dark">{t("Nouveau message")}</p>
+            <p className="mt-1 font-display text-base font-semibold text-ink">{t("Choisir un professeur")}</p>
           </div>
           {professeurs.map((professeur) => (
             // Une ligne peut exister avant le premier message; on cherche donc le compteur par identifiant.
@@ -123,9 +117,7 @@ export default function Messages() {
                   <p className="truncate font-body text-sm font-semibold text-ink">
                     {professeur.name} {professeur.firstname}
                   </p>
-                  <p className="mt-0.5 truncate font-body text-xs text-ink-soft">
-                    Professeur
-                  </p>
+                  <p className="mt-0.5 truncate font-body text-xs text-ink-soft">{t("Professeur")}</p>
                   {conversation?.unreadCount > 0 && (
                     // Ce badge indique le nombre de réponses du professeur restant à lire.
                     <span className="mt-1 inline-flex min-w-5 items-center justify-center rounded-full bg-coral px-1.5 py-0.5 font-mono text-[10px] font-semibold leading-none text-white">
@@ -141,18 +133,14 @@ export default function Messages() {
               })()
           ))}
           {professeurs.length === 0 && (
-            <p className="px-5 py-8 font-body text-sm text-ink-soft">
-              Chargement des professeurs…
-            </p>
+            <p className="px-5 py-8 font-body text-sm text-ink-soft">{t("Chargement des professeurs…")}</p>
           )}
         </div>
 
         <div className="flex flex-col md:col-span-2">
           {loading ? (
             <div className="grid flex-1 place-items-center p-6 text-center">
-              <p className="font-body text-sm text-ink-soft">
-                Chargement des conversations…
-              </p>
+              <p className="font-body text-sm text-ink-soft">{t("Chargement des conversations…")}</p>
             </div>
           ) : activeProf ? (
             <>
@@ -160,9 +148,7 @@ export default function Messages() {
                 <p className="font-display text-sm font-semibold text-ink">
                   {activeProf.name} {activeProf.firstname}
                 </p>
-                <p className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                  Professeur · Accompagnement personnalisé
-                </p>
+                <p className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">{t("Professeur · Accompagnement personnalisé")}</p>
               </div>
               <div className="flex-1 space-y-3 p-6">
                 {activeConversation?.messages?.length ? (
@@ -179,22 +165,20 @@ export default function Messages() {
                     </div>
                   ))
                 ) : (
-                  <p className="font-body text-sm text-ink-soft">
-                    Aucun message dans cette conversation.
-                  </p>
+                  <p className="font-body text-sm text-ink-soft">{t("Aucun message dans cette conversation.")}</p>
                 )}
               </div>
               <div className="flex items-center gap-2 border-t border-ivory-dark p-4">
                 <input
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
-                  placeholder="Écrire un message…"
+                  placeholder={t("Écrire un message…")}
                   className="flex-1 rounded-full border border-ivory-dark bg-white/70 px-4 py-2.5 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
                 />
                 <button
                   onClick={handleSend}
                   className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-coral text-ivory shadow-md shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
-                  aria-label="Envoyer"
+                  aria-label={t("Envoyer")}
                 >
                   <HiOutlinePaperAirplane size={15} />
                 </button>
@@ -202,9 +186,7 @@ export default function Messages() {
             </>
           ) : (
             <div className="grid flex-1 place-items-center p-6 text-center">
-              <p className="font-body text-sm text-ink-soft">
-                Sélectionne un professeur pour ouvrir la discussion.
-              </p>
+              <p className="font-body text-sm text-ink-soft">{t("Sélectionne un professeur pour ouvrir la discussion.")}</p>
             </div>
           )}
         </div>

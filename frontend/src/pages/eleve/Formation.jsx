@@ -22,6 +22,7 @@ import { useUser } from "../../app/hooks/useUser";
 import usePaiement from "../../app/hooks/usePaiement";
 import { storePaiement } from "../../app/api/paiementApi";
 import { Guitar } from "../../lib/icons";
+import { useLang } from "../../app/hooks/useLang";
 
 // Modal de paiement pour un niveau donné, ouvert depuis la liste des niveaux.
 // Reprend la logique de eleve/paiement.jsx (sélection de mois + mode de paiement)
@@ -33,6 +34,7 @@ function ModalPaiementNiveau({
   onClose,
   onConfirmerPaiement,
 }) {
+  const { t } = useLang();
 
   console.log("niveauModal : ", niveauModal);
   const [moisSelectionnes, setMoisSelectionnes] = useState([]);
@@ -159,14 +161,11 @@ function ModalPaiementNiveau({
         <div className="flex items-start justify-between gap-3 px-6 pb-5 pt-6">
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-coral/10 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-coral-dark">
-              <HiOutlineBanknotes size={12} /> Paiement
-            </span>
+              <HiOutlineBanknotes size={12} />{" "}{t("Paiement")}</span>
             <h3 className="mt-2 font-display text-xl font-semibold text-ink">
               {capitalize(niveauModal.nom)}
             </h3>
-            <p className="mt-1 font-body text-sm text-ink-soft">
-                Instruments :{" "}
-                {niveauModal.instruments.map((instrument) => (
+            <p className="mt-1 font-body text-sm text-ink-soft">{t("Instruments :")}{" "}{niveauModal.instruments.map((instrument) => (
                   <span
                     key={instrument.id}
                     className="rounded-full bg-ivory px-2.5 py-0.5 font-body text-xs text-ink-soft"
@@ -180,7 +179,7 @@ function ModalPaiementNiveau({
             type="button"
             onClick={onClose}
             className="rounded-full p-1.5 text-ink-soft transition-colors duration-200 hover:bg-ivory-dark/50 hover:text-ink"
-            aria-label="Fermer"
+            aria-label={t("Fermer")}
           >
             <HiOutlineXMark size={18} />
           </button>
@@ -193,12 +192,8 @@ function ModalPaiementNiveau({
               <HiOutlineCheckCircle size={20} />
             </span>
             <div>
-              <p className="font-body text-sm font-bold text-emerald-700">
-                Paiement enregistré avec succès !
-              </p>
-              <p className="font-body text-xs text-emerald-600">
-                Le montant a bien été pris en compte pour ce niveau.
-              </p>
+              <p className="font-body text-sm font-bold text-emerald-700">{t("Paiement enregistré avec succès !")}</p>
+              <p className="font-body text-xs text-emerald-600">{t("Le montant a bien été pris en compte pour ce niveau.")}</p>
             </div>
           </div>
         )}
@@ -209,11 +204,8 @@ function ModalPaiementNiveau({
         <div className="px-6 py-4">
           <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-wide text-ink-soft">
             <span className="flex items-center gap-1.5">
-              <HiOutlineClock size={13} /> Progression du paiement
-            </span>
-            <span className="font-semibold text-ink">
-              {moisPayer} / {niveauModal.dureeMois} mois
-            </span>
+              <HiOutlineClock size={13} />{" "}{t("Progression du paiement")}</span>
+            <span className="font-semibold text-ink">{t("{{moisPayer}} / {{dureeMois}} mois", { moisPayer, dureeMois: niveauModal.dureeMois })}</span>
           </div>
           <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-ivory-dark">
             <div
@@ -221,18 +213,14 @@ function ModalPaiementNiveau({
               style={{ width: `${pourcentagePaye}%` }}
             />
           </div>
-          <p className="mt-1.5 font-body text-[11px] text-ink-soft/80">
-            {formatAriary(niveauModal.montantMensuel)} × {niveauModal.instruments.length} instrument{niveauModal.instruments.length > 1 ? "s" : "" } = {formatAriary(montantMensuelAvecInstrument)} / mois
-          </p>
+          <p className="mt-1.5 font-body text-[11px] text-ink-soft/80">{t(niveauModal.instruments.length > 1 ? "{{v0}} × {{length}} instruments = {{total}} / mois" : "{{v0}} × {{length}} instrument = {{total}} / mois", { v0: formatAriary(niveauModal.montantMensuel), length: niveauModal.instruments.length, total: formatAriary(montantMensuelAvecInstrument) })}</p>
         </div>
 
         {moisRestant === 0 ? (
           <div className="px-6 pb-6">
             <hr className="mb-4 border-ivory-dark" />
             <p className="flex items-center gap-2 rounded-xl bg-coral/5 px-4 py-3.5 font-body text-sm font-medium text-coral-dark">
-              <HiOutlineCheckCircle size={16} /> Tous les mois de ce niveau sont
-              payés.
-            </p>
+              <HiOutlineCheckCircle size={16} />{" "}{t("Tous les mois de ce niveau sont payés.")}</p>
           </div>
         ) : (
           <>
@@ -240,13 +228,8 @@ function ModalPaiementNiveau({
 
             {/* ---------- SÉLECTION DES MOIS ---------- */}
             <div className="px-6 py-4">
-              <p className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                Mois restants ({moisRestant} / {niveauModal.dureeMois})
-              </p>
-              <p className="mt-1 font-body text-[11px] text-ink-soft/80">
-                Les mois se paient dans l'ordre : sélectionner un mois inclut
-                les mois précédents non payés.
-              </p>
+              <p className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">{t("Mois restants ({{moisRestant}} / {{dureeMois}})", { moisRestant, dureeMois: niveauModal.dureeMois })}</p>
+              <p className="mt-1 font-body text-[11px] text-ink-soft/80">{t("Les mois se paient dans l'ordre : sélectionner un mois inclut les mois précédents non payés.")}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {moisRestants.map((nombreMois) => (
                   <button
@@ -258,9 +241,7 @@ function ModalPaiementNiveau({
                         ? "border-coral bg-coral text-ivory"
                         : "border-ivory-dark  text-ink-soft hover:border-coral hover:text-coral-dark"
                     }`}
-                  >
-                    Mois {nombreMois}
-                  </button>
+                  >{t("Mois {{nombreMois}}", { nombreMois })}</button>
                 ))}
               </div>
             </div>
@@ -270,9 +251,7 @@ function ModalPaiementNiveau({
               <>
                 <hr className="border-ivory-dark" />
                 <div className="px-6 py-4">
-                  <p className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                    Mode de paiement
-                  </p>
+                  <p className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">{t("Mode de paiement")}</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {[...modesMobileMoney, modeCarte].map((m) => (
                       <button
@@ -302,9 +281,7 @@ function ModalPaiementNiveau({
                         <label
                           className="block font-mono text-[11px] uppercase tracking-wide text-ink-soft"
                           htmlFor="numeroCarteModal"
-                        >
-                          Numéro de carte
-                        </label>
+                        >{t("Numéro de carte")}</label>
                         <input
                           id="numeroCarteModal"
                           type="text"
@@ -320,9 +297,7 @@ function ModalPaiementNiveau({
                         <label
                           className="block font-mono text-[11px] uppercase tracking-wide text-ink-soft"
                           htmlFor="expirationCarteModal"
-                        >
-                          Expiration (MM/AA)
-                        </label>
+                        >{t("Expiration (MM/AA)")}</label>
                         <input
                           id="expirationCarteModal"
                           type="text"
@@ -338,9 +313,7 @@ function ModalPaiementNiveau({
                         <label
                           className="block font-mono text-[11px] uppercase tracking-wide text-ink-soft"
                           htmlFor="cvvCarteModal"
-                        >
-                          CVV
-                        </label>
+                        >{t("CVV")}</label>
                         <input
                           id="cvvCarteModal"
                           type="password"
@@ -364,10 +337,7 @@ function ModalPaiementNiveau({
                 <hr className="border-ivory-dark" />
                 <div className="flex flex-wrap items-center justify-between gap-3 rounded-b-2xl bg-ivory-dark/30 px-6 py-4">
                   <p className="flex items-center gap-1.5 font-body text-sm text-ink">
-                    <HiOutlineBanknotes size={16} />
-                    {moisSelectionnes.length} mois ×{" "}
-                    {formatAriary(montantMensuelAvecInstrument)} ={" "}
-                    <span className="font-semibold text-coral-dark">
+                    <HiOutlineBanknotes size={16} />{t("{{length}} mois × {{v0}} =", { length: moisSelectionnes.length, v0: formatAriary(montantMensuelAvecInstrument) })}{" "}<span className="font-semibold text-coral-dark">
                       {formatAriary(total)}
                     </span>
                   </p>
@@ -377,7 +347,7 @@ function ModalPaiementNiveau({
                     disabled={!mode || enCours || !carteValide}
                     className="group inline-flex items-center gap-1.5 rounded-full bg-coral px-4 py-2 font-body text-sm font-semibold text-ivory transition-colors duration-300 hover:bg-brick disabled:opacity-60"
                   >
-                    {enCours ? "Traitement…" : "Payer"}
+                    {enCours ? t("Traitement…") : t("Payer")}
                     {!enCours && (
                       <HiOutlineArrowRight
                         size={14}
@@ -403,6 +373,7 @@ const NIVEAU_ACTUEL = NIVEAUX_PARCOURS.find(
 );
 
 export default function Formation() {
+  const { t } = useLang();
   const { levels } = useLevel();
   const { user } = useAuth();
   const { userListInscription, fetchUserListInscription } = useUser();
@@ -429,7 +400,7 @@ export default function Formation() {
         nombre_mois: moisSelectionnes,
         montant: total,
         mode_paiement: mode,
-        description: "Paiement par tranche",
+        description: t("Paiement par tranche"),
         ...(mode === "carte" ? donneesCarte : {}),
       };
 
@@ -449,7 +420,7 @@ export default function Formation() {
       }));
     } catch (err) {
       console.error("Erreur lors du paiement", err.response?.data);
-      setErreur("Une erreur est survenue lors du paiement");
+      setErreur(t("Une erreur est survenue lors du paiement"));
     }
   };
 
@@ -521,34 +492,27 @@ export default function Formation() {
   return (
     <div className="space-y-10">
       <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-          Formation
-        </span>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
-          Mon parcours
-        </h2>
-        <p className="mt-2  font-body text-sm text-ink-soft">
-          Ta progression à travers les 4 niveaux de la formation, de
-          l'initiation jusqu'au niveau avancé.
-        </p>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Formation")}</span>
+        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Mon parcours")}</h2>
+        <p className="mt-2  font-body text-sm text-ink-soft">{t("Ta progression à travers les 4 niveaux de la formation, de l'initiation jusqu'au niveau avancé.")}</p>
       </AnimatedSection>
 
       {/* ---------- STATS ---------- */}
       <section className="grid gap-5 sm:grid-cols-3">
         <StatCard
           icon={HiOutlineAcademicCap}
-          label="Niveaux terminés"
+          label={t("Niveaux terminés")}
           value={`${niveauxTerminés.length} / ${levels.length}`}
         />
         <StatCard
           icon={HiOutlineClock}
-          label="Niveau en cours"
-          value={niveauEnCour ? capitalize(niveauEnCour.niveau.name) : "Aucun"}
+          label={t("Niveau en cours")}
+          value={niveauEnCour ? capitalize(niveauEnCour.niveau.name) : t("Aucun")}
           delay={80}
         />
         <StatCard
           icon={HiOutlineMusicalNote}
-          label="Niveaux avec inscription"
+          label={t("Niveaux avec inscription")}
           value={userListInscription.length}
           delay={160}
         />
@@ -598,7 +562,7 @@ export default function Formation() {
             const statut = enAttente
               ? {
                   cle: "en_attente",
-                  label: "En attente",
+                  label: t("En attente"),
                   pastille: "bg-ink-soft text-ivory-dark",
                   carte:
                     "border-amber/50 bg-amber/5 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amber/10",
@@ -608,7 +572,7 @@ export default function Formation() {
                 ? aJour
                   ? {
                       cle: "a_jour",
-                      label: "À jour",
+                      label: t("À jour"),
                       pastille: "bg-coral text-ivory ring-4 ring-coral/20",
                       carte:
                         "border-coral/50 bg-coral/5 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-coral/10",
@@ -616,7 +580,7 @@ export default function Formation() {
                     }
                   : {
                       cle: "en_cours",
-                      label: "En cours",
+                      label: t("En cours"),
                       pastille: "bg-amber text-ink",
                       carte:
                         "border-ivory-dark bg-white/70 dark:bg-white/10 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brick/10",
@@ -624,7 +588,7 @@ export default function Formation() {
                     }
                 : {
                     cle: "verrouille",
-                    label: "Non commencé",
+                    label: t("Non commencé"),
                     pastille: "bg-ivory-dark text-ink-soft",
                     carte: "border-dashed border-ivory-dark bg-ivory-dark/20",
                     badge: "bg-ivory-dark text-ink-soft",
@@ -698,19 +662,15 @@ export default function Formation() {
                           <span
                             className={`rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide ${statut.badge}`}
                           >
-                            {statut.label}
+                            {t(statut.label)}
                           </span>
                         </div>
                         <p className="mt-1 font-body text-sm text-ink-soft">
-                          {n.description}
+                          {t(n.description)}
                         </p>
                         <p className="mt-2 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                          <HiOutlineClock size={13} /> Durée : {n.duree}
-                          {inscription && enCours && (
-                            <span className="ml-2">
-                              · Inscrit le{" "}
-                              {formatDate(inscription.date_debut)}{" "}
-                            </span>
+                          <HiOutlineClock size={13} />{" "}{t("Durée : {{duree}}", { duree: n.duree })}{inscription && enCours && (
+                            <span className="ml-2">{t("· Inscrit le {{v0}}", { v0: formatDate(inscription.date_debut) })}{" "}</span>
                           )}
                         </p>
 
@@ -718,35 +678,26 @@ export default function Formation() {
                           <Link
                             to={`/eleve/formation/${n.name}`}
                             className="group mt-4 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark transition-colors duration-300 hover:text-brick"
-                          >
-                            Voir le détail de ma formation
-                            <HiOutlineArrowRight
+                          >{t("Voir le détail de ma formation")}<HiOutlineArrowRight
                               size={14}
                               className="transition-transform duration-300 group-hover:translate-x-1"
                             />
                           </Link>
                         ) : enAttente ? (
                           <span className="mt-4 inline-flex items-center gap-1.5 font-body text-sm font-medium text-ink-soft/70">
-                            <HiOutlineLockClosed size={14} />
-                            En attente de validation
-                          </span>
+                            <HiOutlineLockClosed size={14} />{t("En attente de validation")}</span>
                         ) : ouvertInscription ? (
                           <Link
                             to={`/inscription?niveau=${n.name}`}
                             className="group mt-4 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:text-coral-dark"
-                          >
-                            S'inscrire à ce niveau
-                            <HiOutlineArrowRight
+                          >{t("S'inscrire à ce niveau")}<HiOutlineArrowRight
                               size={14}
                               className="transition-transform duration-300 group-hover:translate-x-1"
                             />
                           </Link>
                         ) : (
                           <span className="mt-4 inline-flex items-center gap-1.5 font-body text-sm font-medium text-ink-soft/70">
-                            <HiOutlineLockClosed size={14} />
-                            Termine le niveau précédent pour débloquer
-                            l'inscription
-                          </span>
+                            <HiOutlineLockClosed size={14} />{t("Termine le niveau précédent pour débloquer l'inscription")}</span>
                         )}
                       </div>
 
@@ -754,10 +705,8 @@ export default function Formation() {
                       {enCours && (
                         <div className="flex flex-col justify-center gap-2.5 border-t border-ivory-dark/60 pt-4 lg:w-60 lg:shrink-0 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
                           <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wide text-ink-soft">
-                            <span>Paiement</span>
-                            <span className="font-semibold text-ink">
-                              {moisPayer} / {n.duree} mois
-                            </span>
+                            <span>{t("Paiement")}</span>
+                            <span className="font-semibold text-ink">{t("{{moisPayer}} / {{duree}} mois", { moisPayer, duree: n.duree })}</span>
                           </div>
 
                           {/* barre de progression du paiement */}
@@ -777,10 +726,7 @@ export default function Formation() {
 
                           {moisRestant > 0 ? (
                             <>
-                              <p className="font-body text-xs text-ink-soft">
-                                {n.prix_mensuel?.toLocaleString("fr-MG")} Ar ×{" "}
-                                {moisRestant} mois restant
-                                {moisRestant > 1 ? "s" : ""}
+                              <p className="font-body text-xs text-ink-soft">{t(moisRestant > 1 ? "{{v0}} Ar × {{moisRestant}} mois restants" : "{{v0}} Ar × {{moisRestant}} mois restant", { v0: n.prix_mensuel?.toLocaleString("fr-MG"), moisRestant })}
                               </p>
                               <button
                                 type="button"
@@ -796,9 +742,7 @@ export default function Formation() {
                                   })
                                 }
                                 className="group mt-0.5 inline-flex items-center justify-center gap-1.5 rounded-full bg-coral px-4 py-2 font-body text-xs font-semibold text-ivory shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-brick hover:shadow-md"
-                              >
-                                Payer {moisRestant} mois
-                                <HiOutlineArrowRight
+                              >{t("Payer {{moisRestant}} mois", { moisRestant })}<HiOutlineArrowRight
                                   size={13}
                                   className="transition-transform duration-300 group-hover:translate-x-1"
                                 />
@@ -806,8 +750,7 @@ export default function Formation() {
                             </>
                           ) : (
                             <span className="mt-0.5 inline-flex items-center justify-center gap-1.5 rounded-full bg-coral/10 px-4 py-2 font-body text-xs font-semibold text-coral-dark">
-                              <HiOutlineCheckCircle size={13} /> Paiement à jour
-                            </span>
+                              <HiOutlineCheckCircle size={13} />{" "}{t("Paiement à jour")}</span>
                           )}
                         </div>
                       )}

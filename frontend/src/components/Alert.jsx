@@ -1,6 +1,8 @@
 import { HiOutlineCheckCircle, HiOutlineExclamationTriangle, HiOutlineXMark } from "react-icons/hi2";
+import { useLang } from "../app/hooks/useLang";
 
 function Alert({ type = "success", message, onClose }) {
+  const { t } = useLang();
   const isSuccess = type === "success";
   return (
     <div
@@ -18,7 +20,7 @@ function Alert({ type = "success", message, onClose }) {
       <p className="flex-1">{message}</p>
       <button
         onClick={onClose}
-        aria-label="Fermer"
+        aria-label={t("Fermer")}
         className="shrink-0 opacity-70 transition-opacity hover:opacity-100"
       >
         <HiOutlineXMark size={16} />

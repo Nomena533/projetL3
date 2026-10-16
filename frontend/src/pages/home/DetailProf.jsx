@@ -10,6 +10,7 @@ import AnimatedSection from "../../components/AnimatedSection";
 import { useUser } from "../../app/hooks/useUser";
 import { BASE_URL } from "../../app/api/api";
 import { parseList, parseSpecialites } from "../../lib/profPortfolio";
+import { useLang } from "../../app/hooks/useLang";
 
 function Timeline({ items, renderItem, empty }) {
   if (items.length === 0) {
@@ -28,6 +29,7 @@ function Timeline({ items, renderItem, empty }) {
 }
 
 export default function DetailProf() {
+  const { t } = useLang();
   const { id } = useParams();
   const { userList } = useUser();
 
@@ -38,15 +40,14 @@ export default function DetailProf() {
       <section className="px-5 py-24 text-center sm:px-8">
         <p className="font-body text-ink-soft">
           {userList.length === 0
-            ? "Chargement…"
-            : "Ce professeur est introuvable."}
+            ? t("Chargement…")
+            : t("Ce professeur est introuvable.")}
         </p>
         <Link
           to="/professeurs"
           className="mt-4 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark hover:text-brick"
         >
-          <HiOutlineArrowLeft size={15} /> Retour aux professeurs
-        </Link>
+          <HiOutlineArrowLeft size={15} />{" "}{t("Retour aux professeurs")}</Link>
       </section>
     );
   }
@@ -63,8 +64,7 @@ export default function DetailProf() {
           to="/professeurs"
           className="inline-flex items-center gap-1.5 font-body text-sm font-semibold text-ink-soft transition-colors hover:text-coral-dark"
         >
-          <HiOutlineArrowLeft size={15} /> Tous les professeurs
-        </Link>
+          <HiOutlineArrowLeft size={15} />{" "}{t("Tous les professeurs")}</Link>
 
         {/* ---------- EN-TÊTE ---------- */}
         <AnimatedSection className="mt-6 rounded-4xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-8 sm:p-10">
@@ -83,7 +83,7 @@ export default function DetailProf() {
 
             <div>
               <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-                {prof.titre || "Professeur"}
+                {prof.titre || t("Professeur")}
               </span>
               <h1 className="mt-2 font-display text-3xl font-semibold text-ink sm:text-4xl">
                 {prof.firstname} {prof.name}
@@ -97,9 +97,7 @@ export default function DetailProf() {
                 )}
                 {prof.annees_experience && (
                   <span className="inline-flex items-center gap-1.5">
-                    <HiOutlineClock size={15} /> {prof.annees_experience} ans
-                    d'expérience
-                  </span>
+                    <HiOutlineClock size={15} />{" "}{t("{{annees_experience}} ans d'expérience", { annees_experience: prof.annees_experience })}</span>
                 )}
               </div>
 
@@ -123,11 +121,9 @@ export default function DetailProf() {
           <div className="space-y-8 lg:col-span-3">
             {/* ---------- À PROPOS ---------- */}
             <AnimatedSection delay={60}>
-              <h2 className="font-display text-xl font-semibold text-ink">
-                À propos
-              </h2>
+              <h2 className="font-display text-xl font-semibold text-ink">{t("À propos")}</h2>
               <p className="mt-3 whitespace-pre-line font-body text-sm leading-relaxed text-ink-soft">
-                {prof.bio || "Ce professeur n'a pas encore rédigé sa présentation."}
+                {prof.bio || t("Ce professeur n'a pas encore rédigé sa présentation.")}
               </p>
             </AnimatedSection>
           </div>
@@ -136,12 +132,10 @@ export default function DetailProf() {
             {/* ---------- EXPÉRIENCES ---------- */}
             <AnimatedSection delay={100}>
               <h2 className="flex items-center gap-2 font-display text-xl font-semibold text-ink">
-                <HiOutlineBriefcase className="text-coral-dark" size={20} />
-                Expériences
-              </h2>
+                <HiOutlineBriefcase className="text-coral-dark" size={20} />{t("Expériences")}</h2>
               <Timeline
                 items={experiences}
-                empty="Aucune expérience renseignée pour le moment."
+                empty={t("Aucune expérience renseignée pour le moment.")}
                 renderItem={(e) => (
                   <>
                     <h3 className="font-display text-base font-semibold text-ink">
@@ -152,7 +146,7 @@ export default function DetailProf() {
                     </p>
                     {e.description && (
                       <p className="mt-2 font-body text-sm leading-relaxed text-ink-soft">
-                        {e.description}
+                        {t(e.description)}
                       </p>
                     )}
                   </>
@@ -165,12 +159,10 @@ export default function DetailProf() {
             {/* ---------- PARCOURS ---------- */}
             <AnimatedSection delay={140}>
               <h2 className="flex items-center gap-2 font-display text-xl font-semibold text-ink">
-                <HiOutlineAcademicCap className="text-coral-dark" size={20} />
-                Parcours
-              </h2>
+                <HiOutlineAcademicCap className="text-coral-dark" size={20} />{t("Parcours")}</h2>
               <Timeline
                 items={parcours}
-                empty="Aucun parcours renseigné pour le moment."
+                empty={t("Aucun parcours renseigné pour le moment.")}
                 renderItem={(p) => (
                   <>
                     <h3 className="font-display text-base font-semibold text-ink">

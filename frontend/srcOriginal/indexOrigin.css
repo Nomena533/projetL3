@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/* Les fichiers de police eux-mêmes sont chargés en tant que fichiers locaux
+   (npm @fontsource, importés dans main.jsx) — aucune requête réseau vers
+   Google Fonts ou un autre CDN n'est nécessaire, y compris hors connexion. */
+.font-display {
+  font-family: "Fraunces", ui-serif, Georgia, serif;
+}
+.font-body {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+.font-mono {
+  font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+/* ============================================================
+   KALON'NY — Design tokens
+   Palette : corail / brique / ambre / ivoire chaud
+   Typo     : Fraunces (display) · Plus Jakarta Sans (texte) · IBM Plex Mono (chiffres)
+   ============================================================ */
+@theme {
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --color-ivory: #fbf5ea;
+  --color-ivory-dark: #f1e6d2;
+  --color-coral: #e8664a;
+  --color-coral-dark: #c94f35;
+  --color-coral-light: #f4917a;
+  --color-brick: #7a2e22;
+  --color-brick-light: #9a4633;
+  --color-amber: #dda23b;
+  --color-amber-light: #f0c878;
+  --color-ink: #2b211a;
+  --color-ink-soft: #6b584a;
+
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fade-in: fade-in 0.6s ease-out forwards;
+  --animate-string: string-pluck 2.4s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes string-pluck {
+  0%, 100% { transform: scaleY(1); opacity: 0.5; }
+  50% { transform: scaleY(1.15); opacity: 1; }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-ivory);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+  }
+  ::selection {
+    background-color: var(--color-amber-light);
+    color: var(--color-brick);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-coral);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Utilitaire : élément révélé au scroll (piloté par AnimatedSection.jsx) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}

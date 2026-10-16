@@ -22,6 +22,7 @@ import {
   deleteRessource,
 } from "../../app/api/ressourceApi";
 import { BASE_URL } from "../../app/api/api";
+import { useLang } from "../../app/hooks/useLang";
 
 const RESOURCE_ICON = {
   video: HiOutlineVideoCamera,
@@ -42,6 +43,7 @@ const TYPE_OPTIONS = [
 ];
 
 export default function ProfLeconDetail() {
+  const { t } = useLang();
   const { id: coursId, lessonId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -105,10 +107,10 @@ export default function ProfLeconDetail() {
       // Même logique
       // setResource(resource.filter((r) => r.id !== ressourceId));
 
-      setAlert("La ressource a été supprimée avec succès !");
+      setAlert(t("La ressource a été supprimée avec succès !"));
     } catch (err) {
       console.error(
-        "Erreur lors de la suppression de la ressource",
+        t("Erreur lors de la suppression de la ressource"),
         err.response?.data,
       );
     } finally {
@@ -130,7 +132,7 @@ export default function ProfLeconDetail() {
 
   if ( lesson === null || resource === null ) {
     return (
-      <p className="font-body text-sm text-ink-soft">Chargement de la leçon…</p>
+      <p className="font-body text-sm text-ink-soft">{t("Chargement de la leçon…")}</p>
     );
   }
 
@@ -140,8 +142,7 @@ export default function ProfLeconDetail() {
         onClick={() => navigate(`/professeur/cours/${coursId}/details`)}
         className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
       >
-        <HiOutlineChevronLeft size={13} /> Retour au cours
-      </button>
+        <HiOutlineChevronLeft size={13} />{" "}{t("Retour au cours")}</button>
 
       {alert && (
         <div className="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 font-body text-sm text-emerald-700">
@@ -149,7 +150,7 @@ export default function ProfLeconDetail() {
           <p className="flex-1">{alert}</p>
           <button
             onClick={() => setAlert(null)}
-            aria-label="Fermer"
+            aria-label={t("Fermer")}
             className="shrink-0 opacity-70 hover:opacity-100"
           >
             <HiOutlineXMark size={16} />
@@ -161,9 +162,7 @@ export default function ProfLeconDetail() {
       <AnimatedSection className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-              Leçon
-            </span>
+            <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Leçon")}</span>
             <h2 className="mt-1 font-display text-2xl font-semibold text-ink sm:text-3xl">
               {lesson.titre || "_"}
             </h2>
@@ -172,23 +171,22 @@ export default function ProfLeconDetail() {
             to={`/professeur/cours/${coursId}/lecons/${lessonId}`}
             className="inline-flex items-center gap-1.5 rounded-full border border-ivory-dark px-4 py-2 font-body text-xs font-semibold text-ink transition-colors hover:border-coral/40"
           >
-            <HiOutlinePencilSquare size={14} /> Modifier la leçon
-          </Link>
+            <HiOutlinePencilSquare size={14} />{" "}{t("Modifier la leçon")}</Link>
         </div>
 
         {lesson.description && (
           <p className="mt-3 font-body text-sm leading-relaxed text-ink-soft">
-            {lesson.description}
+            {t(lesson.description)}
           </p>
         )}
 
         <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 font-body text-sm text-ink-soft">
           <span>
-            <strong className="text-ink">Durée : </strong>
+            <strong className="text-ink">{t("Durée :")}{" "}</strong>
             {lesson.duree || "—"}
           </span>
           <span>
-            <strong className="text-ink">Ressources : </strong>
+            <strong className="text-ink">{t("Ressources :")}{" "}</strong>
             {resource.length}
           </span>
         </div>
@@ -200,15 +198,12 @@ export default function ProfLeconDetail() {
         className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7"
       >
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <h3 className="font-display text-lg font-semibold text-ink">
-            Ressources
-          </h3>
+          <h3 className="font-display text-lg font-semibold text-ink">{t("Ressources")}</h3>
           <Link
             to={`/professeur/cours/${coursId}/lecons/${lessonId}/ressources/nouveau`}
             className="flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wide text-coral-dark transition-colors hover:text-brick"
           >
-            <HiPlus size={14} /> Ajouter des ressources
-          </Link>
+            <HiPlus size={14} />{" "}{t("Ajouter des ressources")}</Link>
         </div>
 
         {resource.length > 0 && (
@@ -216,11 +211,11 @@ export default function ProfLeconDetail() {
             <FilterBar
               searchValue={search}
               onSearchChange={setSearch}
-              searchPlaceholder="Rechercher une ressource…"
+              searchPlaceholder={t("Rechercher une ressource…")}
               filters={[
                 {
                   name: "type",
-                  label: "Tous les types",
+                  label: t("Tous les types"),
                   value: typeFilter,
                   onChange: setTypeFilter,
                   options: TYPE_OPTIONS,
@@ -238,25 +233,17 @@ export default function ProfLeconDetail() {
         )}
 
         {resource === null ? (
-          <p className="font-body text-sm text-ink-soft">
-            Chargement des ressources…
-          </p>
+          <p className="font-body text-sm text-ink-soft">{t("Chargement des ressources…")}</p>
         ) : error ? (
           <p className="font-body text-sm text-brick">{error}</p>
         ) : resource.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-ivory-dark px-5 py-10 text-center font-body text-sm text-ink-soft">
-            Cette leçon n'a pas encore de ressource.{" "}
-            <Link
+          <p className="rounded-xl border border-dashed border-ivory-dark px-5 py-10 text-center font-body text-sm text-ink-soft">{t("Cette leçon n'a pas encore de ressource.")}{" "}<Link
               to={`/professeur/cours/${coursId}/lecons/${lessonId}/ressources/nouveau`}
               className="font-semibold text-coral-dark hover:text-brick"
-            >
-              Ajoute la première →
-            </Link>
+            >{t("Ajoute la première →")}</Link>
           </p>
         ) : filteredRessources.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-ivory-dark px-5 py-10 text-center font-body text-sm text-ink-soft">
-            Aucune ressource ne correspond à ta recherche.
-          </p>
+          <p className="rounded-xl border border-dashed border-ivory-dark px-5 py-10 text-center font-body text-sm text-ink-soft">{t("Aucune ressource ne correspond à ta recherche.")}</p>
         ) : (
           <div className="space-y-3">
             {filteredRessources.map((r) => {
@@ -275,7 +262,7 @@ export default function ProfLeconDetail() {
                         {r.titre || "_"}
                       </p>
                       <p className="font-body text-xs text-ink-soft">
-                        {RESOURCE_LABEL[r.type] || "Ressource"}
+                        {RESOURCE_LABEL[r.type] || t("Ressource")}
                         {r.duree && ` · ${r.duree}`}
                       </p>
                     </div>
@@ -287,7 +274,7 @@ export default function ProfLeconDetail() {
                         target="_blank"
                         rel="noreferrer"
                         className="text-ink-soft transition-colors hover:text-coral-dark"
-                        aria-label="Voir le fichier"
+                        aria-label={t("Voir le fichier")}
                       >
                         <HiOutlineArrowDownTray size={16} />
                       </a>
@@ -295,14 +282,14 @@ export default function ProfLeconDetail() {
                     <Link
                       to={`/professeur/cours/${coursId}/lecons/${lessonId}/ressources/${r.id}`}
                       className="text-ink-soft transition-colors hover:text-coral-dark"
-                      aria-label="Modifier la ressource"
+                      aria-label={t("Modifier la ressource")}
                     >
                       <HiOutlinePencilSquare size={17} />
                     </Link>
                     <button
                       onClick={() => setToDelete(r)} // r est ici sera pris comme toDelete => donc toDelete va recevoir tous les valeurs de r
                       className="text-ink-soft transition-colors hover:text-brick"
-                      aria-label="Supprimer la ressource"
+                      aria-label={t("Supprimer la ressource")}
                     >
                       <HiOutlineTrash size={15} />
                     </button>
@@ -317,25 +304,19 @@ export default function ProfLeconDetail() {
       <Modal
         open={!!toDelete}
         onClose={() => setToDelete(null)}
-        title="Supprimer cette ressource ?"
+        title={t("Supprimer cette ressource ?")}
       >
         <p className="font-body text-sm leading-relaxed text-ink-soft">
-          <span className="font-semibold text-ink">« {toDelete?.titre} »</span>{" "}
-          sera définitivement supprimée. Cette action est irréversible.
-        </p>
+          <span className="font-semibold text-ink">« {toDelete?.titre} »</span>{" "}{t("sera définitivement supprimée. Cette action est irréversible.")}</p>
         <div className="mt-6 flex gap-3">
           <button
             onClick={() => setToDelete(null)}
             className="flex-1 rounded-full border border-ivory-dark py-2.5 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:bg-ivory-dark/40"
-          >
-            Annuler
-          </button>
+          >{t("Annuler")}</button>
           <button
             onClick={() => handleDeleteRessource(toDelete?.id)}
             className="flex-1 rounded-full bg-brick py-2.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-brick/25 transition-all duration-300 hover:bg-brick-light"
-          >
-            Supprimer
-          </button>
+          >{t("Supprimer")}</button>
         </div>
       </Modal>
     </div>

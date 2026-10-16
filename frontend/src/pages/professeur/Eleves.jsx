@@ -5,6 +5,7 @@ import StatCard from "../../components/StatCard";
 import FilterBar from "../../components/FilterBar";
 import { Th, Td } from "../../components/Table";
 import { INSCRIPTIONS } from "../../lib/mockProfData";
+import { useLang } from "../../app/hooks/useLang";
 
 // Initiales d'un nom pour l'avatar rond (ex. "Rado Andria" -> "RA")
 function initials(name = "") {
@@ -17,6 +18,7 @@ function initials(name = "") {
 }
 
 export default function ProfEleves() {
+  const { t } = useLang();
   const [search, setSearch] = useState("");
   const [coursFilter, setCoursFilter] = useState("");
 
@@ -49,29 +51,25 @@ export default function ProfEleves() {
   return (
     <div className="space-y-6">
       <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-          Espace professeur
-        </span>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
-          Mes élèves
-        </h2>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Espace professeur")}</span>
+        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Mes élèves")}</h2>
       </AnimatedSection>
 
       <section className="grid gap-5 sm:grid-cols-3">
-        <StatCard icon={HiOutlineUsers} label="Élèves inscrits" value={totalEleves} />
-        <StatCard icon={HiOutlineBookOpen} label="Cours suivis" value={totalCours} delay={60} />
-        <StatCard icon={HiOutlineChartBar} label="Progression moyenne" value={`${progressionMoyenne}%`} delay={120} />
+        <StatCard icon={HiOutlineUsers} label={t("Élèves inscrits")} value={totalEleves} />
+        <StatCard icon={HiOutlineBookOpen} label={t("Cours suivis")} value={totalCours} delay={60} />
+        <StatCard icon={HiOutlineChartBar} label={t("Progression moyenne")} value={`${progressionMoyenne}%`} delay={120} />
       </section>
 
       {INSCRIPTIONS.length > 0 && (
         <FilterBar
           searchValue={search}
           onSearchChange={setSearch}
-          searchPlaceholder="Rechercher un élève…"
+          searchPlaceholder={t("Rechercher un élève…")}
           filters={[
             {
               name: "cours",
-              label: "Tous les cours",
+              label: t("Tous les cours"),
               value: coursFilter,
               onChange: setCoursFilter,
               options: coursOptions,
@@ -95,9 +93,9 @@ export default function ProfEleves() {
           <table className="w-full">
             <thead className="border-b border-ivory-dark">
               <tr>
-                <Th>Élève</Th>
-                <Th>Cours</Th>
-                <Th>Progression</Th>
+                <Th>{t("Élève")}</Th>
+                <Th>{t("Cours")}</Th>
+                <Th>{t("Progression")}</Th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ivory-dark">
@@ -127,14 +125,10 @@ export default function ProfEleves() {
         </div>
 
         {INSCRIPTIONS.length === 0 ? (
-          <p className="px-5 py-12 text-center font-body text-sm text-ink-soft">
-            Tu n'as pas encore d'élève inscrit à l'un de tes cours.
-          </p>
+          <p className="px-5 py-12 text-center font-body text-sm text-ink-soft">{t("Tu n'as pas encore d'élève inscrit à l'un de tes cours.")}</p>
         ) : (
           filtered.length === 0 && (
-            <p className="px-5 py-12 text-center font-body text-sm text-ink-soft">
-              Aucun élève ne correspond à ta recherche.
-            </p>
+            <p className="px-5 py-12 text-center font-body text-sm text-ink-soft">{t("Aucun élève ne correspond à ta recherche.")}</p>
           )
         )}
       </AnimatedSection>

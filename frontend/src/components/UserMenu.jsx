@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { LogOut, ChevronDown } from "../lib/icons";
+import { useLang } from "../app/hooks/useLang";
 
 /**
  * Menu déroulant affiché en cliquant sur l'avatar (initiales) d'un utilisateur
@@ -26,6 +27,7 @@ export default function UserMenu({
   onLogout,
   avatarClassName = "bg-amber-200 text-teal-950",
 }) {
+  const { t } = useLang();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
 
@@ -118,9 +120,7 @@ export default function UserMenu({
                 }}
                 className="flex w-full items-center gap-2.5 px-4 py-2 font-body text-sm text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950"
               >
-                <LogOut size={16} className="shrink-0" />
-                Déconnexion
-              </button>
+                <LogOut size={16} className="shrink-0" />{t("Déconnexion")}</button>
             </div>
           )}
         </div>

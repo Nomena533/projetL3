@@ -7,6 +7,7 @@ import { LogOut, Sun, Moon, Grid, Settings, User } from "../lib/icons";
 import UserMenu from "../components/UserMenu";
 import LanguageMenu from "../components/LanguageMenu";
 import useTheme from "../app/hooks/useTheme";
+import { useLang } from "../app/hooks/useLang";
 
 // Fait correspondre le rôle de l'utilisateur connecté à la base des routes
 // de son espace privé. ⚠️ À vérifier : les valeurs exactes renvoyées par
@@ -29,6 +30,7 @@ const LINKS = [
 ];
 
 export default function Navbar() {
+  const { t } = useLang();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const location = useLocation();
@@ -60,9 +62,9 @@ export default function Navbar() {
 
   const spaceBase = user ? SPACE_BASE_PATH[user.role] || "/eleve" : "/eleve";
   const userMenuItems = [
-    { to: spaceBase, label: "Mon espace", icon: Grid },
-    { to: `${spaceBase}/profil`, label: "Profil", icon: User },
-    { to: `${spaceBase}/parametres`, label: "Paramètres", icon: Settings },
+    { to: spaceBase, label: t("Mon espace"), icon: Grid },
+    { to: `${spaceBase}/profil`, label: t("Profil"), icon: User },
+    { to: `${spaceBase}/parametres`, label: t("Paramètres"), icon: Settings },
   ];
 
   const linkClass = ({ isActive }) =>
@@ -84,7 +86,7 @@ export default function Navbar() {
         {isDark ? <LogoBlanc /> : <LogoVert />}
         <nav
           className="hidden items-center gap-7 lg:flex"
-          aria-label="Navigation principale"
+          aria-label={t("Navigation principale")}
         >
           {LINKS.map((l) => (
             <NavLink
@@ -93,7 +95,7 @@ export default function Navbar() {
               end={l.to === "/"}
               className={linkClass}
             >
-              {l.label}
+              {t(l.label)}
             </NavLink>
           ))}
         </nav>
@@ -104,8 +106,8 @@ export default function Navbar() {
           <button
             type="button"
             onClick={toggleDark}
-            title={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
-            aria-label={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
+            title={isDark ? t("Passer en mode clair") : t("Passer en mode sombre")}
+            aria-label={isDark ? t("Passer en mode clair") : t("Passer en mode sombre")}
             className="grid h-10 w-10 place-items-center rounded-full text-ink transition-colors hover:bg-ivory-dark"
           >
             {isDark ? <Sun size={19} /> : <Moon size={19} />}
@@ -124,15 +126,11 @@ export default function Navbar() {
               <NavLink
                 to="/connexionCompte"
                 className="font-body text-sm font-medium text-ink-soft transition-colors hover:text-ink"
-              >
-                Se connecter
-              </NavLink>
+              >{t("Se connecter")}</NavLink>
               <NavLink
                 to="/inscriptionCompte"
                 className="rounded-full bg-coral px-5 py-2.5 font-body text-sm font-semibold text-ivory shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark hover:shadow-lg hover:shadow-coral/30"
-              >
-                Commencer
-              </NavLink>
+              >{t("Commencer")}</NavLink>
             </div>
           )}
         </div>
@@ -141,7 +139,7 @@ export default function Navbar() {
           type="button"
           onClick={() => setOpen((v) => !v)}
           className="grid h-10 w-10 place-items-center rounded-full text-ink transition-colors hover:bg-ivory-dark lg:hidden"
-          aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+          aria-label={open ? t("Fermer le menu") : t("Ouvrir le menu")}
           aria-expanded={open}
         >
           {open ? <HiOutlineX size={24} /> : <HiOutlineMenu size={24} />}
@@ -157,7 +155,7 @@ export default function Navbar() {
         <div className="min-h-0">
           <nav
             className="flex flex-col gap-1 border-t border-ivory-dark bg-ivory dark:bg-white/20 px-5 pb-5 pt-3"
-            aria-label="Navigation mobile"
+            aria-label={t("Navigation mobile")}
           >
             {LINKS.map((l) => (
               <NavLink
@@ -172,7 +170,7 @@ export default function Navbar() {
                   }`
                 }
               >
-                {l.label}
+                {t(l.label)}
               </NavLink>
             ))}
             {user ? (
@@ -192,24 +190,18 @@ export default function Navbar() {
                   onClick={handleLogout}
                   className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-left font-body text-sm font-medium text-red-500 hover:bg-red-50"
                 >
-                  <LogOut size={16} />
-                  Déconnexion
-                </button>
+                  <LogOut size={16} />{t("Déconnexion")}</button>
               </div>
             ) : (
               <div className="mt-2 flex flex-col gap-2 border-t border-ivory-dark pt-3">
                 <NavLink
                   to="/connexionCompte"
                   className="rounded-lg px-3 py-2.5 text-center font-body text-sm font-medium text-ink-soft hover:bg-ivory-dark"
-                >
-                  Se connecter
-                </NavLink>
+                >{t("Se connecter")}</NavLink>
                 <NavLink
                   to="/inscriptionCompte"
                   className="rounded-full bg-coral px-3 py-2.5 text-center font-body text-sm font-semibold text-ivory"
-                >
-                  Commencer
-                </NavLink>
+                >{t("Commencer")}</NavLink>
               </div>
             )}
           </nav>

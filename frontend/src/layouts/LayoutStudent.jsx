@@ -26,8 +26,10 @@ import {
   markNotificationAsRead,
 } from "../app/api/notificationApi";
 import useTheme from "../app/hooks/useTheme";
+import { useLang } from "../app/hooks/useLang";
 
 export default function LayoutStudent() {
+  const { t } = useLang();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -110,7 +112,7 @@ export default function LayoutStudent() {
               }
             >
               <Icon size={17} />
-              {label}
+              {t(label)}
             </NavLink>
           ))}
         </nav>
@@ -128,7 +130,7 @@ export default function LayoutStudent() {
                 {user?.firstname} {user?.name}
               </p>
               <p className="text-xs text-stone-400 truncate">
-                {user?.email || "Compte élève vérifié"}
+                {user?.email || t("Compte élève vérifié")}
               </p>
             </div>
           </div>
@@ -138,9 +140,7 @@ export default function LayoutStudent() {
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm text-stone-300 hover:bg-teal-900/60 hover:text-amber-400 transition-colors"
           >
-            <LogOut size={17} />
-            Déconnexion
-          </button>
+            <LogOut size={17} />{t("Déconnexion")}</button>
         </div>
       </aside>
 
@@ -161,15 +161,15 @@ export default function LayoutStudent() {
             <Menu size={20} />
           </button>
           <h1 className="font-display text-xl text-teal-950 dark:text-ink">
-            {current?.label || "Kalon'ny"}
+            {current?.label || t("Kalon'ny")}
           </h1>
           <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
             <button
               type="button"
               onClick={toggleDark}
-              title={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
+              title={isDark ? t("Passer en mode clair") : t("Passer en mode sombre")}
               aria-label={
-                isDark ? "Passer en mode clair" : "Passer en mode sombre"
+                isDark ? t("Passer en mode clair") : t("Passer en mode sombre")
               }
               className="relative grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-stone-100 dark:hover:bg-stone-600 hover:text-teal-950 dark:hover:text-teal-100"
             >
@@ -179,7 +179,7 @@ export default function LayoutStudent() {
               to="/eleve/messages"
               icon={Mail}
               count={unreadMessages}
-              label="Messages"
+              label={t("Messages")}
             />
             <NotificationBell
               count={unreadCount}
@@ -191,19 +191,19 @@ export default function LayoutStudent() {
               initials={initials}
               displayName={
                 `${user?.firstname || ""} ${user?.name || ""}`.trim() ||
-                (role === "prof" ? "Professeur" : "Administrateur")
+                (role === "prof" ? t("Professeur") : t("Administrateur"))
               }
               subLabel={
                 user?.email ||
                 (role === "prof"
-                  ? "Compte professeur vérifié"
-                  : "Accès administrateur")
+                  ? t("Compte professeur vérifié")
+                  : t("Accès administrateur"))
               }
               items={[
-                { to: "/eleve/profil", label: "Profil", icon: User },
+                { to: "/eleve/profil", label: t("Profil"), icon: User },
                 {
                   to: "/eleve/parametres",
-                  label: "Paramètres",
+                  label: t("Paramètres"),
                   icon: Settings,
                 },
               ]}

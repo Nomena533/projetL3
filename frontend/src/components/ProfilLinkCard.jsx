@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { HiOutlineUserCircle, HiOutlineArrowRight } from "react-icons/hi2";
 import AnimatedSection from "./AnimatedSection";
+import { useLang } from "../app/hooks/useLang";
 
 /**
  * Carte de renvoi vers la page "Profil" (nom, photo, e-mail, mot de passe…).
@@ -10,6 +11,7 @@ import AnimatedSection from "./AnimatedSection";
  * ⚠️ Ajuste la prop `to` si le chemin de ta route Profil diffère.
  */
 export default function ProfilLinkCard({ to = "/profil", delay = 0 }) {
+  const { t } = useLang();
   return (
     <AnimatedSection delay={delay} className="flex h-full flex-col justify-between rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7">
       <div className="flex items-start gap-3">
@@ -17,19 +19,15 @@ export default function ProfilLinkCard({ to = "/profil", delay = 0 }) {
           <HiOutlineUserCircle size={18} />
         </span>
         <div>
-          <h3 className="font-display text-lg font-semibold text-ink">Profil</h3>
-          <p className="mt-0.5 font-body text-sm text-ink-soft">
-            Nom, photo, e-mail et mot de passe se gèrent depuis ta page de profil.
-          </p>
+          <h3 className="font-display text-lg font-semibold text-ink">{t("Profil")}</h3>
+          <p className="mt-0.5 font-body text-sm text-ink-soft">{t("Nom, photo, e-mail et mot de passe se gèrent depuis ta page de profil.")}</p>
         </div>
       </div>
 
       <Link
         to={to}
         className="mt-5 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark transition-colors hover:text-coral"
-      >
-        Aller à mon profil
-        <HiOutlineArrowRight size={15} />
+      >{t("Aller à mon profil")}<HiOutlineArrowRight size={15} />
       </Link>
     </AnimatedSection>
   );

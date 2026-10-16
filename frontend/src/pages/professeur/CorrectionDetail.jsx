@@ -24,6 +24,7 @@ import {
 import { useSoumission } from "../../app/hooks/useSoumission";
 import { formatDate } from "../../lib/formatFunction";
 import { updateNoteSoumission } from "../../app/api/soumissionApi";
+import { useLang } from "../../app/hooks/useLang";
 
 // Même logique d'icônes/libellés que dans eleve/LessonPlayer.jsx, adaptée au
 // type de contenu qu'un élève peut soumettre (video / audio / document).
@@ -40,6 +41,7 @@ const CONTENT_LABEL = {
 };
 
 export default function CorrectionDetail() {
+  const { t } = useLang();
   const { id } = useParams();
   const navigate = useNavigate();
   const { soumission, fetchSoumission } = useSoumission();
@@ -84,7 +86,7 @@ export default function CorrectionDetail() {
 
       navigate("/professeur/corrections", {
         state: {
-          success: "Soumission corrigée avec succès !"
+          success: t("Soumission corrigée avec succès !")
         },
       });
     } catch (error) {
@@ -111,11 +113,8 @@ export default function CorrectionDetail() {
           to="/professeur/corrections"
           className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
         >
-          <HiOutlineChevronLeft size={13} /> Retour aux corrections
-        </Link>
-        <p className="rounded-2xl border border-dashed border-ivory-dark px-5 py-12 text-center font-body text-sm text-ink-soft">
-          Cette soumission est introuvable.
-        </p>
+          <HiOutlineChevronLeft size={13} />{" "}{t("Retour aux corrections")}</Link>
+        <p className="rounded-2xl border border-dashed border-ivory-dark px-5 py-12 text-center font-body text-sm text-ink-soft">{t("Cette soumission est introuvable.")}</p>
       </div>
     );
   }
@@ -126,19 +125,16 @@ export default function CorrectionDetail() {
         to="/professeur/corrections"
         className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
       >
-        <HiOutlineChevronLeft size={13} /> Retour aux corrections
-      </Link>
+        <HiOutlineChevronLeft size={13} />{" "}{t("Retour aux corrections")}</Link>
 
       <AnimatedSection className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-            Espace professeur
-          </span>
+          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Espace professeur")}</span>
           <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
             {soumissionDetail.exercice.titre}
           </h2>
         </div>
-        <Pill>{soumissionDetail.statut}</Pill>
+        <Pill>{t(soumissionDetail.statut)}</Pill>
       </AnimatedSection>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -151,9 +147,7 @@ export default function CorrectionDetail() {
                   controls
                   className="aspect-video w-full bg-black"
                   src={`${BASE_URL}/storage/${soumissionDetail.fichier}`}
-                >
-                  Ton navigateur ne supporte pas la lecture vidéo.
-                </video>
+                >{t("Ton navigateur ne supporte pas la lecture vidéo.")}</video>
               )}
 
               {soumissionDetail.type === "audio" && (
@@ -165,9 +159,7 @@ export default function CorrectionDetail() {
                     controls
                     className="w-full max-w-md"
                     src={`${BASE_URL}/storage/${soumissionDetail.fichier}`}
-                  >
-                    Ton navigateur ne supporte pas la lecture audio.
-                  </audio>
+                  >{t("Ton navigateur ne supporte pas la lecture audio.")}</audio>
                 </div>
               )}
 
@@ -183,12 +175,9 @@ export default function CorrectionDetail() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h3 className="font-display text-base font-semibold text-ink">
-                  {CONTENT_LABEL[soumissionDetail.type] || "Contenu"} envoyé par l'élève
-                </h3>
+                  {CONTENT_LABEL[soumissionDetail.type] || t("Contenu")}{" "}{t("envoyé par l'élève")}</h3>
                 {soumissionDetail.created_at && (
-                  <p className="font-body text-xs text-ink-soft">
-                    Soumis le {formatDate(soumissionDetail.created_at)}
-                  </p>
+                  <p className="font-body text-xs text-ink-soft">{t("Soumis le {{v0}}", { v0: formatDate(soumissionDetail.created_at) })}</p>
                 )}
               </div>
               {soumissionDetail.fichier && (
@@ -198,8 +187,7 @@ export default function CorrectionDetail() {
                   rel="noreferrer"
                   className="flex items-center gap-2 rounded-full border border-ivory-dark px-4 py-2 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:border-coral/40 hover:text-coral-dark"
                 >
-                  <HiOutlineArrowDownTray size={15} /> Télécharger
-                </a>
+                  <HiOutlineArrowDownTray size={15} />{" "}{t("Télécharger")}</a>
               )}
             </div>
           </AnimatedSection>
@@ -210,11 +198,9 @@ export default function CorrectionDetail() {
               delay={100}
               className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
             >
-              <h3 className="mb-2 font-display text-base font-semibold text-ink">
-                Description de l'élève
-              </h3>
+              <h3 className="mb-2 font-display text-base font-semibold text-ink">{t("Description de l'élève")}</h3>
               <p className="font-body text-sm leading-relaxed text-ink-soft">
-                {soumissionDetail.description}
+                {t(soumissionDetail.description)}
               </p>
             </AnimatedSection>
           )}
@@ -224,23 +210,19 @@ export default function CorrectionDetail() {
             delay={140}
             className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
           >
-            <h3 className="mb-4 font-display text-base font-semibold text-ink">
-              Correction
-            </h3>
+            <h3 className="mb-4 font-display text-base font-semibold text-ink">{t("Correction")}</h3>
             <form onSubmit={handleValider} className="space-y-4">
               <div>
                 <label
                   htmlFor="correction-commentaire"
                   className="mb-1.5 block font-body text-xs font-semibold uppercase tracking-wide text-ink-soft"
-                >
-                  Commentaire
-                </label>
+                >{t("Commentaire")}</label>
                 <textarea
                   id="correction-commentaire"
                   rows={4}
                   value={commentaire}
                   onChange={(e) => setCommentaire(e.target.value)}
-                  placeholder="Un retour pour l'élève sur sa soumission…"
+                  placeholder={t("Un retour pour l'élève sur sa soumission…")}
                   className="w-full resize-none rounded-xl border border-ivory-dark  px-4 py-2.5 font-body text-sm text-ink placeholder:text-ink-soft/60 focus:border-coral/40 focus:outline-none"
                 />
               </div>
@@ -250,15 +232,13 @@ export default function CorrectionDetail() {
                   <label
                     htmlFor="correction-note"
                     className="mb-1.5 block font-body text-xs font-semibold uppercase tracking-wide text-ink-soft"
-                  >
-                    Note
-                  </label>
+                  >{t("Note")}</label>
                   <input
                     id="correction-note"
                     type="number"
                     min={0}
                     max={20}
-                    placeholder="Note /20"
+                    placeholder={t("Note /20")}
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     className="w-28 rounded-full border border-ivory-dark bg-white/70 dark:bg-white/10 px-4 py-2 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
@@ -271,8 +251,8 @@ export default function CorrectionDetail() {
                   className="mt-5 rounded-full bg-coral px-5 py-2.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
                 >
                   {soumissionDetail.statut === "corriger"
-                    ? "Mettre à jour la correction"
-                    : "Valider la correction"}
+                    ? t("Mettre à jour la correction")
+                    : t("Valider la correction")}
                 </button>
 
                 <span className="mt-5 flex items-center gap-1.5 font-mono text-xs text-ink-soft">
@@ -281,13 +261,10 @@ export default function CorrectionDetail() {
                       <HiOutlineCheckCircle
                         size={15}
                         className="text-coral-dark"
-                      />{" "}
-                      Déjà corrigé
-                    </>
+                      />{" "}{t("Déjà corrigé")}</>
                   ) : (
                     <>
-                      <HiOutlineClock size={15} /> En attente de correction
-                    </>
+                      <HiOutlineClock size={15} />{" "}{t("En attente de correction")}</>
                   )}
                 </span>
               </div>
@@ -302,9 +279,7 @@ export default function CorrectionDetail() {
             as="aside"
             className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-5"
           >
-            <p className="mb-3 font-mono text-xs uppercase tracking-wide text-ink-soft">
-              Contexte
-            </p>
+            <p className="mb-3 font-mono text-xs uppercase tracking-wide text-ink-soft">{t("Contexte")}</p>
             <div className="space-y-2 font-body text-sm text-ink">
               {niveauNom && (
                 <p className="flex items-center gap-2">
@@ -331,9 +306,7 @@ export default function CorrectionDetail() {
                 </p>
               )}
               {!niveauNom && !coursNom && !leconNom && (
-                <p className="font-body text-xs text-ink-soft">
-                  Contexte non renseigné.
-                </p>
+                <p className="font-body text-xs text-ink-soft">{t("Contexte non renseigné.")}</p>
               )}
             </div>
           </AnimatedSection>
@@ -344,9 +317,7 @@ export default function CorrectionDetail() {
             as="aside"
             className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-5"
           >
-            <p className="mb-3 font-mono text-xs uppercase tracking-wide text-ink-soft">
-              Élève
-            </p>
+            <p className="mb-3 font-mono text-xs uppercase tracking-wide text-ink-soft">{t("Élève")}</p>
             <div className="flex items-center gap-3">
               {eleveAvatar ? (
                 <img

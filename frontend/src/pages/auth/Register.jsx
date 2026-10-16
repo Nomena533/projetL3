@@ -19,6 +19,7 @@ import { register } from "../../app/api/authApi";
 import { getRoles } from "../../app/api/roleApi";
 import { LogoBlanc, LogoVert } from "../../components/Logo";
 import useTheme from "../../app/hooks/useTheme";
+import { useLang } from "../../app/hooks/useLang";
 
 const ROLES_ICONS = {
   professeur: HiOutlineMusicalNote,
@@ -26,6 +27,7 @@ const ROLES_ICONS = {
 };
 
 export default function Register() {
+  const { t } = useLang();
   const {isDark} = useTheme();
   // Liste des rôles récupérés depuis laravel
   const [roles, setRoles] = useState([]);
@@ -91,7 +93,7 @@ export default function Register() {
     setErrorMessage(null);
 
     if (!role) {
-      alert("Veuillez sélectionner un rôle.");
+      alert(t("Veuillez sélectionner un rôle."));
       return;
     }
     try {
@@ -112,7 +114,7 @@ export default function Register() {
         email: message.email,
         password: message.password,
       });
-      setError("Une erreur est survenue lors de l'inscription.");
+      setError(t("Une erreur est survenue lors de l'inscription."));
       console.error("Erreur inscription : ", error.response?.data);
     }
   };
@@ -132,8 +134,7 @@ export default function Register() {
         to="/"
         className="relative z-10 mb-8 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-widest text-ink-soft transition-colors hover:text-coral-dark"
       >
-        <HiOutlineArrowLeft size={13} /> Retour au site
-      </Link>
+        <HiOutlineArrowLeft size={13} />{" "}{t("Retour au site")}</Link>
 
       <div className="relative mx-auto mt-10 grid max-w-5xl overflow-hidden rounded-4xl shadow-2xl shadow-brick/20 md:grid-cols-2">
         {/* ---------- PANNEAU ÉDITORIAL ---------- */}
@@ -144,10 +145,7 @@ export default function Register() {
             </div>
             <div>
               <ValihaMotif count={24} tone="amber" className="h-20" />
-              <p className="mt-4 font-body text-sm leading-relaxed text-ivory/60">
-                Apprends un instrument avec de vrais professeurs, à ton rythme,
-                où que tu sois à Madagascar.
-              </p>
+              <p className="mt-4 font-body text-sm leading-relaxed text-ivory/60">{t("Apprends un instrument avec de vrais professeurs, à ton rythme, où que tu sois à Madagascar.")}</p>
               <div className="mt-6 flex items-center gap-3">
                 <div className="flex -space-x-2">
                   {[0, 1, 2].map((i) => (
@@ -161,9 +159,7 @@ export default function Register() {
                   <p className="flex items-center gap-1 font-body text-sm font-semibold text-ivory">
                     4.8 <HiStar className="text-amber" size={13} />
                   </p>
-                  <p className="font-mono text-[10px] uppercase tracking-wide text-ivory/50">
-                    +1 000 élèves nous font confiance
-                  </p>
+                  <p className="font-mono text-[10px] uppercase tracking-wide text-ivory/50">{t("+1 000 élèves nous font confiance")}</p>
                 </div>
               </div>
             </div>
@@ -180,9 +176,7 @@ export default function Register() {
                   isActive ? "text-ink" : "text-ink-soft hover:text-ink"
                 }`
               }
-            >
-              Se connecter
-              <span
+            >{t("Se connecter")}<span
                 className={({ isActive }) =>
                   `absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-coral transition-all duration-300 ${
                     isActive ? "text-ink" : "text-ink-soft hover:text-ink"
@@ -198,9 +192,7 @@ export default function Register() {
                   isActive ? "text-ink" : "text-ink-soft hover:text-ink"
                 }`
               }
-            >
-              Créer un compte
-              <span
+            >{t("Créer un compte")}<span
                 className={({ isActive }) =>
                   `absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-coral transition-all duration-300 ${
                     isActive ? "text-ink" : "text-ink-soft hover:text-ink"
@@ -217,16 +209,16 @@ export default function Register() {
           >
             <div className="mb-4 grid grid-cols-2 gap-3">
               <FormField
-                label="Nom"
-                placeholder="Rakoto"
+                label={t("Nom")}
+                placeholder={t("Rakoto")}
                 name="name"
                 value={Form.name}
                 onChange={handleChange}
                 required
               />
               <FormField
-                label="Prénom"
-                placeholder="Fara"
+                label={t("Prénom")}
+                placeholder={t("Fara")}
                 name="firstname"
                 value={Form.firstname}
                 onChange={handleChange}
@@ -235,9 +227,7 @@ export default function Register() {
             </div>
 
             <div className="mb-5">
-              <p className="mb-2 font-mono text-xs uppercase tracking-wide text-ink-soft">
-                Je m'inscris en tant que
-              </p>
+              <p className="mb-2 font-mono text-xs uppercase tracking-wide text-ink-soft">{t("Je m'inscris en tant que")}</p>
               <div className="grid grid-cols-2 gap-3">
                 {roles.map((r) => (
                   // const Icon = ROLES_ICONS[r.name];
@@ -252,14 +242,14 @@ export default function Register() {
                         : "border-ivory-dark text-ink-soft hover:border-coral/40"
                     }`}
                   >
-                    <r.icon size={16} /> {r.label}
+                    <r.icon size={16} /> {t(r.label)}
                   </button>
                 ))}
               </div>
             </div>
 
             <FormField
-              label="Adresse e-mail"
+              label={t("Adresse e-mail")}
               type="email"
               placeholder="fara.rakoto@mail.mg"
               name="email"
@@ -271,7 +261,7 @@ export default function Register() {
             />
 
             <FormField
-              label="Mot de passe"
+              label={t("Mot de passe")}
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               name="password"
@@ -287,8 +277,8 @@ export default function Register() {
                   className="shrink-0 text-ink-soft transition-colors hover:text-ink"
                   aria-label={
                     showPassword
-                      ? "Masquer le mot de passe"
-                      : "Afficher le mot de passe"
+                      ? t("Masquer le mot de passe")
+                      : t("Afficher le mot de passe")
                   }
                 >
                   {showPassword ? (
@@ -301,17 +291,13 @@ export default function Register() {
             />
 
             {error && (
-              <p className="font-body text-sm text-brick">Erreur : {error}</p>
+              <p className="font-body text-sm text-brick">{t("Erreur : {{error}}", { error })}</p>
             )}
 
             {errorMessage && (
               <div>
-                <p className="font-body text-sm text-brick">
-                  Erreur : {errorMessage.email}
-                </p>
-                <p className="font-body text-sm text-brick">
-                  Erreur : {errorMessage.password}
-                </p>
+                <p className="font-body text-sm text-brick">{t("Erreur : {{email}}", { email: errorMessage.email })}</p>
+                <p className="font-body text-sm text-brick">{t("Erreur : {{password}}", { password: errorMessage.password })}</p>
               </div>
             )}
 
@@ -319,18 +305,10 @@ export default function Register() {
               type="submit"
               className="group mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-coral py-3.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark disabled:pointer-events-none disabled:opacity-70"
             >
-              <HiOutlineUserPlus size={16} />
-              Créer mon compte
-            </button>
+              <HiOutlineUserPlus size={16} />{t("Créer mon compte")}</button>
           </form>
 
-          <p className="mt-6 text-center font-body text-xs text-ink-soft">
-            En continuant, tu acceptes les{" "}
-            <button className="font-semibold text-coral-dark hover:text-brick">
-              conditions d'utilisation
-            </button>{" "}
-            de la plateforme.
-          </p>
+          <p className="mt-6 text-center font-body text-xs text-ink-soft">{t("En continuant, tu acceptes les")}{" "}<button className="font-semibold text-coral-dark hover:text-brick">{t("conditions d'utilisation")}</button>{" "}{t("de la plateforme.")}</p>
         </AnimatedSection>
       </div>
     </div>

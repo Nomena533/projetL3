@@ -1,5 +1,7 @@
+import { dateLocale } from "./i18nRuntime";
+
 export const formatDate = (date) => {
-  const formatted = new Date(date).toLocaleDateString("fr-FR", {
+  const formatted = new Date(date).toLocaleDateString(dateLocale(), {
     day: "numeric",
     month: "long",
     year: "numeric",

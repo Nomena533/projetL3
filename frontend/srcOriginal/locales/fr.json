@@ -1,0 +1,13 @@
+{
+  "appName": "Académie des Arts Musicaux",
+  "home": "Accueil",
+  "courses": "Cours",
+  "instruments": "Instruments",
+  "login": "Se connecter",
+  "register": "S'inscrire",
+  "logout": "Se déconnecter",
+  "welcome": "Bienvenue sur notre plateforme musicale",
+  "dashboard": "Tableau de bord",
+  "profile": "Mon profil",
+  "settings": "Paramètres"
+}

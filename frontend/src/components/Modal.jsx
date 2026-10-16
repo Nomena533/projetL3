@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { HiOutlineXMark } from "react-icons/hi2";
+import { useLang } from "../app/hooks/useLang";
 
 /**
  * Modal — boîte de dialogue générique (confirmation d'achat, aperçu de
@@ -7,6 +8,7 @@ import { HiOutlineXMark } from "react-icons/hi2";
  * animations utilisent les keyframes déjà définies dans index.css.
  */
 export default function Modal({ open, onClose, title, children }) {
+  const { t } = useLang();
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === "Escape" && onClose();
@@ -33,7 +35,7 @@ export default function Modal({ open, onClose, title, children }) {
           <button
             onClick={onClose}
             className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-ink-soft transition-colors duration-300 hover:bg-ivory-dark hover:text-ink"
-            aria-label="Fermer"
+            aria-label={t("Fermer")}
           >
             <HiOutlineXMark size={16} />
           </button>

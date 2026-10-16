@@ -2,23 +2,21 @@ import { Link } from "react-router-dom";
 import { HiOutlineCheck, HiOutlineArrowRight } from "react-icons/hi";
 import AnimatedSection from "../../components/AnimatedSection";
 import { pricingPlans, paymentMethods } from "../../lib/mockHomeData";
+import { useLang } from "../../app/hooks/useLang";
 
 function formatAriary(n) {
   return n === 0 ? "0 Ar" : new Intl.NumberFormat("fr-MG").format(n) + " Ar";
 }
 
 export default function Pricing() {
+  const { t } = useLang();
   return (
     <section className="px-5 py-16 sm:px-8 sm:py-20">
       <div className="mx-auto max-w-6xl">
         <AnimatedSection className="mx-auto max-w-xl text-center">
-          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">Tarifs</span>
-          <h1 className="mt-3 font-display text-4xl font-semibold text-ink sm:text-5xl">
-            Un abonnement pour chaque ambition
-          </h1>
-          <p className="mt-4 font-body text-ink-soft">
-            Sans engagement, résiliable à tout moment. Tous les prix sont en Ariary.
-          </p>
+          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Tarifs")}</span>
+          <h1 className="mt-3 font-display text-4xl font-semibold text-ink sm:text-5xl">{t("Un abonnement pour chaque ambition")}</h1>
+          <p className="mt-4 font-body text-ink-soft">{t("Sans engagement, résiliable à tout moment. Tous les prix sont en Ariary.")}</p>
         </AnimatedSection>
 
         <div className="mt-14 grid gap-6 lg:grid-cols-3">
@@ -33,15 +31,13 @@ export default function Pricing() {
               }`}
             >
               {plan.mis_en_avant && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-amber px-4 py-1 font-mono text-[10px] font-bold uppercase tracking-wide text-ink">
-                  Le plus choisi
-                </span>
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-amber px-4 py-1 font-mono text-[10px] font-bold uppercase tracking-wide text-ink">{t("Le plus choisi")}</span>
               )}
               <h2 className={`font-display text-xl font-semibold ${plan.mis_en_avant ? "text-ivory" : "text-ink"}`}>
                 {plan.nom}
               </h2>
               <p className={`mt-1.5 font-body text-sm ${plan.mis_en_avant ? "text-ivory/75" : "text-ink-soft"}`}>
-                {plan.description}
+                {t(plan.description)}
               </p>
               <div className="mt-6 flex items-baseline gap-1.5">
                 <span className="font-mono text-3xl font-semibold">{formatAriary(plan.prix)}</span>
@@ -54,7 +50,7 @@ export default function Pricing() {
                 {plan.avantages.map((a) => (
                   <li key={a} className="flex items-start gap-2.5 font-body text-sm">
                     <HiOutlineCheck className={`mt-0.5 shrink-0 ${plan.mis_en_avant ? "text-amber-light" : "text-coral-dark"}`} size={17} />
-                    <span className={plan.mis_en_avant ? "text-ivory/90" : "text-ink-soft"}>{a}</span>
+                    <span className={plan.mis_en_avant ? "text-ivory/90" : "text-ink-soft"}>{t(a)}</span>
                   </li>
                 ))}
               </ul>
@@ -67,14 +63,14 @@ export default function Pricing() {
                     : "bg-ink text-ivory hover:bg-coral-dark"
                 }`}
               >
-                {plan.cta}
+                {t(plan.cta)}
               </Link>
             </AnimatedSection>
           ))}
         </div>
 
         <AnimatedSection delay={200} className="mt-16 flex flex-col items-center gap-5 rounded-4xl border border-ivory-dark bg-white/50 px-8 py-10 text-center">
-          <p className="font-mono text-xs uppercase tracking-widest text-coral-dark">Paiement local</p>
+          <p className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Paiement local")}</p>
           <div className="flex flex-wrap justify-center gap-4">
             {paymentMethods.map((m) => (
               <span key={m.id} className="rounded-full border border-ivory-dark bg-ivory px-5 py-2.5 font-body text-sm font-medium text-ink">
@@ -82,16 +78,11 @@ export default function Pricing() {
               </span>
             ))}
           </div>
-          <p className="max-w-md font-body text-sm text-ink-soft">
-            Réglez en toute simplicité depuis votre téléphone, sans carte bancaire nécessaire.
-          </p>
+          <p className="max-w-md font-body text-sm text-ink-soft">{t("Réglez en toute simplicité depuis votre téléphone, sans carte bancaire nécessaire.")}</p>
         </AnimatedSection>
 
         <AnimatedSection delay={250} className="mt-10 text-center">
-          <p className="font-body text-sm text-ink-soft">
-            Des questions sur nos tarifs ?{" "}
-            <Link to="/faq" className="inline-flex items-center gap-1 font-semibold text-coral-dark hover:text-brick">
-              Consultez la FAQ <HiOutlineArrowRight size={13} />
+          <p className="font-body text-sm text-ink-soft">{t("Des questions sur nos tarifs ?")}{" "}<Link to="/faq" className="inline-flex items-center gap-1 font-semibold text-coral-dark hover:text-brick">{t("Consultez la FAQ")}{" "}<HiOutlineArrowRight size={13} />
             </Link>
           </p>
         </AnimatedSection>

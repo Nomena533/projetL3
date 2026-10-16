@@ -10,6 +10,7 @@ import {
 import AnimatedSection from "../../components/AnimatedSection";
 import Toggle from "../../components/Toggle";
 import ProfilLinkCard from "../../components/ProfilLinkCard";
+import { useLang } from "../../app/hooks/useLang";
 
 const LANGUES = [
   { id: "fr", label: "Français" },
@@ -41,8 +42,8 @@ function SettingsSection({ icon: Icon, title, description, delay = 0, children }
 }
 
 export default function AdminParametres() {
+  const { t, lang: langue, setLang: setLangue } = useLang();
   const [darkMode, setDarkMode] = useState(false);
-  const [langue, setLangue] = useState("fr");
   const [paiements, setPaiements] = useState({ mvola: true, orange_money: true, airtel_money: true, carte: false });
   const [notifEmail, setNotifEmail] = useState(true);
   const [notifPush, setNotifPush] = useState(true);
@@ -61,26 +62,24 @@ export default function AdminParametres() {
   return (
     <div className="space-y-8">
       <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">Administration</span>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">Paramètres du site</h2>
-        <p className="mt-2 font-body text-sm text-ink-soft">
-          Ces réglages s'appliquent à l'ensemble de la plateforme, pour tous les rôles.
-        </p>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Administration")}</span>
+        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Paramètres du site")}</h2>
+        <p className="mt-2 font-body text-sm text-ink-soft">{t("Ces réglages s'appliquent à l'ensemble de la plateforme, pour tous les rôles.")}</p>
       </AnimatedSection>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* ---------- APPARENCE ---------- */}
-        <SettingsSection icon={HiOutlineMoon} title="Apparence" description="Thème affiché par défaut aux nouveaux visiteurs." delay={60}>
+        <SettingsSection icon={HiOutlineMoon} title={t("Apparence")} description={t("Thème affiché par défaut aux nouveaux visiteurs.")} delay={60}>
           <Toggle
             checked={darkMode}
             onChange={setDarkMode}
-            label="Mode sombre par défaut"
-            description="Les utilisateurs pourront toujours basculer manuellement depuis leur espace."
+            label={t("Mode sombre par défaut")}
+            description={t("Les utilisateurs pourront toujours basculer manuellement depuis leur espace.")}
           />
         </SettingsSection>
 
         {/* ---------- LANGUE ---------- */}
-        <SettingsSection icon={HiOutlineLanguage} title="Langue" description="Langue affichée par défaut sur le site public." delay={100}>
+        <SettingsSection icon={HiOutlineLanguage} title={t("Langue")} description={t("Langue affichée par défaut sur le site public.")} delay={100}>
           <div className="flex gap-2 py-4">
             {LANGUES.map((l) => (
               <button
@@ -90,7 +89,7 @@ export default function AdminParametres() {
                   langue === l.id ? "bg-coral text-ivory shadow-md shadow-coral/25" : "border border-ivory-dark text-ink-soft hover:border-coral/40"
                 }`}
               >
-                {l.label}
+                {t(l.label)}
               </button>
             ))}
           </div>
@@ -99,27 +98,27 @@ export default function AdminParametres() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* ---------- PAIEMENTS ---------- */}
-        <SettingsSection icon={HiOutlineCreditCard} title="Moyens de paiement" description="Activez ou désactivez les modes de paiement proposés aux élèves." delay={140}>
+        <SettingsSection icon={HiOutlineCreditCard} title={t("Moyens de paiement")} description={t("Activez ou désactivez les modes de paiement proposés aux élèves.")} delay={140}>
           {MOYENS_PAIEMENT.map((m) => (
-            <Toggle key={m.id} checked={paiements[m.id]} onChange={() => togglePaiement(m.id)} label={m.label} description={m.description} />
+            <Toggle key={m.id} checked={paiements[m.id]} onChange={() => togglePaiement(m.id)} label={t(m.label)} description={t(m.description)} />
           ))}
         </SettingsSection>
 
         {/* ---------- NOTIFICATIONS ---------- */}
-        <SettingsSection icon={HiOutlineBellAlert} title="Notifications" description="Notifications envoyées automatiquement par la plateforme." delay={180}>
-          <Toggle checked={notifEmail} onChange={setNotifEmail} label="Notifications par e-mail" description="Rappels de cours, messages, paiements." />
-          <Toggle checked={notifPush} onChange={setNotifPush} label="Notifications dans l'application" description="Cloche de notification pour élèves et professeurs." />
+        <SettingsSection icon={HiOutlineBellAlert} title={t("Notifications")} description={t("Notifications envoyées automatiquement par la plateforme.")} delay={180}>
+          <Toggle checked={notifEmail} onChange={setNotifEmail} label={t("Notifications par e-mail")} description={t("Rappels de cours, messages, paiements.")} />
+          <Toggle checked={notifPush} onChange={setNotifPush} label={t("Notifications dans l'application")} description={t("Cloche de notification pour élèves et professeurs.")} />
         </SettingsSection>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* ---------- MAINTENANCE ---------- */}
-        <SettingsSection icon={HiOutlineWrenchScrewdriver} title="Maintenance" description="Rend le site public inaccessible aux visiteurs le temps d'une intervention." delay={220}>
+        <SettingsSection icon={HiOutlineWrenchScrewdriver} title={t("Maintenance")} description={t("Rend le site public inaccessible aux visiteurs le temps d'une intervention.")} delay={220}>
           <Toggle
             checked={maintenance}
             onChange={setMaintenance}
-            label="Mode maintenance"
-            description="Seuls les administrateurs pourront se connecter tant que le mode est actif."
+            label={t("Mode maintenance")}
+            description={t("Seuls les administrateurs pourront se connecter tant que le mode est actif.")}
           />
         </SettingsSection>
 
@@ -132,7 +131,7 @@ export default function AdminParametres() {
           className="inline-flex items-center gap-2 rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
         >
           {saved && <HiOutlineCheckCircle size={16} />}
-          {saved ? "Paramètres enregistrés" : "Enregistrer les paramètres"}
+          {saved ? t("Paramètres enregistrés") : t("Enregistrer les paramètres")}
         </button>
       </AnimatedSection>
     </div>

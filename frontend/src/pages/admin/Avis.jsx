@@ -5,16 +5,18 @@ import AnimatedSection from "../../components/AnimatedSection";
 import Modal from "../../components/Modal";
 import Pill from "../../components/Pill";
 import { AVIS_ADMIN } from "../../lib/mockAdminData";
+import { useLang } from "../../app/hooks/useLang";
 
 export default function AdminAvis() {
+  const { t } = useLang();
   const [items, setItems] = useState(AVIS_ADMIN);
   const [toDelete, setToDelete] = useState(null);
 
   return (
     <div className="space-y-6">
       <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">Administration</span>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">Avis</h2>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Administration")}</span>
+        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Avis")}</h2>
       </AnimatedSection>
 
       <div className="space-y-3">
@@ -32,46 +34,38 @@ export default function AdminAvis() {
                   <span className="font-mono text-xs text-ink-soft">{a.eleve}</span>
                 </div>
               </div>
-              <Pill>{a.statut}</Pill>
+              <Pill>{t(a.statut)}</Pill>
             </div>
             <p className="mt-3 font-body text-sm leading-relaxed text-ink-soft">{a.commentaire}</p>
             <button
               onClick={() => setToDelete(a)}
               className="mt-3 flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wide text-brick/80 transition-colors hover:text-brick"
             >
-              <HiOutlineTrash size={13} /> Supprimer l'avis
-            </button>
+              <HiOutlineTrash size={13} />{" "}{t("Supprimer l'avis")}</button>
           </AnimatedSection>
         ))}
 
         {items.length === 0 && (
           <AnimatedSection className="rounded-2xl border border-dashed border-ivory-dark py-16 text-center">
-            <p className="font-body text-sm text-ink-soft">Aucun avis à modérer.</p>
+            <p className="font-body text-sm text-ink-soft">{t("Aucun avis à modérer.")}</p>
           </AnimatedSection>
         )}
       </div>
 
-      <Modal open={!!toDelete} onClose={() => setToDelete(null)} title="Supprimer cet avis ?">
-        <p className="font-body text-sm leading-relaxed text-ink-soft">
-          L'avis de <span className="font-semibold text-ink">{toDelete?.eleve}</span> sur{" "}
-          <span className="font-semibold text-ink">« {toDelete?.cours} »</span> sera définitivement supprimé.
-        </p>
+      <Modal open={!!toDelete} onClose={() => setToDelete(null)} title={t("Supprimer cet avis ?")}>
+        <p className="font-body text-sm leading-relaxed text-ink-soft">{t("L'avis de")}{" "}<span className="font-semibold text-ink">{toDelete?.eleve}</span>{" "}{t("sur")}{" "}<span className="font-semibold text-ink">« {toDelete?.cours} »</span>{" "}{t("sera définitivement supprimé.")}</p>
         <div className="mt-6 flex gap-3">
           <button
             onClick={() => setToDelete(null)}
             className="flex-1 rounded-full border border-ivory-dark py-2.5 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:bg-ivory-dark/40"
-          >
-            Annuler
-          </button>
+          >{t("Annuler")}</button>
           <button
             onClick={() => {
               setItems(items.filter((x) => x.id !== toDelete.id));
               setToDelete(null);
             }}
             className="flex-1 rounded-full bg-brick py-2.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-brick/25 transition-all duration-300 hover:bg-brick-light"
-          >
-            Supprimer
-          </button>
+          >{t("Supprimer")}</button>
         </div>
       </Modal>
     </div>

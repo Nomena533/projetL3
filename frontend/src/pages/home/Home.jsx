@@ -15,6 +15,7 @@ import {
 } from "../../lib/mockHomeData";
 import { useUser } from "../../app/hooks/useUser";
 import { useInstrument } from "../../app/hooks/useInstrument";
+import { useLang } from "../../app/hooks/useLang";
 
 const STEPS = [
   {
@@ -51,6 +52,7 @@ function formatAriary(n) {
 }
 
 export default function Home() {
+  const { t: tl } = useLang();
   const {instruments} = useInstrument();
   const {userList} = useUser();
   const prof = userList.filter((u) => u.role_id === 3);
@@ -70,37 +72,24 @@ export default function Home() {
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
           <AnimatedSection>
-            <span className="inline-flex items-center gap-2 rounded-full bg-brick/5 px-4 py-1.5 font-mono text-xs uppercase tracking-widest text-brick">
-              Fa mbola misy ny mozika malagasy
-            </span>
-            <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl">
-              Apprenez la musique,
-              <span className="relative inline-block px-1 text-coral">
-                {" "}
-                selon votre rythme
-              </span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-brick/5 px-4 py-1.5 font-mono text-xs uppercase tracking-widest text-brick">{tl("Fa mbola misy ny mozika malagasy")}</span>
+            <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl">{tl("Apprenez la musique,")}<span className="relative inline-block px-1 text-coral">{" "}{tl("selon votre rythme")}</span>
             </h1>
-            <p className="mt-6 max-w-lg font-body text-lg leading-relaxed text-ink-soft">
-              Kalon'ny réunit de vrais professeurs et un parcours guidé pour
-              apprendre le piano, la guitare, le saxophone ou
-              la batterie — où que vous soyez à Madagascar.
-            </p>
+            <p className="mt-6 max-w-lg font-body text-lg leading-relaxed text-ink-soft">{tl("Kalon'ny réunit de vrais professeurs et un parcours guidé pour apprendre le piano, la guitare, le saxophone ou la batterie — où que vous soyez à Madagascar.")}</p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <Link
                 to="/formation"
                 className="group inline-flex items-center gap-2 rounded-full bg-coral px-7 py-3.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
-              >
-                Explorer les formations
-                <HiOutlineArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
+              >{tl("Explorer les formations")}<HiOutlineArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
               
             </div>
 
             <dl className="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-ivory-dark pt-6">
               {[
-                ["6", "instruments"],
-                ["1 000+", "élèves actifs"],
-                ["4.8/5", "note moyenne"],
+                ["6", tl("instruments")],
+                ["1 000+", tl("élèves actifs")],
+                ["4.8/5", tl("note moyenne")],
               ].map(([n, l]) => (
                 <div key={l}>
                   <dt className="font-display text-2xl font-semibold text-ink">
@@ -118,13 +107,8 @@ export default function Home() {
             <div className="relative overflow-hidden rounded-4xl bg-linear-to-br from-brick via-coral to-amber p-1 shadow-2xl shadow-brick/20">
               <div className="rounded-[1.85rem] bg-ink/90 p-8 sm:p-10">
                 <ValihaMotif count={26} tone="amber" className="h-24" />
-                <p className="mt-6 font-display text-xl italic leading-snug text-ivory">
-                  « Le valiha, ce n'est pas qu'un instrument. C'est une voix
-                  qu'on transmet. »
-                </p>
-                <p className="mt-3 font-mono text-xs uppercase tracking-widest text-amber-light">
-                  — Njaka Rakotondrabe, professeur
-                </p>
+                <p className="mt-6 font-display text-xl italic leading-snug text-ivory">{tl("« Le valiha, ce n'est pas qu'un instrument. C'est une voix qu'on transmet. »")}</p>
+                <p className="mt-3 font-mono text-xs uppercase tracking-widest text-amber-light">{tl("— Njaka Rakotondrabe, professeur")}</p>
               </div>
             </div>
             <div className="absolute -bottom-6 -left-6 flex items-center gap-3 rounded-2xl bg-white/95 px-5 py-4 shadow-xl backdrop-blur">
@@ -137,12 +121,8 @@ export default function Home() {
                 ))}
               </div>
               <div>
-                <p className="font-display text-sm font-semibold text-ink">
-                  +1 000 élèves
-                </p>
-                <p className="font-mono text-[10px] uppercase tracking-wide text-ink-soft">
-                  nous font confiance
-                </p>
+                <p className="font-display text-sm font-semibold text-ink">{tl("+1 000 élèves")}</p>
+                <p className="font-mono text-[10px] uppercase tracking-wide text-ink-soft">{tl("nous font confiance")}</p>
               </div>
             </div>
           </AnimatedSection>
@@ -153,12 +133,8 @@ export default function Home() {
       <section className="px-5 py-20 sm:px-8">
         <div className="mx-auto max-w-7xl">
           <AnimatedSection className="max-w-xl">
-            <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-              Nos instruments
-            </span>
-            <h2 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">
-              Six voies pour faire chanter la musique malgache
-            </h2>
+            <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{tl("Nos instruments")}</span>
+            <h2 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">{tl("Six voies pour faire chanter la musique malgache")}</h2>
           </AnimatedSection>
 
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -174,7 +150,7 @@ export default function Home() {
                   {instr.name}
                 </h3>
                 <p className="mt-2 font-body text-sm leading-relaxed text-ink-soft">
-                  {instr.description ? instr.description : "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laudantium, voluptate."}
+                  {instr.description ? instr.description : tl("Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laudantium, voluptate.")}
                 </p>
               </AnimatedSection>
             ))}
@@ -186,12 +162,8 @@ export default function Home() {
       <section className="bg-ivory-dark/50 px-5 py-20 sm:px-8">
         <div className="mx-auto max-w-7xl">
           <AnimatedSection className="max-w-xl">
-            <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-              Le parcours
-            </span>
-            <h2 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">
-              Comment ça marche
-            </h2>
+            <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{tl("Le parcours")}</span>
+            <h2 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">{tl("Comment ça marche")}</h2>
           </AnimatedSection>
 
           <div className="mt-12 grid gap-8 md:grid-cols-3">
@@ -211,7 +183,7 @@ export default function Home() {
                   {step.titre}
                 </h3>
                 <p className="mt-2 font-body text-sm leading-relaxed text-ink-soft">
-                  {step.texte}
+                  {tl(step.texte)}
                 </p>
               </AnimatedSection>
             ))}
@@ -223,12 +195,8 @@ export default function Home() {
       <section className="bg-ink px-5 py-20 sm:px-8">
         <div className="mx-auto max-w-7xl">
           <AnimatedSection className="max-w-xl">
-            <span className="font-mono text-xs uppercase tracking-widest text-amber-light">
-              Nos professeurs
-            </span>
-            <h2 className="mt-3 font-display text-3xl font-semibold text-ivory sm:text-4xl">
-              Appris par des passionnés, transmis avec exigence
-            </h2>
+            <span className="font-mono text-xs uppercase tracking-widest text-amber-light">{tl("Nos professeurs")}</span>
+            <h2 className="mt-3 font-display text-3xl font-semibold text-ivory sm:text-4xl">{tl("Appris par des passionnés, transmis avec exigence")}</h2>
           </AnimatedSection>
 
           <div className="mt-12 flex gap-5 overflow-x-auto pb-4 scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -252,21 +220,18 @@ export default function Home() {
                   </Link>
                 </h3>
                 <p className="mt-3 font-body text-sm leading-relaxed text-ivory/60">
-                  {t?.bio ? t?.bio : "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laudantium, voluptate."}
+                  {t?.bio ? t?.bio : tl("Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laudantium, voluptate.")}
                 </p>
                 {/* <p className="mt-4 flex items-center gap-1 font-body text-sm text-ivory/70">
                   <HiStar className="text-amber" size={14} /> {t.note} ·{" "}
                   {t?.eleves} élèves
                 </p> */}
                 <p className="mt-4 flex items-center gap-1 font-body text-sm text-ivory/70">
-                  <HiStar className="text-amber" size={14} /> 10 ·{" "}
-                  15 élèves
-                </p>
+                  <HiStar className="text-amber" size={14} />{" "}{tl("10 · 15 élèves")}</p>
                 <Link
                   to={`/professeurs/${t.id}`}
                   className="mt-4 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-amber-light transition-colors hover:text-ivory"
-                >
-                  Voir le portfolio <HiOutlineArrowRight size={14} />
+                >{tl("Voir le portfolio")}{" "}<HiOutlineArrowRight size={14} />
                 </Link>
               </AnimatedSection>
             ))}
@@ -274,8 +239,7 @@ export default function Home() {
           <Link
             to="/professeurs"
             className="mt-8 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-amber-light hover:text-ivory"
-          >
-            Voir tous les professeurs <HiOutlineArrowRight size={15} />
+          >{tl("Voir tous les professeurs")}{" "}<HiOutlineArrowRight size={15} />
           </Link>
         </div>
       </section>
@@ -284,12 +248,8 @@ export default function Home() {
       <section className="px-5 py-20 sm:px-8">
         <div className="mx-auto max-w-7xl">
           <AnimatedSection className="max-w-xl">
-            <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-              Témoignages
-            </span>
-            <h2 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">
-              Ce que disent nos élèves
-            </h2>
+            <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{tl("Témoignages")}</span>
+            <h2 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">{tl("Ce que disent nos élèves")}</h2>
           </AnimatedSection>
 
           <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -305,13 +265,13 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="mt-4 font-body text-sm leading-relaxed text-ink-soft">
-                  « {t.texte} »
+                  « {tl(t.texte)} »
                 </p>
                 <p className="mt-5 font-display text-sm font-semibold text-ink">
                   {t.nom}
                 </p>
                 <p className="font-mono text-[11px] uppercase tracking-wide text-coral-dark">
-                  {t.role}
+                  {tl(t.role)}
                 </p>
               </AnimatedSection>
             ))}
@@ -322,18 +282,12 @@ export default function Home() {
       {/* ---------- CTA FINAL ---------- */}
       <section className="px-5 pb-24 sm:px-8">
         <AnimatedSection className="mx-auto max-w-5xl overflow-hidden rounded-4xl bg-linear-to-br from-brick via-coral-dark to-coral px-8 py-16 text-center sm:px-16">
-          <h2 className="font-display text-3xl font-semibold text-ivory sm:text-4xl">
-            Prêt à faire vos premiers accords ?
-          </h2>
-          <p className="mx-auto mt-4 max-w-md font-body text-ivory/80">
-            Rejoignez plus de 1 000 élèves malgaches qui apprennent la musique à
-            leur rythme, avec de vrais professeurs.
-          </p>
+          <h2 className="font-display text-3xl font-semibold text-ivory sm:text-4xl">{tl("Prêt à faire vos premiers accords ?")}</h2>
+          <p className="mx-auto mt-4 max-w-md font-body text-ivory/80">{tl("Rejoignez plus de 1 000 élèves malgaches qui apprennent la musique à leur rythme, avec de vrais professeurs.")}</p>
           <Link
             to="/inscriptionCompte"
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-ivory px-8 py-3.5 font-body text-sm font-semibold text-brick shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
-          >
-            Créer mon compte gratuit <HiOutlineArrowRight />
+          >{tl("Créer mon compte gratuit")}{" "}<HiOutlineArrowRight />
           </Link>
         </AnimatedSection>
       </section>

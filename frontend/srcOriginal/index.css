@@ -1,0 +1,216 @@
+/* ============================================================
+   index.css : feuille de style globale de la plateforme
+   Contient : import de Tailwind, polices, design tokens (clair),
+   palette du mode sombre, styles de base et animations.
+   ============================================================ */
+
+/* Charge Tailwind CSS v4 (génère toutes les classes utilitaires :
+   bg-*, text-*, flex, etc.) */
+@import "tailwindcss";
+
+/* ------------------------------------------------------------
+   Variante "dark:" pilotée par une classe
+   ------------------------------------------------------------
+   Par défaut, Tailwind active "dark:" selon la préférence du système.
+   Ici on la lie à la classe .dark placée sur <html>, ce qui permet à
+   l'utilisateur de basculer le thème lui-même avec un bouton.
+   Exemple : <div class="bg-white dark:bg-ink"> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ------------------------------------------------------------
+   Classes utilitaires de police
+   ------------------------------------------------------------
+   Les fichiers de police sont chargés en local (npm @fontsource,
+   importés dans main.jsx) : aucune requête réseau vers Google Fonts
+   ou un autre CDN n'est nécessaire, même hors connexion. */
+
+/* Police des titres (élégante, avec empattements) */
+.font-display {
+  font-family: "Fraunces", ui-serif, Georgia, serif;
+}
+/* Police du texte courant */
+.font-body {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+/* Police à chasse fixe, utile pour les chiffres (prix, durées, scores) */
+.font-mono {
+  font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+/* ============================================================
+   Design tokens : thème CLAIR (par défaut)
+   Palette : turquoise / vert sapin / ambre / blanc légèrement verdi
+   Typo    : Fraunces (titres) · Plus Jakarta Sans (texte) · IBM Plex Mono (chiffres)
+   ------------------------------------------------------------
+   @theme déclare des variables CSS ET génère les classes Tailwind
+   correspondantes. Exemple : --color-coral => bg-coral, text-coral,
+   border-coral, etc. Les noms (coral, brick...) sont historiques :
+   ils désignent bien les couleurs ci-dessous.
+   ============================================================ */
+@theme {
+  /* --- Polices (utilisables via font-display, font-body, font-mono) --- */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* --- Fonds --- */
+  --color-ivory: #f8faf8;       /* fond principal de la page */
+  --color-ivory-dark: #e8f1ed;  /* fond secondaire : cartes, sections alternées */
+
+  /* --- Couleur principale (CTA, boutons, liens) --- */
+  --color-coral: #0f766e;        /* couleur de base */
+  --color-coral-dark: #115e59;   /* état survol (hover) / appui */
+  --color-coral-light: #5eead4;  /* version claire : accents, badges */
+
+  /* --- Couleur secondaire (titres, sections sombres) --- */
+  --color-brick: #134e4a;        /* vert sapin profond */
+  --color-brick-light: #16615b;  /* variante un peu plus claire */
+
+  /* --- Accent (mises en avant, surlignage) --- */
+  --color-amber: #fbbf24;
+  --color-amber-light: #fde68a;
+
+  /* --- Texte --- */
+  --color-ink: #1f2937;       /* texte principal */
+  --color-ink-soft: #6b7280;  /* texte secondaire (légendes, descriptions) */
+
+  /* --- Animations (utilisables via animate-fade-up, animate-fade-in, animate-string) --- */
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fade-in: fade-in 0.6s ease-out forwards;
+  --animate-string: string-pluck 2.4s ease-in-out infinite;
+}
+
+/* ============================================================
+   Design tokens : thème SOMBRE
+   ------------------------------------------------------------
+   S'active quand <html> porte la classe "dark".
+   Principe : on REDÉFINIT les mêmes variables que ci-dessus.
+   Les classes Tailwind (bg-ivory, text-ink, bg-coral...) lisent ces
+   variables, donc toute la plateforme change de couleurs sans qu'il
+   faille modifier les composants.
+   ":root.dark" (spécificité plus forte que ":root") garantit que ces
+   valeurs l'emportent sur celles de @theme.
+   ============================================================ */
+:root.dark {
+  /* Indique au navigateur d'utiliser ses contrôles natifs sombres
+     (barres de défilement, champs de formulaire, menus déroulants) */
+  color-scheme: dark;
+
+  /* --- Fonds : du vert-noir profond, plus doux que du noir pur --- */
+  --color-ivory: #0b1413;       /* fond principal de la page */
+  --color-ivory-dark: #12201e;  /* surfaces surélevées : cartes, sections alternées */
+
+  /* --- Couleur principale : éclaircie pour rester lisible sur fond sombre --- */
+  --color-coral: #14b8a6;        /* boutons, liens, éléments interactifs */
+  --color-coral-dark: #0d9488;   /* état survol (hover) / appui */
+  --color-coral-light: #5eead4;  /* inchangé : accent clair, déjà lumineux */
+
+  /* --- Couleur secondaire : devient claire, car elle sert surtout aux titres.
+         Les sections qui utilisaient bg-brick comme fond sombre devront
+         utiliser un fond dédié en mode sombre (ex. dark:bg-ivory-dark). --- */
+  --color-brick: #ccfbf1;        /* titres : turquoise très pâle */
+  --color-brick-light: #99f6e4;  /* variante pour sous-titres */
+
+  /* --- Accent : l'ambre reste identique (déjà bien visible sur fond sombre) --- */
+  --color-amber: #fbbf24;
+  --color-amber-light: #fde68a;
+
+  /* --- Texte : clair sur fond sombre --- */
+  --color-ink: #f2f8f6;       /* texte principal (blanc légèrement verdi, moins agressif que #fff) */
+  --color-ink-soft: #9ccfc4;  /* texte secondaire, contraste suffisant sur #0b1413 */
+}
+
+/* ============================================================
+   Animations (définitions des @keyframes référencés plus haut)
+   ============================================================ */
+
+/* Apparition en glissant du bas vers le haut + fondu */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Apparition en fondu simple */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+/* Effet "corde pincée" : étirement vertical + variation d'opacité
+   (utilisé pour les décors de cordes d'instrument) */
+@keyframes string-pluck {
+  0%, 100% { transform: scaleY(1); opacity: 0.5; }
+  50% { transform: scaleY(1.15); opacity: 1; }
+}
+
+/* ============================================================
+   Styles de base (appliqués à toute la page)
+   @layer base : priorité basse, les classes Tailwind peuvent
+   toujours les surcharger.
+   ============================================================ */
+@layer base {
+  /* Défilement fluide lors des clics sur les liens d'ancre (#section) */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Couleurs et police globales, basées sur les tokens :
+     elles s'adaptent donc automatiquement au mode sombre.
+     La transition adoucit le changement de thème. */
+  body {
+    background-color: var(--color-ivory);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Style du texte sélectionné à la souris (thème clair) */
+  ::selection {
+    background-color: var(--color-amber-light);
+    color: var(--color-brick);
+  }
+
+  /* Thème sombre : on fixe des couleurs explicites, car --color-brick
+     est devenu clair et serait illisible sur le fond ambre clair */
+  .dark ::selection {
+    background-color: var(--color-amber);
+    color: #0b1413;
+  }
+
+  /* Contour visible lors de la navigation au clavier (accessibilité) */
+  :focus-visible {
+    outline: 2px solid var(--color-coral);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+/* ============================================================
+   Accessibilité : réduction des animations
+   ------------------------------------------------------------
+   Si l'utilisateur a demandé "réduire les animations" dans son
+   système, on rend toutes les animations/transitions quasi
+   instantanées et on désactive le défilement fluide. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   Utilitaire .reveal : élément révélé au défilement
+   ------------------------------------------------------------
+   Piloté par AnimatedSection.jsx : l'élément est invisible et
+   décalé vers le bas, puis la classe .is-visible est ajoutée
+   quand il entre dans l'écran. */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* État final : visible et à sa place */
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}

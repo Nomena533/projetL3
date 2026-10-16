@@ -21,6 +21,7 @@ import { getExerciceByLesson } from "../../app/api/exerciceApi";
 import { storeSoumission } from "../../app/api/soumissionApi";
 import { useSoumission } from "../../app/hooks/useSoumission";
 import { useAuth } from "../../app/hooks/useAuth";
+import { useLang } from "../../app/hooks/useLang";
 
 // Reprend exactement la même logique d'affichage que dans LeconDetail.jsx,
 // pour rester cohérent sur toute la plateforme.
@@ -47,6 +48,7 @@ function guessType(file) {
 }
 
 export default function LessonPlayer() {
+  const { t } = useLang();
   const { id } = useParams();
   const [params] = useSearchParams();
   const courId = params.get("courId");
@@ -81,7 +83,7 @@ export default function LessonPlayer() {
         console.log("Leçons sélectionnés avec succès");
       } catch (error) {
         console.error(
-          "Erreur lors de la récupération des leçons :",
+          t("Erreur lors de la récupération des leçons :"),
           error.response?.data,
         );
       }
@@ -99,7 +101,7 @@ export default function LessonPlayer() {
         console.log("Exerice sélectionné avec succès");
       } catch (error) {
         console.error(
-          "Erreur lors de la récupération de l'exercice :",
+          t("Erreur lors de la récupération de l'exercice :"),
           error.response?.data,
         );
       }
@@ -172,7 +174,7 @@ export default function LessonPlayer() {
       setSoumissionForm({ description: "", type: "", fichier: null });
     } catch (error) {
       console.error(
-        "Erreur lors de l'envoi de la soumission :",
+        t("Erreur lors de l'envoi de la soumission :"),
         error.response?.data,
       );
       setSoumissionStatut("error");
@@ -199,7 +201,7 @@ export default function LessonPlayer() {
 
   if (!lesson || !resource || !lessons) {
     return (
-      <p className="font-body text-sm text-ink-soft">Chargement du cours…</p>
+      <p className="font-body text-sm text-ink-soft">{t("Chargement du cours…")}</p>
     );
   }
 
@@ -212,8 +214,7 @@ export default function LessonPlayer() {
               onClick={() => setActiveResource(null)}
               className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
             >
-              <HiOutlineChevronLeft size={13} /> Retour à la leçon
-            </button>
+              <HiOutlineChevronLeft size={13} />{" "}{t("Retour à la leçon")}</button>
 
             <div className="overflow-hidden rounded-2xl border border-ivory-dark bg-ink">
               {activeResource.type === "video" && (
@@ -221,9 +222,7 @@ export default function LessonPlayer() {
                   controls
                   className="aspect-video w-full bg-black"
                   src={`${BASE_URL}/storage/${activeResource.fichier}`}
-                >
-                  Ton navigateur ne supporte pas la lecture vidéo.
-                </video>
+                >{t("Ton navigateur ne supporte pas la lecture vidéo.")}</video>
               )}
 
               {activeResource.type === "audio" && (
@@ -235,9 +234,7 @@ export default function LessonPlayer() {
                     controls
                     className="w-full max-w-md"
                     src={`${BASE_URL}/storage/${activeResource.fichier}`}
-                  >
-                    Ton navigateur ne supporte pas la lecture audio.
-                  </audio>
+                  >{t("Ton navigateur ne supporte pas la lecture audio.")}</audio>
                 </div>
               )}
 
@@ -256,7 +253,7 @@ export default function LessonPlayer() {
                   {capitalize(activeResource.titre)}
                 </h3>
                 <p className="font-body text-xs text-ink-soft">
-                  {RESOURCE_LABEL[activeResource.type] || "Ressource"}
+                  {RESOURCE_LABEL[activeResource.type] || t("Ressource")}
                   {activeResource.duree && ` · ${activeResource.duree}`}
                 </p>
               </div>
@@ -267,8 +264,7 @@ export default function LessonPlayer() {
                   rel="noreferrer"
                   className="flex items-center gap-2 rounded-full border border-ivory-dark px-4 py-2 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:border-coral/40 hover:text-coral-dark"
                 >
-                  <HiOutlineArrowDownTray size={15} /> Télécharger
-                </a>
+                  <HiOutlineArrowDownTray size={15} />{" "}{t("Télécharger")}</a>
               )}
             </div>
           </AnimatedSection>
@@ -289,19 +285,14 @@ export default function LessonPlayer() {
           <h2 className="font-display text-xl font-semibold text-ink sm:text-2xl">
             {capitalize(lesson.titre)}
           </h2>
-          <p className="mt-1 font-body text-sm text-ink-soft">
-            Leçon {lessons.indexOf(CURRENT) + 1} sur {lessons.length} ·{" "}
-            {lesson.duree}
-          </p>
+          <p className="mt-1 font-body text-sm text-ink-soft">{t("Leçon {{v0}} sur {{length}} · {{duree}}", { v0: lessons.indexOf(CURRENT) + 1, length: lessons.length, duree: lesson.duree })}</p>
         </AnimatedSection>
 
         <AnimatedSection delay={100} className="flex flex-wrap gap-3">
           <button className="flex items-center gap-2 rounded-full border border-ivory-dark px-4 py-2 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:border-coral/40 hover:text-coral-dark">
-            <HiOutlineArrowDownTray size={15} /> Partition PDF
-          </button>
+            <HiOutlineArrowDownTray size={15} />{" "}{t("Partition PDF")}</button>
           <button className="flex items-center gap-2 rounded-full border border-ivory-dark px-4 py-2 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:border-coral/40 hover:text-coral-dark">
-            <HiOutlineSpeakerWave size={15} /> Piste audio
-          </button>
+            <HiOutlineSpeakerWave size={15} />{" "}{t("Piste audio")}</button>
         </AnimatedSection>
 
         {exercice === null || exercice === undefined ? (
@@ -309,12 +300,8 @@ export default function LessonPlayer() {
             delay={140}
             className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
           >
-            <h3 className="mb-2 font-display text-base font-semibold text-ink">
-              Exercice
-            </h3>
-            <p className="mb-4 font-body text-sm leading-relaxed text-ink-soft">
-              Pas d'exercice disponible pour cette leçcon
-            </p>
+            <h3 className="mb-2 font-display text-base font-semibold text-ink">{t("Exercice")}</h3>
+            <p className="mb-4 font-body text-sm leading-relaxed text-ink-soft">{t("Pas d'exercice disponible pour cette leçcon")}</p>
           </AnimatedSection>
         ) : (
           <AnimatedSection
@@ -329,15 +316,11 @@ export default function LessonPlayer() {
             </p>
             <hr className="border-ivory-dark mt-4 mb-4" />
             {exerciceHasSoumission ? (
-              <div className="font-body flex justify-center text-ink-soft leading-relaxed">
-                Vous avez déjà soumis votre réponse
-              </div>
+              <div className="font-body flex justify-center text-ink-soft leading-relaxed">{t("Vous avez déjà soumis votre réponse")}</div>
             ) : (
               <form onSubmit={handleSoumissionSubmit} className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block font-body text-xs font-semibold uppercase tracking-wide text-ink-soft">
-                    Fichier à soumettre
-                  </label>
+                  <label className="mb-1.5 block font-body text-xs font-semibold uppercase tracking-wide text-ink-soft">{t("Fichier à soumettre")}</label>
                   <label
                     htmlFor="soumission-fichier"
                     className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-ivory-dark  px-4 py-3 font-body text-sm text-ink-soft transition-colors duration-300 hover:border-coral/40 hover:text-coral-dark"
@@ -351,7 +334,7 @@ export default function LessonPlayer() {
                     <span className="truncate">
                       {soumissionForm.fichier
                         ? soumissionForm.fichier.name
-                        : "Choisir un fichier depuis mon ordinateur"}
+                        : t("Choisir un fichier depuis mon ordinateur")}
                     </span>
                   </label>
                   <input
@@ -370,9 +353,7 @@ export default function LessonPlayer() {
                   <label
                     htmlFor="soumission-description"
                     className="mb-1.5 block font-body text-xs font-semibold uppercase tracking-wide text-ink-soft"
-                  >
-                    Description (facultatif)
-                  </label>
+                  >{t("Description (facultatif)")}</label>
                   <textarea
                     id="soumission-description"
                     rows={3}
@@ -381,7 +362,7 @@ export default function LessonPlayer() {
                     value={soumissionForm.description}
                     // onChange={(e) => setSoumissionDescription(e.target.value)}
                     onChange={handleChange}
-                    placeholder="Un mot sur ta soumission pour ton professeur…"
+                    placeholder={t("Un mot sur ta soumission pour ton professeur…")}
                     className="w-full resize-none rounded-xl border border-ivory-dark  px-4 py-2.5 font-body text-sm text-ink placeholder:text-ink-soft/60 focus:border-coral/40 focus:outline-none"
                   />
                 </div>
@@ -394,20 +375,16 @@ export default function LessonPlayer() {
                     className="rounded-full bg-coral px-5 py-2.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
                   >
                     {soumissionEnvoi
-                      ? "Envoi en cours…"
-                      : "Envoyer au professeur"}
+                      ? t("Envoi en cours…")
+                      : t("Envoyer au professeur")}
                   </button>
 
                   {soumissionStatut === "success" && (
                     <p className="flex items-center gap-1.5 font-body text-xs font-semibold text-coral-dark">
-                      <HiOutlineCheckCircle size={14} />
-                      Soumission envoyée avec succès !
-                    </p>
+                      <HiOutlineCheckCircle size={14} />{t("Soumission envoyée avec succès !")}</p>
                   )}
                   {soumissionStatut === "error" && (
-                    <p className="font-body text-xs font-semibold text-brick">
-                      Une erreur est survenue, réessaie.
-                    </p>
+                    <p className="font-body text-xs font-semibold text-brick">{t("Une erreur est survenue, réessaie.")}</p>
                   )}
                 </div>
               </form>
@@ -421,9 +398,7 @@ export default function LessonPlayer() {
           as="aside"
           className="rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-5 "
         >
-          <p className="mb-3 font-mono text-xs uppercase tracking-wide text-ink-soft">
-            Plan du cours
-          </p>
+          <p className="mb-3 font-mono text-xs uppercase tracking-wide text-ink-soft">{t("Plan du cours")}</p>
           <div className="space-y-1">
             {lessons &&
               lessons?.map((l) => (
@@ -461,14 +436,10 @@ export default function LessonPlayer() {
           delay={180}
           className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
         >
-          <h3 className="mb-4 font-display text-base font-semibold text-ink">
-            Ressources de la leçon
-          </h3>
+          <h3 className="mb-4 font-display text-base font-semibold text-ink">{t("Ressources de la leçon")}</h3>
 
           {resource.length === 0 ? (
-            <p className="font-body text-sm text-ink-soft">
-              Cette leçon n'a pas encore de ressource.
-            </p>
+            <p className="font-body text-sm text-ink-soft">{t("Cette leçon n'a pas encore de ressource.")}</p>
           ) : (
             <div className="space-y-3">
               {resource.map((r) => {
@@ -494,7 +465,7 @@ export default function LessonPlayer() {
                           {r.titre || "_"}
                         </p>
                         <p className="font-body text-xs text-ink-soft">
-                          {RESOURCE_LABEL[r.type] || "Ressource"}
+                          {RESOURCE_LABEL[r.type] || t("Ressource")}
                           {r.duree && ` · ${r.duree}`}
                         </p>
                       </div>
@@ -506,7 +477,7 @@ export default function LessonPlayer() {
                         rel="noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         className="shrink-0 text-ink-soft transition-colors hover:text-coral-dark"
-                        aria-label="Télécharger le fichier"
+                        aria-label={t("Télécharger le fichier")}
                       >
                         <HiOutlineArrowDownTray size={16} />
                       </a>

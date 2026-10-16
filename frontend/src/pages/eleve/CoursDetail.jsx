@@ -27,6 +27,7 @@ import {
 import useGetCour from "../../app/hooks/useGetCour";
 import { BASE_URL } from "../../app/api/api";
 import { capitalize } from "../../lib/formatFunction";
+import { useLang } from "../../app/hooks/useLang";
 
 const INCLUS = [
   { icon: HiOutlineVideoCamera, label: "Leçons vidéo téléchargeables" },
@@ -43,6 +44,7 @@ const NIVEAU_BADGE = {
 };
 
 export default function CourseDetail() {
+  const { t } = useLang();
   const { id } = useParams();
   const c = COURSES.find((x) => String(x.id) === id) || COURSES[0];
   const [fav, setFav] = useState(false);
@@ -69,7 +71,7 @@ export default function CourseDetail() {
 
   if (!courDetail || !lesson) {
     return (
-      <p className="font-body text-sm text-ink-soft">Chargement du cours…</p>
+      <p className="font-body text-sm text-ink-soft">{t("Chargement du cours…")}</p>
     );
   }
 
@@ -79,8 +81,7 @@ export default function CourseDetail() {
         to="/eleve/formation"
         className="inline-flex w-fit items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
       >
-        <HiOutlineChevronLeft size={13} /> Retour au formation
-      </Link>
+        <HiOutlineChevronLeft size={13} />{" "}{t("Retour au formation")}</Link>
 
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
@@ -119,9 +120,7 @@ export default function CourseDetail() {
                   {courDetail.duree}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <HiOutlineBookOpen size={14} className="text-coral-dark" />
-                  {lesson.length} leçons
-                </span>
+                  <HiOutlineBookOpen size={14} className="text-coral-dark" />{t("{{length}} leçons", { length: lesson.length })}</span>
               </div>
             </div>
           </AnimatedSection>
@@ -131,9 +130,7 @@ export default function CourseDetail() {
             delay={60}
             className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
           >
-            <h3 className="mb-3 font-display text-lg font-semibold text-ink">
-              À propos de ce cours
-            </h3>
+            <h3 className="mb-3 font-display text-lg font-semibold text-ink">{t("À propos de ce cours")}</h3>
             <p className="max-w-2xl font-body text-sm leading-relaxed text-ink-soft">
               {capitalize(courDetail.description)}
             </p>
@@ -141,9 +138,7 @@ export default function CourseDetail() {
 
           {/* Bloc 3 — Contenu / leçons */}
           <AnimatedSection delay={120}>
-            <h3 className="mb-3 font-display text-lg font-semibold text-ink">
-              Contenu du cours
-            </h3>
+            <h3 className="mb-3 font-display text-lg font-semibold text-ink">{t("Contenu du cours")}</h3>
             <div className="divide-y divide-ivory-dark overflow-hidden rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10">
               {lesson.map((l) => (
                 <Link
@@ -175,9 +170,7 @@ export default function CourseDetail() {
 
           {/* Bloc 4 — Avis */}
           <AnimatedSection delay={160}>
-            <h3 className="mb-3 font-display text-lg font-semibold text-ink">
-              Avis des élèves
-            </h3>
+            <h3 className="mb-3 font-display text-lg font-semibold text-ink">{t("Avis des élèves")}</h3>
             <div className="space-y-4">
               {AVIS_COURS.map((a) => (
                 <div
@@ -199,7 +192,7 @@ export default function CourseDetail() {
                     </span>
                   </div>
                   <p className="mt-2 font-body text-sm leading-relaxed text-ink-soft">
-                    {a.texte}
+                    {t(a.texte)}
                   </p>
                 </div>
               ))}
@@ -221,20 +214,18 @@ export default function CourseDetail() {
               size={16}
               className={fav ? "fill-coral text-coral" : "text-ink-soft"}
             />
-            {fav ? "Dans mes favoris" : "Ajouter aux favoris"}
+            {fav ? t("Dans mes favoris") : t("Ajouter aux favoris")}
           </button>
 
           <div className="mt-6 space-y-2.5 border-t border-ivory-dark pt-5">
-            <p className="mb-1 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-              Ce cours inclut
-            </p>
+            <p className="mb-1 font-mono text-[11px] uppercase tracking-wide text-ink-soft">{t("Ce cours inclut")}</p>
             {INCLUS.map((it) => (
               <p
                 key={it.label}
                 className="flex items-center gap-2.5 font-body text-xs text-ink-soft"
               >
                 <it.icon size={14} className="shrink-0 text-coral-dark" />{" "}
-                {it.label}
+                {t(it.label)}
               </p>
             ))}
           </div>

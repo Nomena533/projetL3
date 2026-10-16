@@ -16,6 +16,7 @@ import useGetCour from "../../app/hooks/useGetCour";
 import { BASE_URL } from "../../app/api/api";
 import { getLevel } from "../../app/api/levelApi";
 import { capitalize } from "../../lib/formatFunction";
+import { useLang } from "../../app/hooks/useLang";
 
 // Champ select stylé
 function SelectField({ label, name, value, onChange, options }) {
@@ -45,6 +46,7 @@ function SelectField({ label, name, value, onChange, options }) {
 
 // Champ d'import d'image avec aperçu
 function ImageField({ label, name, defaultValue, onChange, onPreviewChange }) {
+  const { t } = useLang();
   const [preview, setPreview] = useState(defaultValue || null);
 
   useEffect(() => {
@@ -79,24 +81,20 @@ function ImageField({ label, name, defaultValue, onChange, onPreviewChange }) {
           <>
             <img
               src={preview}
-              alt="Aperçu de l'image du cours"
+              alt={t("Aperçu de l'image du cours")}
               className="h-full w-full object-cover"
             />
 
             <div className="absolute inset-0 flex items-center justify-center bg-ink/0 opacity-0 transition-all duration-300 group-hover:bg-ink/50 group-hover:opacity-100">
               <span className="flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wide text-ivory">
-                <HiOutlinePhoto size={15} />
-                Changer l'image
-              </span>
+                <HiOutlinePhoto size={15} />{t("Changer l'image")}</span>
             </div>
           </>
         ) : (
           <div className="flex flex-col items-center gap-1.5 text-ink-soft">
             <HiOutlinePhoto size={22} />
 
-            <span className="text-center font-body text-xs">
-              Cliquer pour importer une image
-            </span>
+            <span className="text-center font-body text-xs">{t("Cliquer pour importer une image")}</span>
           </div>
         )}
       </div>
@@ -133,6 +131,7 @@ function TextAreaField({ label, name, value, onChange }) {
 }
 
 export default function ProfCourEditeur() {
+  const { t } = useLang();
   const { id } = useParams();
 
   const isEditMode = Boolean(id);
@@ -296,8 +295,8 @@ export default function ProfCourEditeur() {
       navigate("/professeur/mescours", {
         state: {
           success: id
-            ? "Le cour a été modifié avec succès !"
-            : "Le cour a été crée avec succès !",
+            ? t("Le cour a été modifié avec succès !")
+            : t("Le cour a été crée avec succès !"),
         },
       });
     } catch (error) {
@@ -315,7 +314,7 @@ export default function ProfCourEditeur() {
 
   if (id && courDetail == null) {
     return (
-      <p className="font-body text-sm text-ink-soft">Chargement du cours…</p>
+      <p className="font-body text-sm text-ink-soft">{t("Chargement du cours…")}</p>
     );
   }
 
@@ -326,18 +325,14 @@ export default function ProfCourEditeur() {
         onClick={() => navigate("/professeur/mescours")}
         className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
       >
-        <HiOutlineChevronLeft size={13} />
-        Retour à mes cours
-      </button>
+        <HiOutlineChevronLeft size={13} />{t("Retour à mes cours")}</button>
 
       {/* Titre de la page */}
       <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-          Éditeur de cours
-        </span>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Éditeur de cours")}</span>
 
         <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
-          {id ? "Modifier le cours" : "Nouveau cours"}
+          {id ? t("Modifier le cours") : t("Nouveau cours")}
         </h2>
       </AnimatedSection>
 
@@ -352,7 +347,7 @@ export default function ProfCourEditeur() {
             <div className="grid w-full gap-6 lg:grid-cols-[320px_1fr]">
               {/* Image */}
               <ImageField
-                label="Image du cours"
+                label={t("Image du cours")}
                 name="image"
                 defaultValue={imagePreview}
                 onChange={handleImageChange}
@@ -362,15 +357,15 @@ export default function ProfCourEditeur() {
               <div className="space-y-4">
                 {/* Titre */}
                 <FormField
-                  label="Titre du cours"
-                  placeholder="Ex. Valiha — Les fondamentaux"
+                  label={t("Titre du cours")}
+                  placeholder={t("Ex. Valiha — Les fondamentaux")}
                   name="titre"
                   value={form.titre}
                   onChange={handleChange}
                 />
                 {/* Description */}
                 <TextAreaField
-                  label="Description"
+                  label={t("Description")}
                   name="description"
                   value={form.description}
                   onChange={handleChange}
@@ -379,7 +374,7 @@ export default function ProfCourEditeur() {
                 <div className="grid gap-4 sm:grid-cols-3">
                   {/* Instrument */}
                   <SelectField
-                    label="Instrument"
+                    label={t("Instrument")}
                     options={instrumentList}
                     name="instrument_id"
                     value={form.instrument_id}
@@ -387,7 +382,7 @@ export default function ProfCourEditeur() {
                   />
                   {/* Niveau */}
                   <SelectField
-                    label="Niveau"
+                    label={t("Niveau")}
                     options={levelList}
                     name="niveau_id"
                     value={form.niveau_id}
@@ -402,8 +397,8 @@ export default function ProfCourEditeur() {
                   /> */}
                   {/* Durée */}
                   <FormField
-                    label="Durée du cours"
-                    placeholder="Ex. 4h30"
+                    label={t("Durée du cours")}
+                    placeholder={t("Ex. 4h30")}
                     name="duree"
                     value={form.duree}
                     onChange={handleChange}
@@ -422,11 +417,7 @@ export default function ProfCourEditeur() {
               size={20}
               className="mt-0.5 shrink-0 text-coral-dark"
             />
-            <p className="font-body text-sm leading-relaxed text-ink-soft">
-              Ce formulaire crée uniquement les informations générales du cours.
-              Une fois enregistré, tu pourras ajouter ses leçons (vidéo, PDF ou
-              audio) depuis sa page de détail.
-            </p>
+            <p className="font-body text-sm leading-relaxed text-ink-soft">{t("Ce formulaire crée uniquement les informations générales du cours. Une fois enregistré, tu pourras ajouter ses leçons (vidéo, PDF ou audio) depuis sa page de détail.")}</p>
           </AnimatedSection>
 
           {/* Bouton */}
@@ -434,9 +425,7 @@ export default function ProfCourEditeur() {
             <button
               onClick={() => setConfirmOpen(true)}
               className="rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
-            >
-              Enregistrer le brouillon
-            </button>
+            >{t("Enregistrer le brouillon")}</button>
           </AnimatedSection>
         </div>
 
@@ -446,16 +435,14 @@ export default function ProfCourEditeur() {
             delay={80}
             className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6"
           >
-            <span className="font-mono text-xs uppercase tracking-wide text-ink-soft">
-              Aperçu de la fiche
-            </span>
+            <span className="font-mono text-xs uppercase tracking-wide text-ink-soft">{t("Aperçu de la fiche")}</span>
 
             <div className="overflow-hidden rounded-xl border border-ivory-dark">
               <div className="flex aspect-video w-full items-center justify-center bg-ivory-dark/40">
                 {imagePreview ? (
                   <img
                     src={imagePreview}
-                    alt="Aperçu du cours"
+                    alt={t("Aperçu du cours")}
                     className="h-full w-full object-cover"
                   />
                 ) : (
@@ -464,10 +451,10 @@ export default function ProfCourEditeur() {
               </div>
               <div className="space-y-1.5 p-4">
                 <p className="line-clamp-1 font-display text-sm font-semibold text-ink">
-                  {form.titre || "Titre du cours"} - {selectedNiveau?.name || "Niveau"}
+                  {form.titre || t("Titre du cours")} - {selectedNiveau?.name || t("Niveau")}
                 </p>
                 <p className="font-body text-xs text-ink-soft">
-                  {selectedInstrument?.name || "Instrument"}
+                  {selectedInstrument?.name || t("Instrument")}
                   {form.duree && ` · ${form.duree}`}
                 </p>
                 {/* <p className="font-mono text-sm text-coral-dark">
@@ -483,28 +470,16 @@ export default function ProfCourEditeur() {
             delay={110}
             className="space-y-3 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6"
           >
-            <span className="font-mono text-xs uppercase tracking-wide text-ink-soft">
-              Conseils
-            </span>
+            <span className="font-mono text-xs uppercase tracking-wide text-ink-soft">{t("Conseils")}</span>
             <ul className="space-y-2.5 font-body text-xs leading-relaxed text-ink-soft">
               <li className="flex gap-2">
-                <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-coral" />
-                Choisis un titre clair, avec l'instrument et le niveau visé.
-              </li>
+                <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-coral" />{t("Choisis un titre clair, avec l'instrument et le niveau visé.")}</li>
               <li className="flex gap-2">
-                <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-coral" />
-                Une image lumineuse et nette donne davantage envie de
-                s'inscrire.
-              </li>
+                <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-coral" />{t("Une image lumineuse et nette donne davantage envie de s'inscrire.")}</li>
               <li className="flex gap-2">
-                <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-coral" />
-                Indique la durée totale réelle du cours, pas seulement d'une
-                leçon.
-              </li>
+                <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-coral" />{t("Indique la durée totale réelle du cours, pas seulement d'une leçon.")}</li>
               <li className="flex gap-2">
-                <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-coral" />
-                Décris ce que l'élève saura faire une fois le cours terminé.
-              </li>
+                <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-coral" />{t("Décris ce que l'élève saura faire une fois le cours terminé.")}</li>
             </ul>
           </AnimatedSection>
         </div>
@@ -514,28 +489,21 @@ export default function ProfCourEditeur() {
       <Modal
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        title="Enregistrer ce cours ?"
+        title={t("Enregistrer ce cours ?")}
       >
-        <p className="font-body text-sm leading-relaxed text-ink-soft">
-          Le cours sera créé avec les informations saisies. Tu pourras ensuite
-          lui ajouter des leçons et le modifier à tout moment.
-        </p>
+        <p className="font-body text-sm leading-relaxed text-ink-soft">{t("Le cours sera créé avec les informations saisies. Tu pourras ensuite lui ajouter des leçons et le modifier à tout moment.")}</p>
 
         <div className="mt-6 flex gap-3">
           <button
             onClick={() => setConfirmOpen(false)}
             className="flex-1 rounded-full border border-ivory-dark py-2.5 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:bg-ivory-dark/40"
-          >
-            Annuler
-          </button>
+          >{t("Annuler")}</button>
 
           <button
             onClick={handleSubmit}
             className="flex flex-1 items-center justify-center gap-2 rounded-full bg-coral py-2.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:bg-coral-dark"
           >
-            <HiOutlineCheckCircle size={16} />
-            Enregistrer
-          </button>
+            <HiOutlineCheckCircle size={16} />{t("Enregistrer")}</button>
         </div>
       </Modal>
     </div>

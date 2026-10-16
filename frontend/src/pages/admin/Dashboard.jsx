@@ -17,6 +17,8 @@ import { useMemo } from "react";
 import { useUser } from "../../app/hooks/useUser";
 import useGetCour from "../../app/hooks/useGetCour";
 import usePaiement from "../../app/hooks/usePaiement";
+import { useLang } from "../../app/hooks/useLang";
+import { dateLocale } from "../../lib/i18nRuntime";
 
 const QUICK_LINKS = [
   {
@@ -82,6 +84,7 @@ function convertirDate(date) {
 }
 
 export default function AdminDashboard() {
+  const { t } = useLang();
   const { inscriptions } = useInscription();
   const { userList } = useUser();
   const { cours, courBrouillon } = useGetCour();
@@ -137,7 +140,7 @@ export default function AdminDashboard() {
           "0",
         )}`,
 
-        label: date.toLocaleDateString("fr-FR", {
+        label: date.toLocaleDateString(dateLocale(), {
           month: "short",
         }),
 
@@ -173,35 +176,31 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-10">
       <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-          Administration
-        </span>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
-          Vue d'ensemble
-        </h2>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Administration")}</span>
+        <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Vue d'ensemble")}</h2>
       </AnimatedSection>
 
       <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={HiOutlineUsers}
-          label="Utilisateurs"
+          label={t("Utilisateurs")}
           value={userList.length || 0}
         />
         <StatCard
           icon={HiOutlineBookOpen}
-          label="Cours publiés"
+          label={t("Cours publiés")}
           value={cours.filter((c) => c.statut === "publié").length}
           delay={80}
         />
         <StatCard
           icon={HiOutlineBanknotes}
-          label="Revenus ce mois"
+          label={t("Revenus ce mois")}
           value={formatAriary(revenuMois)}
           delay={160}
         />
         <StatCard
           icon={HiOutlineClipboardDocumentCheck}
-          label="Cours à valider"
+          label={t("Cours à valider")}
           value={courBrouillon.length || 0}
           delay={240}
         />
@@ -213,9 +212,7 @@ export default function AdminDashboard() {
       >
         <div className="mb-6 flex items-center gap-2">
           <HiOutlineChartBar size={17} className="text-coral-dark" />
-          <h3 className="font-display text-lg font-semibold text-ink">
-            Inscriptions — 6 derniers mois
-          </h3>
+          <h3 className="font-display text-lg font-semibold text-ink">{t("Inscriptions — 6 derniers mois")}</h3>
         </div>
         <div className="flex h-40 items-stretch gap-3 sm:gap-4">
           {statistiques.map((m) => {
@@ -241,13 +238,13 @@ export default function AdminDashboard() {
                       height: `${hauteur}%`,
                       minHeight: m.total > 0 ? "2px" : "0",
                     }}
-                    title={`${m.total} inscription(s) en ${m.label}`}
+                    title={t("{{total}} inscription(s) en {{label}}", { total: m.total, label: m.label })}
                   />
                 </div>
 
                 {/* Mois */}
                 <span className="font-mono text-[10px] uppercase tracking-wide text-ink-soft">
-                  {m.label}
+                  {t(m.label)}
                 </span>
               </div>
             );
@@ -268,7 +265,7 @@ export default function AdminDashboard() {
               <l.icon size={17} />
             </span>
             <span className="font-body text-sm font-semibold text-ink">
-              {l.label}
+              {t(l.label)}
             </span>
             <HiOutlineArrowRight
               className="ml-auto text-ink-soft opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100"

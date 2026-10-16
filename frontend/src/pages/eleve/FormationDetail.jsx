@@ -20,6 +20,8 @@ import { useEffect } from "react";
 import useGetCour from "../../app/hooks/useGetCour";
 import { HiMusicNote } from "react-icons/hi";
 import { capitalize } from "../../lib/formatFunction";
+import { useLang } from "../../app/hooks/useLang";
+import { dateLocale } from "../../lib/i18nRuntime";
 
 const TONE_BG = {
   coral: "bg-coral",
@@ -28,6 +30,7 @@ const TONE_BG = {
 };
 
 export default function FormationDetail() {
+  const { t } = useLang();
   const { niveauName } = useParams();
 
   const { user } = useAuth();
@@ -103,7 +106,7 @@ export default function FormationDetail() {
     if (!date) return "—";
     const d = date instanceof Date ? date : new Date(date);
     if (Number.isNaN(d.getTime())) return "—";
-    return d.toLocaleDateString("fr-FR", {
+    return d.toLocaleDateString(dateLocale(), {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -118,9 +121,9 @@ export default function FormationDetail() {
   const examenInfo = (() => {
     if (!dateExamen || Number.isNaN(dateExamen.getTime())) {
       return {
-        label: "À planifier",
+        label: t("À planifier"),
         badge: "bg-ivory-dark text-ink-soft",
-        hint: "La date sera communiquée à la fin du niveau.",
+        hint: t("La date sera communiquée à la fin du niveau."),
       };
     }
 
@@ -128,29 +131,29 @@ export default function FormationDetail() {
 
     if (jours < 0) {
       return {
-        label: "Passé",
+        label: t("Passé"),
         badge: "bg-ivory-dark text-ink-soft",
-        hint: "L'examen a déjà eu lieu.",
+        hint: t("L'examen a déjà eu lieu."),
       };
     }
     if (jours === 0) {
       return {
-        label: "Aujourd'hui",
+        label: t("Aujourd'hui"),
         badge: "bg-coral text-white",
-        hint: "Bonne chance !",
+        hint: t("Bonne chance !"),
       };
     }
     if (jours <= 14) {
       return {
-        label: `Dans ${jours} jour${jours > 1 ? "s" : ""}`,
+        label: t(jours > 1 ? "Dans {{jours}} jours" : "Dans {{jours}} jour", { jours }),
         badge: "bg-coral text-white",
-        hint: "Pensez à réviser vos cours et exercices.",
+        hint: t("Pensez à réviser vos cours et exercices."),
       };
     }
     return {
-      label: `Dans ${jours} jours`,
+      label: t("Dans {{jours}} jours", { jours }),
       badge: "bg-amber-100 text-coral-dark",
-      hint: "Après la fin du niveau, vous passerez l'examen de passage.",
+      hint: t("Après la fin du niveau, vous passerez l'examen de passage."),
     };
   })();
 
@@ -162,7 +165,7 @@ export default function FormationDetail() {
 
   if (!formation) {
     return (
-      <p className="font-body text-sm text-ink-soft">Chargement du cours…</p>
+      <p className="font-body text-sm text-ink-soft">{t("Chargement du cours…")}</p>
     );
   }
 
@@ -174,13 +177,10 @@ export default function FormationDetail() {
         to="/eleve/formation"
         className="inline-flex w-fit items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
       >
-        <HiOutlineChevronLeft size={13} /> Retour à mon parcours
-      </Link>
+        <HiOutlineChevronLeft size={13} />{" "}{t("Retour à mon parcours")}</Link>
 
       <AnimatedSection>
-        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-          Niveau {formation.level.id}
-        </span>
+        <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Niveau {{id}}", { id: formation.level.id })}</span>
         <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
           {capitalize(formation.level.name)}
         </h2>
@@ -189,27 +189,19 @@ export default function FormationDetail() {
 
       <AnimatedSection className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="font-display text-lg font-semibold text-ink">
-            Progression du niveau
-          </h3>
-          <span className="font-mono text-[11px] uppercase tracking-wide text-coral-dark">
-            {Math.round(progressionValues.progression)}% terminé
-          </span>
+          <h3 className="font-display text-lg font-semibold text-ink">{t("Progression du niveau")}</h3>
+          <span className="font-mono text-[11px] uppercase tracking-wide text-coral-dark">{t("{{v0}}% terminé", { v0: Math.round(progressionValues.progression) })}</span>
         </div>
 
         <div className="mt-6 flex items-start justify-between">
           <div className="flex flex-col">
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-ink">
-              Début
-            </span>
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-ink">{t("Début")}</span>
             <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
               {formatDate(formation.date_debut)}
             </span>
           </div>
           <div className="flex flex-col items-end">
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-ink">
-              Fin
-            </span>
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-ink">{t("Fin")}</span>
             <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
               {formatDate(dateFin)}
             </span>
@@ -223,9 +215,7 @@ export default function FormationDetail() {
           <div
             className="absolute left-3 top-6 h-0.5 -translate-y-1/2 bg-coral transition-all duration-500"
             style={{
-              width: `calc(${progressionValues.progression}% - ${
-                progressionValues.progression >= 100 ? "24px" : "12px"
-              })`,
+              width: `calc(${progressionValues.progression}% - ${progressionValues.progression >= 100 ? "24px" : "12px"})`,
             }}
           />
 
@@ -258,16 +248,12 @@ export default function FormationDetail() {
                   >
                     {estTermine && <HiOutlineCheckCircle size={14} />}
                   </div>
-                  <span className="font-mono text-[10px] uppercase tracking-wide text-ink-soft">
-                    Mois {mois}
-                  </span>
+                  <span className="font-mono text-[10px] uppercase tracking-wide text-ink-soft">{t("Mois {{mois}}", { mois })}</span>
                   <span
                     className={`font-mono text-[10px] uppercase tracking-wide ${
                       estActuel ? "text-coral-dark" : "text-transparent"
                     }`}
-                  >
-                    Actuel
-                  </span>
+                  >{t("Actuel")}</span>
                 </div>
               );
             })}
@@ -275,13 +261,9 @@ export default function FormationDetail() {
         </div>
 
         <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-          <span>
-            Mois écoulés :{" "}
-            <span className="text-ink">{progressionValues.moisEcoules}</span>
+          <span>{t("Mois écoulés :")}{" "}<span className="text-ink">{progressionValues.moisEcoules}</span>
           </span>
-          <span>
-            Mois restants :{" "}
-            <span className="text-ink">{progressionValues.moisRestants}</span>
+          <span>{t("Mois restants :")}{" "}<span className="text-ink">{progressionValues.moisRestants}</span>
           </span>
         </div>
       </AnimatedSection>
@@ -297,11 +279,9 @@ export default function FormationDetail() {
               <HiOutlineAcademicCap className="opacity-90" />
             </div>
             <div>
-              <h3 className="font-display text-lg font-semibold text-ink">
-                Examen de passage
-              </h3>
+              <h3 className="font-display text-lg font-semibold text-ink">{t("Examen de passage")}</h3>
               <p className="mt-0.5 font-body text-sm text-ink-soft">
-                {examenInfo.hint}
+                {t(examenInfo.hint)}
               </p>
             </div>
           </div>
@@ -309,7 +289,7 @@ export default function FormationDetail() {
           <span
             className={`rounded-full px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wide ${examenInfo.badge}`}
           >
-            {examenInfo.label}
+            {t(examenInfo.label)}
           </span>
         </div>
 
@@ -318,9 +298,7 @@ export default function FormationDetail() {
           <div className="flex items-center gap-2.5 rounded-xl border border-ivory-dark bg-ivory/40 px-4 py-3">
             <HiOutlineCheckCircle size={18} className="shrink-0 text-ink-soft" />
             <div className="flex flex-col">
-              <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                Fin du niveau
-              </span>
+              <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">{t("Fin du niveau")}</span>
               <span className="font-body text-sm text-ink">
                 {formatDate(dateFin)}
               </span>
@@ -334,11 +312,9 @@ export default function FormationDetail() {
               className="shrink-0 text-coral-dark"
             />
             <div className="flex flex-col">
-              <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                Date de l'examen
-              </span>
+              <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">{t("Date de l'examen")}</span>
               <span className="font-body text-sm font-semibold text-ink">
-                {dateExamen ? formatDate(dateExamen) : "À définir"}
+                {dateExamen ? formatDate(dateExamen) : t("À définir")}
               </span>
             </div>
           </div>
@@ -369,24 +345,18 @@ export default function FormationDetail() {
                       </span>
                     </div>
                     <div>
-                      <h3 className="font-display text-lg font-semibold text-ink">
-                        Mes cours de {instrument.name}
-                      </h3>
+                      <h3 className="font-display text-lg font-semibold text-ink">{t("Mes cours de {{name}}", { name: instrument.name })}</h3>
                     </div>
                   </div>
                 </div>
 
                 <div className="mt-6 grid gap-6 sm:grid-cols-2">
                   <div>
-                    <h4 className="mb-3 font-body text-xs font-semibold uppercase tracking-wide text-ink-soft">
-                      Cours suivis
-                    </h4>
+                    <h4 className="mb-3 font-body text-xs font-semibold uppercase tracking-wide text-ink-soft">{t("Cours suivis")}</h4>
                     <div className="divide-y divide-ivory-dark overflow-hidden rounded-xl border border-ivory-dark bg-ivory/40">
                       {courFormation.length === 0 ? (
                         <div className="flex items-center justify-center gap-2.5 px-4 py-3 transition-colors duration-200 bg-amber-200/40 hover:bg-amber-300/40 border border-amber-400 ">
-                          <span className="font-body text-sm text-ink text-center">
-                            Aucune cour publiée pour l'instant
-                          </span>
+                          <span className="font-body text-sm text-ink text-center">{t("Aucune cour publiée pour l'instant")}</span>
                         </div>
                       ) : (
                         courFormation.map((c) => (
@@ -412,9 +382,7 @@ export default function FormationDetail() {
                   </div>
 
                   <div>
-                    <h4 className="mb-3 font-body text-xs font-semibold uppercase tracking-wide text-ink-soft">
-                      Exercices réalisés
-                    </h4>
+                    <h4 className="mb-3 font-body text-xs font-semibold uppercase tracking-wide text-ink-soft">{t("Exercices réalisés")}</h4>
                     <div className="divide-y divide-ivory-dark overflow-hidden rounded-xl border border-ivory-dark bg-ivory/40">
                       <div
                         key=""
@@ -424,12 +392,8 @@ export default function FormationDetail() {
                           size={16}
                           className="shrink-0 text-coral-dark"
                         />
-                        <span className="flex-1 font-body text-sm text-ink">
-                          TITRE
-                        </span>
-                        <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-                          NOTE
-                        </span>
+                        <span className="flex-1 font-body text-sm text-ink">{t("TITRE")}</span>
+                        <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">{t("NOTE")}</span>
                       </div>
                     </div>
                   </div>

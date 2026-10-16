@@ -18,6 +18,7 @@ import {
   updateRessource,
 } from "../../app/api/ressourceApi";
 import { BASE_URL } from "../../app/api/api";
+import { useLang } from "../../app/hooks/useLang";
 
 const RESSOURCES = [
   { value: "video", label: "Vidéo", accept: "video/*" },
@@ -59,6 +60,7 @@ function fileNameWithoutExt(name) {
 
 // Champ select stylé, aligné sur le pattern déjà utilisé dans Editeur.jsx
 function SelectField({ label, value, onChange, options, compact }) {
+  const { t } = useLang();
   return (
     <label className="block">
       {label && (
@@ -75,7 +77,7 @@ function SelectField({ label, value, onChange, options, compact }) {
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
-            {o.label}
+            {t(o.label)}
           </option>
         ))}
       </select>
@@ -84,6 +86,7 @@ function SelectField({ label, value, onChange, options, compact }) {
 }
 
 export default function ProfRessourceEditeur() {
+  const { t } = useLang();
   const { id: coursId, lessonId, resourceId } = useParams();
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -168,7 +171,7 @@ export default function ProfRessourceEditeur() {
       })
       .catch((err) => {
         console.error(
-          "Erreur lors de la récupération de la ressource",
+          t("Erreur lors de la récupération de la ressource"),
           err.response?.data,
         );
       })
@@ -201,11 +204,11 @@ export default function ProfRessourceEditeur() {
       try {
         await updateRessource(resourceId, formData);
         navigate(`/professeur/cours/${coursId}/lecons/${lessonId}/details`, {
-          state: { success: "La ressource a été modifiée avec succès !" },
+          state: { success: t("La ressource a été modifiée avec succès !") },
         });
       } catch (err) {
         console.error("Erreur lors de la modification", err.response?.data);
-        setError("Une erreur est survenue lors de l'enregistrement.");
+        setError(t("Une erreur est survenue lors de l'enregistrement."));
       } finally {
         setSubmitting(false);
       }
@@ -213,7 +216,7 @@ export default function ProfRessourceEditeur() {
     }
 
     if (staged.length === 0) {
-      setError("Ajoute au moins un fichier avant d'enregistrer.");
+      setError(t("Ajoute au moins un fichier avant d'enregistrer."));
       return;
     }
 
@@ -232,13 +235,13 @@ export default function ProfRessourceEditeur() {
         state: {
           success:
             staged.length > 1
-              ? "Les ressources ont été ajoutées avec succès !"
-              : "La ressource a été ajoutée avec succès !",
+              ? t("Les ressources ont été ajoutées avec succès !")
+              : t("La ressource a été ajoutée avec succès !"),
         },
       });
     } catch (err) {
       console.error("Erreur lors de l'ajout", err.response?.data);
-      setError("Une erreur est survenue lors de l'enregistrement.");
+      setError(t("Une erreur est survenue lors de l'enregistrement."));
     } finally {
       setSubmitting(false);
     }
@@ -246,9 +249,7 @@ export default function ProfRessourceEditeur() {
 
   if (isEditMode && loadingRessource) {
     return (
-      <p className="font-body text-sm text-ink-soft">
-        Chargement de la ressource…
-      </p>
+      <p className="font-body text-sm text-ink-soft">{t("Chargement de la ressource…")}</p>
     );
   }
 
@@ -260,15 +261,14 @@ export default function ProfRessourceEditeur() {
         }
         className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
       >
-        <HiOutlineChevronLeft size={13} /> Retour à la leçon
-      </button>
+        <HiOutlineChevronLeft size={13} />{" "}{t("Retour à la leçon")}</button>
 
       <AnimatedSection>
         <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-          {isEditMode ? "Modifier la ressource" : "Nouvelles ressources"}
+          {isEditMode ? t("Modifier la ressource") : t("Nouvelles ressources")}
         </span>
         <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
-          {isEditMode ? "Modifier la ressource" : "Ajouter des ressources"}
+          {isEditMode ? t("Modifier la ressource") : t("Ajouter des ressources")}
         </h2>
       </AnimatedSection>
 
@@ -281,8 +281,8 @@ export default function ProfRessourceEditeur() {
           className="space-y-4 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7"
         >
           <FormField
-            label="Titre de la ressource"
-            placeholder="Ex. Démonstration — position des mains"
+            label={t("Titre de la ressource")}
+            placeholder={t("Ex. Démonstration — position des mains")}
             name="titre"
             value={editForm.titre}
             onChange={(e) =>
@@ -291,7 +291,7 @@ export default function ProfRessourceEditeur() {
           />
 
           <SelectField
-            label="Type de ressource"
+            label={t("Type de ressource")}
             value={editForm.type}
             onChange={(e) =>
               setEditForm((f) => ({ ...f, type: e.target.value }))
@@ -300,8 +300,7 @@ export default function ProfRessourceEditeur() {
           />
 
           <label className="block">
-            <span className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">
-              Fichier {currentFichier && !editFile && "(remplacer)"}
+            <span className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">{t("Fichier")}{" "}{currentFichier && !editFile && "(remplacer)"}
             </span>
             {currentFichier && !editFile && (
               <a
@@ -309,9 +308,7 @@ export default function ProfRessourceEditeur() {
                 target="_blank"
                 rel="noreferrer"
                 className="mb-2 inline-block font-body text-xs text-coral-dark hover:text-brick"
-              >
-                Voir le fichier actuel →
-              </a>
+              >{t("Voir le fichier actuel →")}</a>
             )}
             <div className="flex items-center gap-3 rounded-xl border-2 border-dashed border-ivory-dark bg-white/70 px-4 py-4">
               <HiOutlineCloudArrowUp
@@ -349,12 +346,8 @@ export default function ProfRessourceEditeur() {
               className="flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-ivory-dark bg-white/70 dark:bg-white/10 px-6 py-10 text-center transition-colors duration-300 hover:border-coral/50"
             >
               <HiOutlineCloudArrowUp size={26} className="text-ink-soft" />
-              <p className="font-body text-sm font-semibold text-ink">
-                Glisse tes fichiers ici, ou clique pour parcourir
-              </p>
-              <p className="font-body text-xs text-ink-soft">
-                Vidéo, audio ou PDF — plusieurs fichiers à la fois
-              </p>
+              <p className="font-body text-sm font-semibold text-ink">{t("Glisse tes fichiers ici, ou clique pour parcourir")}</p>
+              <p className="font-body text-xs text-ink-soft">{t("Vidéo, audio ou PDF — plusieurs fichiers à la fois")}</p>
               <input
                 ref={inputRef}
                 type="file"
@@ -375,16 +368,12 @@ export default function ProfRessourceEditeur() {
               className="space-y-3 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 sm:p-7"
             >
               <div className="mb-1 flex items-center justify-between">
-                <h3 className="font-display text-base font-semibold text-ink">
-                  {staged.length} fichier{staged.length > 1 ? "s" : ""} prêt
-                  {staged.length > 1 ? "s" : ""}
+                <h3 className="font-display text-base font-semibold text-ink">{t(staged.length > 1 ? "{{length}} fichiers prêts" : "{{length}} fichier prêt", { length: staged.length })}
                 </h3>
                 <button
                   onClick={() => inputRef.current?.click()}
                   className="font-mono text-xs font-semibold uppercase tracking-wide text-coral-dark transition-colors hover:text-brick"
-                >
-                  + Ajouter d'autres fichiers
-                </button>
+                >{t("+ Ajouter d'autres fichiers")}</button>
               </div>
 
               {staged.map((s) => {
@@ -402,7 +391,7 @@ export default function ProfRessourceEditeur() {
                       onChange={(e) =>
                         updateStaged(s.localId, { titre: e.target.value })
                       }
-                      placeholder="Titre de la ressource"
+                      placeholder={t("Titre de la ressource")}
                       className="min-w-40 flex-1 rounded-lg border border-ivory-dark bg-white/80 dark:bg-white/10 px-3 py-2 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
                     />
                     <div className="w-32 shrink-0">
@@ -421,7 +410,7 @@ export default function ProfRessourceEditeur() {
                     <button
                       onClick={() => removeStaged(s.localId)}
                       className="shrink-0 text-ink-soft transition-colors hover:text-brick"
-                      aria-label="Retirer ce fichier"
+                      aria-label={t("Retirer ce fichier")}
                     >
                       <HiOutlineTrash size={15} />
                     </button>
@@ -443,19 +432,17 @@ export default function ProfRessourceEditeur() {
         >
           <HiOutlineCheckCircle size={16} />
           {submitting
-            ? "Enregistrement…"
+            ? t("Enregistrement…")
             : isEditMode
-              ? "Enregistrer les modifications"
-              : "Enregistrer les ressources"}
+              ? t("Enregistrer les modifications")
+              : t("Enregistrer les ressources")}
         </button>
         <button
           onClick={() =>
             navigate(`/professeur/cours/${coursId}/lecons/${lessonId}/details`)
           }
           className="rounded-full border border-ivory-dark px-6 py-3 font-body text-sm font-semibold text-ink transition-all duration-300 hover:border-coral/40"
-        >
-          Annuler
-        </button>
+        >{t("Annuler")}</button>
       </AnimatedSection>
     </div>
   );

@@ -12,9 +12,11 @@ import { BASE_URL } from "../app/api/api";
 import AnimatedSection from "./AnimatedSection";
 import FormField from "./FormField";
 import SettingsSection from "./SettingsSection";
+import { useLang } from "../app/hooks/useLang";
 
 // Ce formulaire commun permet aux élèves et aux administrateurs d'enregistrer les champs partagés.
 export default function ProfileAccountForm({ description, roleLabel, showBio = false }) {
+  const { t } = useLang();
   const { user, setUser } = useAuth();
   console.log("user : ", user);
   
@@ -85,7 +87,7 @@ export default function ProfileAccountForm({ description, roleLabel, showBio = f
         validationMessages
           ? Object.values(validationMessages).flat().join(" ")
           : requestError.response?.data?.message ||
-              "La modification du profil a échoué. Réessaie.",
+              t("La modification du profil a échoué. Réessaie."),
       );
     } finally {
       setSaving(false);
@@ -100,13 +102,13 @@ export default function ProfileAccountForm({ description, roleLabel, showBio = f
         <AnimatedSection delay={60}>
           <SettingsSection
             icon={HiOutlineUserCircle}
-            title="Photo de profil"
-            description="Choisis une image claire ou retire la photo actuelle."
+            title={t("Photo de profil")}
+            description={t("Choisis une image claire ou retire la photo actuelle.")}
           >
             <div className="flex items-center gap-4 py-5">
               <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-coral/10 font-display text-lg text-coral-dark">
                 {displayedPhoto ? (
-                  <img src={displayedPhoto} alt="Photo du profil" className="h-full w-full object-cover" />
+                  <img src={displayedPhoto} alt={t("Photo du profil")} className="h-full w-full object-cover" />
                 ) : initials}
               </div>
               <div className="flex flex-col gap-2">
@@ -114,9 +116,7 @@ export default function ProfileAccountForm({ description, roleLabel, showBio = f
                   htmlFor="account-profile-photo"
                   className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-ivory-dark px-4 py-2 font-body text-sm font-semibold text-ink hover:border-coral/40"
                 >
-                  <HiOutlineCamera size={16} />
-                  Changer la photo
-                </label>
+                  <HiOutlineCamera size={16} />{t("Changer la photo")}</label>
                 <input
                   ref={photoInput}
                   id="account-profile-photo"
@@ -143,9 +143,7 @@ export default function ProfileAccountForm({ description, roleLabel, showBio = f
                       setRemovePhoto(true);
                     }}
                     className="text-left font-body text-xs font-medium text-ink-soft hover:text-brick"
-                  >
-                    Supprimer la photo
-                  </button>
+                  >{t("Supprimer la photo")}</button>
                 )}
               </div>
             </div>
@@ -155,12 +153,12 @@ export default function ProfileAccountForm({ description, roleLabel, showBio = f
         <AnimatedSection delay={100}>
           <SettingsSection
             icon={HiOutlineLockClosed}
-            title="Sécurité"
-            description="Laisse ces champs vides pour conserver ton mot de passe actuel."
+            title={t("Sécurité")}
+            description={t("Laisse ces champs vides pour conserver ton mot de passe actuel.")}
           >
             <div className="grid gap-4 py-5 sm:grid-cols-2">
               <FormField
-                label="Nouveau mot de passe"
+                label={t("Nouveau mot de passe")}
                 name="password"
                 type="password"
                 value={form.password}
@@ -168,15 +166,15 @@ export default function ProfileAccountForm({ description, roleLabel, showBio = f
                   setForm((current) => ({ ...current, password: event.target.value }))
                 }
                 autoComplete="new-password"
-                placeholder="8 caractères minimum"
+                placeholder={t("8 caractères minimum")}
               />
               <FormField
-                label="Confirmer le mot de passe"
+                label={t("Confirmer le mot de passe")}
                 type="password"
                 value={passwordConfirmation}
                 onChange={(event) => setPasswordConfirmation(event.target.value)}
                 autoComplete="new-password"
-                placeholder="Confirmer le mot de passe"
+                placeholder={t("Confirmer le mot de passe")}
               />
             </div>
           </SettingsSection>
@@ -186,15 +184,15 @@ export default function ProfileAccountForm({ description, roleLabel, showBio = f
       <AnimatedSection delay={140}>
         <SettingsSection
           icon={HiOutlineIdentification}
-          title="Informations personnelles"
+          title={t("Informations personnelles")}
           description={description}
         >
           <div className="grid gap-4 py-5 sm:grid-cols-2">
             {[
-              ["Prénom", "firstname", "text", "Prénom"],
-              ["Nom", "name", "text", "Nom"],
+              [t("Prénom"), "firstname", "text", t("Prénom")],
+              [t("Nom"), "name", "text", t("Nom")],
               ["E-mail", "email", "email", "email@exemple.com"],
-              ["Téléphone", "telephone", "tel", "034 00 000 00"],
+              [t("Téléphone"), "telephone", "tel", "034 00 000 00"],
             ].map(([label, name, type, placeholder]) => (
               <FormField
                 key={name}
@@ -212,9 +210,7 @@ export default function ProfileAccountForm({ description, roleLabel, showBio = f
             ))}
             {showBio && (
               <label className="sm:col-span-2">
-                <span className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">
-                  Présentation publique
-                </span>
+                <span className="mb-1.5 block font-mono text-xs uppercase tracking-wide text-ink-soft">{t("Présentation publique")}</span>
                 <textarea
                   rows={4}
                   name="bio"
@@ -222,16 +218,14 @@ export default function ProfileAccountForm({ description, roleLabel, showBio = f
                   onChange={(event) =>
                     setForm((current) => ({ ...current, bio: event.target.value }))
                   }
-                  placeholder="Quelques lignes sur toi…"
+                  placeholder={t("Quelques lignes sur toi…")}
                   className="w-full rounded-xl border border-ivory-dark bg-white/70 dark:bg-white/15 px-4 py-3 font-body text-sm text-ink outline-none focus:border-coral"
                 />
               </label>
             )}
           </div>
           {roleLabel && (
-            <div className="border-t border-ivory-dark py-4 font-body text-sm text-ink-soft">
-              Rôle : {roleLabel}
-            </div>
+            <div className="border-t border-ivory-dark py-4 font-body text-sm text-ink-soft">{t("Rôle : {{roleLabel}}", { roleLabel })}</div>
           )}
         </SettingsSection>
       </AnimatedSection>
@@ -244,7 +238,7 @@ export default function ProfileAccountForm({ description, roleLabel, showBio = f
           className="inline-flex items-center gap-2 rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all hover:bg-coral-dark disabled:cursor-wait disabled:opacity-60"
         >
           {saved && <HiOutlineCheckCircle size={16} />}
-          {saving ? "Enregistrement…" : saved ? "Profil enregistré" : "Enregistrer les modifications"}
+          {saving ? t("Enregistrement…") : saved ? t("Profil enregistré") : t("Enregistrer les modifications")}
         </button>
       </AnimatedSection>
     </form>

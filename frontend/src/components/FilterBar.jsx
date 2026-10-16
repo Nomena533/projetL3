@@ -1,4 +1,5 @@
 import { HiOutlineMagnifyingGlass, HiOutlineXMark } from "react-icons/hi2";
+import { useLang } from "../app/hooks/useLang";
 
 /**
  * Barre de filtre réutilisable pour les pages de liste (cours, leçons,
@@ -25,6 +26,7 @@ export default function FilterBar({
   hasActiveFilters = false,
   onReset,
 }) {
+  const { t } = useLang();
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-3 sm:p-3.5">
       <label className="relative min-w-45 flex-1">
@@ -47,10 +49,10 @@ export default function FilterBar({
           onChange={(e) => f.onChange(e.target.value)}
           className="rounded-full border border-ivory-dark bg-white/80 dark:bg-white/10 px-4 py-2.5 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral"
         >
-          <option value="">{f.label}</option>
+          <option value="">{t(f.label)}</option>
           {f.options.map((o) => (
             <option key={o.value} value={o.value}>
-              {o.label}
+              {t(o.label)}
             </option>
           ))}
         </select>
@@ -61,8 +63,7 @@ export default function FilterBar({
           onClick={onReset}
           className="flex shrink-0 items-center gap-1 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-brick"
         >
-          <HiOutlineXMark size={13} /> Réinitialiser
-        </button>
+          <HiOutlineXMark size={13} />{" "}{t("Réinitialiser")}</button>
       )}
 
       {resultCount != null && totalCount != null && (

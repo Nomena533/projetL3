@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Bell, Check, CheckCircle2 } from "../lib/icons";
 import { formatDate } from "../lib/formatFunction";
+import { useLang } from "../app/hooks/useLang";
 
 export default function NotificationBell({
   count = 0,
@@ -9,6 +10,7 @@ export default function NotificationBell({
   markAll,
   idNotification,
 }) {
+  const { t } = useLang();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
 
@@ -35,8 +37,8 @@ export default function NotificationBell({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        title="Notifications"
-        aria-label="Notifications"
+        title={t("Notifications")}
+        aria-label={t("Notifications")}
         aria-haspopup="menu"
         aria-expanded={open}
         className="relative grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-stone-100 dark:hover:bg-stone-600 hover:text-teal-950 dark:hover:text-teal-100"
@@ -55,7 +57,7 @@ export default function NotificationBell({
           className="absolute right-0 z-50 mt-2 w-80 max-w-[90vw] origin-top-right overflow-hidden rounded-lg border border-stone-200 bg-ivory dark:border-ivory-dark shadow-lg shadow-black/5"
         >
           <div className="flex items-center justify-between border-b border-stone-100 dark:border-ivory-dark px-4 py-3">
-            <p className="font-display text-sm text-ink">Notifications</p>
+            <p className="font-display text-sm text-ink">{t("Notifications")}</p>
             {count > 0 && (
               // <span className="font-mono text-xs text-stone-400">
               //   {count} non lue{count > 1 ? "s" : ""}
@@ -66,17 +68,13 @@ export default function NotificationBell({
                 onClick={() => {
                   markAll();
                 }}
-              >
-                Tout lire
-              </button>
+              >{t("Tout lire")}</button>
             )}
           </div>
 
           <div className="max-h-80 overflow-y-auto">
             {items.length === 0 ? (
-              <p className="px-4 py-6 text-center font-body text-sm text-stone-400">
-                Aucune nouvelle notification
-              </p>
+              <p className="px-4 py-6 text-center font-body text-sm text-stone-400">{t("Aucune nouvelle notification")}</p>
             ) : (
               items.map((n) => (
                 <div
@@ -99,7 +97,7 @@ export default function NotificationBell({
                   <div class="ml-3 shrink-0">
                     <button
                       class="mark-read-btn text-xs text-slate-400 hover:text-slate-600"
-                      title="Marquer comme lu"
+                      title={t("Marquer comme lu")}
                       onClick={() => {
                         markAsRead(n.id);
                       }}

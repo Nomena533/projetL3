@@ -21,6 +21,7 @@ import { BASE_URL } from "../../app/api/api";
 import { deleteCour } from "../../app/api/courApi";
 import { capitalize } from "../../lib/formatFunction";
 import Alert from "../../components/Alert";
+import { useLang } from "../../app/hooks/useLang";
 
 // Bandeau d'alerte succès/erreur affiché après une action (ex. création d'un
 // cours). Se ferme automatiquement après quelques secondes, ou manuellement.
@@ -52,6 +53,7 @@ import Alert from "../../components/Alert";
 // }
 
 export default function ProfMesCours() {
+  const { t } = useLang();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -103,19 +105,19 @@ export default function ProfMesCours() {
       // Affiche directement l'alerte
       setAlert({
         type: "success",
-        message: "Le cours a été supprimé avec succès !",
+        message: t("Le cours a été supprimé avec succès !"),
       });
 
       console.log(response.data);
     } catch (error) {
       console.error(
-        "Erreur lors de la suppression du cours",
+        t("Erreur lors de la suppression du cours"),
         error.response?.data,
       );
 
       setAlert({
         type: "error",
-        message: "Une erreur est survenue lors de la suppression du cours.",
+        message: t("Une erreur est survenue lors de la suppression du cours."),
       });
     }
   };
@@ -148,25 +150,20 @@ export default function ProfMesCours() {
     <div className="space-y-6">
       <AnimatedSection className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-            Espace professeur
-          </span>
-          <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">
-            Mes cours
-          </h2>
+          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Espace professeur")}</span>
+          <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Mes cours")}</h2>
         </div>
         <Link
           to="/professeur/cours/nouveau"
           className="group inline-flex items-center gap-2 rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
         >
-          <HiPlus size={16} /> Créer un cours
-        </Link>
+          <HiPlus size={16} />{" "}{t("Créer un cours")}</Link>
       </AnimatedSection>
 
       {alert && (
         <Alert
           type={alert.type}
-          message={alert.message}
+          message={t(alert.message)}
           onClose={() => setAlert(null)}
         />
       )}
@@ -175,18 +172,18 @@ export default function ProfMesCours() {
         <FilterBar
           searchValue={search}
           onSearchChange={setSearch}
-          searchPlaceholder="Rechercher un cours…"
+          searchPlaceholder={t("Rechercher un cours…")}
           filters={[
             {
               name: "statut",
-              label: "Tous les statuts",
+              label: t("Tous les statuts"),
               value: statutFilter,
               onChange: setStatutFilter,
               options: statutOptions,
             },
             {
               name: "instrument",
-              label: "Tous les instruments",
+              label: t("Tous les instruments"),
               value: instrumentFilter,
               onChange: setInstrumentFilter,
               options: instrumentOptions,
@@ -211,12 +208,12 @@ export default function ProfMesCours() {
           <table className="w-full">
             <thead className="border-b border-ivory-dark">
               <tr>
-                <Th>Cours</Th>
-                <Th>Instrument</Th>
-                <Th>Niveau</Th>
-                <Th>Durée</Th>
-                <Th>Élèves</Th>
-                <Th>Statut</Th>
+                <Th>{t("Cours")}</Th>
+                <Th>{t("Instrument")}</Th>
+                <Th>{t("Niveau")}</Th>
+                <Th>{t("Durée")}</Th>
+                <Th>{t("Élèves")}</Th>
+                <Th>{t("Statut")}</Th>
                 {/* <Th>Prix</Th> */}
                 <Th></Th>
               </tr>
@@ -253,7 +250,7 @@ export default function ProfMesCours() {
                   <Td>{c.duree || "—"}</Td>
                   <Td>{c.eleves ?? 0}</Td>
                   <Td>
-                    <Pill>{c.statut}</Pill>
+                    <Pill>{t(c.statut)}</Pill>
                   </Td>
                   {/* <Td className="font-mono">{formatAriary(c.prix)}</Td> */}
                   <Td>
@@ -261,21 +258,21 @@ export default function ProfMesCours() {
                       <Link
                         to={`/professeur/cours/${c.id}/details`}
                         className="text-ink-soft transition-colors hover:text-coral-dark"
-                        aria-label="Voir le détail"
+                        aria-label={t("Voir le détail")}
                       >
                         <HiOutlineEye size={17} />
                       </Link>
                       <Link
                         to={`/professeur/cours/${c.id}`}
                         className="text-ink-soft transition-colors hover:text-coral-dark"
-                        aria-label="Modifier"
+                        aria-label={t("Modifier")}
                       >
                         <HiOutlinePencilSquare size={17} />
                       </Link>
                       <button
                         onClick={() => setToDelete(c)}
                         className="text-ink-soft transition-colors hover:text-brick"
-                        aria-label="Supprimer"
+                        aria-label={t("Supprimer")}
                       >
                         <HiOutlineTrash size={17} />
                       </button>
@@ -288,20 +285,14 @@ export default function ProfMesCours() {
         </div>
 
         {courByProf.length === 0 ? (
-          <p className="px-5 py-12 text-center font-body text-sm text-ink-soft">
-            Tu n'as pas encore publié de cours.{" "}
-            <Link
+          <p className="px-5 py-12 text-center font-body text-sm text-ink-soft">{t("Tu n'as pas encore publié de cours.")}{" "}<Link
               to="/professeur/cours/nouveau"
               className="font-semibold text-coral-dark hover:text-brick"
-            >
-              Crée le premier →
-            </Link>
+            >{t("Crée le premier →")}</Link>
           </p>
         ) : (
           filteredCours.length === 0 && (
-            <p className="px-5 py-12 text-center font-body text-sm text-ink-soft">
-              Aucun cours ne correspond à ta recherche.
-            </p>
+            <p className="px-5 py-12 text-center font-body text-sm text-ink-soft">{t("Aucun cours ne correspond à ta recherche.")}</p>
           )
         )}
       </AnimatedSection>
@@ -309,28 +300,21 @@ export default function ProfMesCours() {
       <Modal
         open={!!toDelete}
         onClose={() => setToDelete(null)}
-        title="Supprimer ce cours ?"
+        title={t("Supprimer ce cours ?")}
       >
         <p className="font-body text-sm leading-relaxed text-ink-soft">
-          <span className="font-semibold text-ink">« {toDelete?.titre} »</span>{" "}
-          sera définitivement supprimé, ainsi que ses leçons. Les élèves déjà
-          inscrits perdront l'accès au contenu. Cette action est irréversible.
-        </p>
+          <span className="font-semibold text-ink">« {toDelete?.titre} »</span>{" "}{t("sera définitivement supprimé, ainsi que ses leçons. Les élèves déjà inscrits perdront l'accès au contenu. Cette action est irréversible.")}</p>
         <div className="mt-6 flex gap-3">
           <button
             onClick={() => setToDelete(null)}
             className="flex-1 rounded-full border border-ivory-dark py-2.5 font-body text-sm font-semibold text-ink transition-colors duration-300 hover:bg-ivory-dark/40"
-          >
-            Annuler
-          </button>
+          >{t("Annuler")}</button>
           <button
             onClick={() => {
               handleDelete(toDelete?.id);
             }}
             className="flex-1 rounded-full bg-brick py-2.5 font-body text-sm font-semibold text-ivory shadow-lg shadow-brick/25 transition-all duration-300 hover:bg-brick-light"
-          >
-            Supprimer
-          </button>
+          >{t("Supprimer")}</button>
         </div>
       </Modal>
     </div>

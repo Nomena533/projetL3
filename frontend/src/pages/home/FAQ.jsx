@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { HiOutlineChevronDown, HiOutlineArrowRight } from "react-icons/hi";
 import AnimatedSection from "../../components/AnimatedSection";
 import { faqItems } from "../../lib/mockHomeData";
+import { useLang } from "../../app/hooks/useLang";
 
 function FaqRow({ item, isOpen, onToggle }) {
+  const { t } = useLang();
   return (
     <div className="border-b border-ivory-dark">
       <button
@@ -12,7 +14,7 @@ function FaqRow({ item, isOpen, onToggle }) {
         className="flex w-full items-center justify-between gap-4 py-5 text-left"
         aria-expanded={isOpen}
       >
-        <span className="font-display text-base font-medium text-ink sm:text-lg">{item.q}</span>
+        <span className="font-display text-base font-medium text-ink sm:text-lg">{t(item.q)}</span>
         <HiOutlineChevronDown
           className={`shrink-0 text-coral-dark transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
           size={20}
@@ -24,7 +26,7 @@ function FaqRow({ item, isOpen, onToggle }) {
         }`}
       >
         <div className="min-h-0">
-          <p className="pb-5 pr-8 font-body text-sm leading-relaxed text-ink-soft">{item.r}</p>
+          <p className="pb-5 pr-8 font-body text-sm leading-relaxed text-ink-soft">{t(item.r)}</p>
         </div>
       </div>
     </div>
@@ -32,19 +34,16 @@ function FaqRow({ item, isOpen, onToggle }) {
 }
 
 export default function FAQ() {
+  const { t } = useLang();
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
     <section className="px-5 py-16 sm:px-8 sm:py-20">
       <div className="mx-auto max-w-3xl">
         <AnimatedSection className="text-center">
-          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">Besoin d'aide ?</span>
-          <h1 className="mt-3 font-display text-4xl font-semibold text-ink sm:text-5xl">
-            Questions fréquentes
-          </h1>
-          <p className="mt-4 font-body text-ink-soft">
-            Tout ce qu'il faut savoir avant de vous lancer sur Kalon'ny.
-          </p>
+          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Besoin d'aide ?")}</span>
+          <h1 className="mt-3 font-display text-4xl font-semibold text-ink sm:text-5xl">{t("Questions fréquentes")}</h1>
+          <p className="mt-4 font-body text-ink-soft">{t("Tout ce qu'il faut savoir avant de vous lancer sur Kalon'ny.")}</p>
         </AnimatedSection>
 
         <AnimatedSection delay={100} className="mt-12 rounded-2xl border border-ivory-dark bg-white/50 dark:bg-white/10 px-6 sm:px-8">
@@ -59,12 +58,11 @@ export default function FAQ() {
         </AnimatedSection>
 
         <AnimatedSection delay={150} className="mt-12 flex flex-col items-center gap-4 rounded-2xl bg-ivory-dark/50 px-8 py-10 text-center">
-          <h2 className="font-display text-xl font-semibold text-ink">Vous n'avez pas trouvé votre réponse ?</h2>
+          <h2 className="font-display text-xl font-semibold text-ink">{t("Vous n'avez pas trouvé votre réponse ?")}</h2>
           <Link
             to="/contact"
             className="inline-flex items-center gap-2 rounded-full bg-coral px-6 py-3 font-body text-sm font-semibold text-ivory transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
-          >
-            Contactez notre équipe <HiOutlineArrowRight />
+          >{t("Contactez notre équipe")}{" "}<HiOutlineArrowRight />
           </Link>
         </AnimatedSection>
       </div>

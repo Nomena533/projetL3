@@ -22,6 +22,7 @@ import { useSoumission } from "../../app/hooks/useSoumission";
 import { useAuth } from "../../app/hooks/useAuth";
 import { useUser } from "../../app/hooks/useUser";
 import { useMessage } from "../../app/hooks/useMessage";
+import { useLang } from "../../app/hooks/useLang";
 
 // const EN_ATTENTE = SOUMISSIONS.filter((s) => s.statut === "En attente");
 
@@ -36,6 +37,7 @@ const QUICK_LINKS = [
 ];
 
 export default function ProfDashboard() {
+  const { t } = useLang();
   const { courByProf, cours } = useGetCour();
   const { soumission } = useSoumission();
   const { user } = useAuth();
@@ -62,25 +64,16 @@ export default function ProfDashboard() {
       <AnimatedSection className="relative overflow-hidden rounded-4xl bg-linear-to-br from-brick via-coral to-amber p-1 shadow-2xl shadow-brick/20">
         <div className="relative overflow-hidden rounded-[1.85rem] bg-ink/90 p-8 sm:p-10">
           <div className="relative z-10 max-w-lg">
-            <p className="font-mono text-xs uppercase tracking-widest text-amber-light">
-              Bonjour {user.firstname} {user.name}
-            </p>
+            <p className="font-mono text-xs uppercase tracking-widest text-amber-light">{t("Bonjour {{firstname}} {{name}}", { firstname: user.firstname, name: user.name })}</p>
             {soumissionProf.length === 0 ? (
-              <h2 className="mt-3 font-display text-2xl font-semibold leading-snug text-ivory sm:text-3xl">
-                Aucune soumission pour le moment
-              </h2>
+              <h2 className="mt-3 font-display text-2xl font-semibold leading-snug text-ivory sm:text-3xl">{t("Aucune soumission pour le moment")}</h2>
             ) : (
               <>
-                <h2 className="mt-3 font-display text-2xl font-semibold leading-snug text-ivory sm:text-3xl">
-                  {EN_ATTENTE.length} soumission
-                  {EN_ATTENTE.length > 1 ? "s" : ""} attendent ta correction.
-                </h2>
+                <h2 className="mt-3 font-display text-2xl font-semibold leading-snug text-ivory sm:text-3xl">{t(EN_ATTENTE.length > 1 ? "{{length}} soumissions attendent ta correction." : "{{length}} soumission attend ta correction.", { length: EN_ATTENTE.length })}</h2>
                 <Link
                   to="/professeur/corrections"
                   className="group mt-7 inline-flex items-center gap-2 rounded-full bg-ivory px-6 py-3 font-body text-sm font-semibold text-brick shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
-                >
-                  Corriger maintenant
-                  <HiOutlineArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
+                >{t("Corriger maintenant")}<HiOutlineArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               </>
             )}
@@ -97,12 +90,12 @@ export default function ProfDashboard() {
       <section className="grid gap-5 sm:grid-cols-2">
         <StatCard
           icon={HiOutlineBookOpen}
-          label="Cours publiés"
+          label={t("Cours publiés")}
           value={courByProf.filter((c) => c.statut === "publié").length}
         />
         <StatCard
           icon={ClipboardCheck}
-          label="Total soumissions"
+          label={t("Total soumissions")}
           value={soumissionProf.length}
           delay={160}
         />
@@ -113,14 +106,11 @@ export default function ProfDashboard() {
         <div className="mt-6 grid gap-5 md:grid-cols-3">
           <div className="space-y-10 lg:col-span-2">
             <AnimatedSection className="flex flex-wrap items-end justify-between gap-4">
-              <h3 className="font-display text-xl font-semibold text-ink">
-                Mes cours
-              </h3>
+              <h3 className="font-display text-xl font-semibold text-ink">{t("Mes cours")}</h3>
               <Link
                 to="/professeur/mescours"
                 className="inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark transition-colors hover:text-brick"
-              >
-                Gérer mes cours <HiOutlineArrowRight size={15} />
+              >{t("Gérer mes cours")}{" "}<HiOutlineArrowRight size={15} />
               </Link>
             </AnimatedSection>
             {courByProf.length === 0 ? (
@@ -129,9 +119,7 @@ export default function ProfDashboard() {
                   size={22}
                   className="mx-auto text-ink-soft"
                 />
-                <p className="mt-3 font-body text-sm text-ink-soft">
-                  Vous n'avez pas encore de cours publié
-                </p>
+                <p className="mt-3 font-body text-sm text-ink-soft">{t("Vous n'avez pas encore de cours publié")}</p>
               </AnimatedSection>
             ) : (
               <div
@@ -157,11 +145,9 @@ export default function ProfDashboard() {
                         <p className="truncate font-display text-base font-semibold text-ink group-hover:text-coral-dark">
                           {capitalize(c.titre)}
                         </p>
-                        <Pill>{c.statut}</Pill>
+                        <Pill>{t(c.statut)}</Pill>
                       </div>
-                      <p className="mt-1.5 font-body text-sm text-ink-soft">
-                        Instruments : {c.instrument.name}
-                      </p>
+                      <p className="mt-1.5 font-body text-sm text-ink-soft">{t("Instruments : {{name}}", { name: c.instrument.name })}</p>
                     </div>
                   </AnimatedSection>
                 ))}
@@ -172,14 +158,11 @@ export default function ProfDashboard() {
             {/* --- Messages récents --- */}
             <section>
               <AnimatedSection className="flex flex-wrap items-end justify-between gap-4">
-                <h3 className="font-display text-xl font-semibold text-ink">
-                  Messages récents
-                </h3>
+                <h3 className="font-display text-xl font-semibold text-ink">{t("Messages récents")}</h3>
                 <Link
                   to="/professeur/messages"
                   className="inline-flex items-center gap-1.5 font-body text-sm font-semibold text-coral-dark transition-colors hover:text-brick"
-                >
-                  Ouvrir <HiOutlineArrowRight size={15} />
+                >{t("Ouvrir")}{" "}<HiOutlineArrowRight size={15} />
                 </Link>
               </AnimatedSection>
 
@@ -189,9 +172,7 @@ export default function ProfDashboard() {
                     size={22}
                     className="mx-auto text-ink-soft"
                   />
-                  <p className="mt-3 font-body text-sm text-ink-soft">
-                    Les messages envoyés par les élèves.
-                  </p>
+                  <p className="mt-3 font-body text-sm text-ink-soft">{t("Les messages envoyés par les élèves.")}</p>
                 </AnimatedSection>
               ) : (
                 <div className="mt-10 divide-y divide-ivory-dark overflow-hidden rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10">
@@ -215,10 +196,10 @@ export default function ProfDashboard() {
                           <span className="block truncate font-body text-sm font-semibold text-ink">
                             {prof
                               ? `${prof.name} ${prof.firstname}`
-                              : "Professeur"}
+                              : t("Professeur")}
                           </span>
                           <span className="block truncate font-body text-xs text-ink-soft">
-                            {envoyeParMoi ? "Toi : " : ""}
+                            {envoyeParMoi ? t("Toi : ") : ""}
                             {dernier?.content}
                           </span>
                         </span>
@@ -240,12 +221,8 @@ export default function ProfDashboard() {
       {/* ---------- SOUMISSIONS RÉCENTES ---------- */}
       <section>
         <AnimatedSection>
-          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">
-            À traiter
-          </span>
-          <h3 className="mt-2 font-display text-xl font-semibold text-ink">
-            Dernières soumissions
-          </h3>
+          <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("À traiter")}</span>
+          <h3 className="mt-2 font-display text-xl font-semibold text-ink">{t("Dernières soumissions")}</h3>
         </AnimatedSection>
 
         {EN_ATTENTE.length === 0 ? (
@@ -254,9 +231,7 @@ export default function ProfDashboard() {
               size={22}
               className="mx-auto text-ink-soft"
             />
-            <p className="mt-3 font-body text-sm text-ink-soft">
-              Aucune soumission en attente ne vous attend.
-            </p>
+            <p className="mt-3 font-body text-sm text-ink-soft">{t("Aucune soumission en attente ne vous attend.")}</p>
           </AnimatedSection>
         ) : (
           <div className="mt-6 space-y-3">
@@ -297,11 +272,9 @@ export default function ProfDashboard() {
                       <HiOutlineChevronRight size={11} />
                       <span>{leconNom}</span>
                     </div>
-                    <p className="mt-0.5 font-body text-xs text-ink-soft">
-                      {eleveNom} . Le {formatDate(s.created_at)}
-                    </p>
+                    <p className="mt-0.5 font-body text-xs text-ink-soft">{t("{{eleveNom}} . Le {{v0}}", { eleveNom, v0: formatDate(s.created_at) })}</p>
                   </div>
-                  <Pill>{s.statut}</Pill>
+                  <Pill>{t(s.statut)}</Pill>
                 </AnimatedSection>
               );
             })}
@@ -323,7 +296,7 @@ export default function ProfDashboard() {
               <l.icon size={17} />
             </span>
             <span className="font-body text-sm font-semibold text-ink">
-              {l.label}
+              {t(l.label)}
             </span>
             <HiOutlineArrowRight
               className="ml-auto text-ink-soft opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100"
