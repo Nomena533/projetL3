@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { HiOutlineChevronLeft, HiOutlineCheckCircle } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
@@ -11,6 +11,8 @@ import {
 } from "../../app/api/exerciceApi";
 import useLesson from "../../app/hooks/useLesson";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, LoadingScreen } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
 function TextAreaField({ label, name, value, onChange }) {
   return (
@@ -73,9 +75,9 @@ export default function ProfLeconEditeur() {
 
   const { lessonDetail, fetchLessonDetail } = useLesson();
 
-  useEffect(() => {
-    if (lessonId) fetchLessonDetail(lessonId);
-  }, [lessonId]);
+  // Chargement (plein écran + « Réessayer ») et enregistrement (spinner + erreur « Réessayer »)
+  const load = useAsyncAction({ initialPending: Boolean(lessonId), initialLabel: "Chargement de la leçon" });
+  const action = useAsyncAction();
 
   const [form, setForm] = useState({
     titre: "",
@@ -103,30 +105,28 @@ export default function ProfLeconEditeur() {
   // (permet de choisir entre storeExercice et updateExercice).
   const [existingExerciceId, setExistingExerciceId] = useState(null);
 
+  // Leçon + exercice existant (modification uniquement)
+  const charger = () =>
+    load.run("Chargement de la leçon", async () => {
+      const [, exerciceResponse] = await Promise.all([
+        fetchLessonDetail(lessonId),
+        getExerciceByLesson(lessonId),
+      ]);
+
+      const exercice = exerciceResponse.data[0];
+
+      if (exercice) {
+        setExistingExerciceId(exercice.id);
+        setExerciceForm({
+          titre: exercice.titre || "",
+          description: exercice.description || "",
+        });
+      }
+    });
+
   useEffect(() => {
     if (!lessonId) return;
-
-    const fetchExercice = async () => {
-      try {
-        const response = await getExerciceByLesson(lessonId);
-
-        const exercice = response.data[0];
-
-        if (exercice) {
-          setExistingExerciceId(exercice.id);
-          setExerciceForm({
-            titre: exercice.titre || "",
-            description: exercice.description || "",
-          });
-        }
-      } catch (err) {
-        console.error(
-          t("Erreur lors de la récupération de l'exercice :"),
-          err.response?.data,
-        );
-      }
-    };
-    fetchExercice();
+    charger();
   }, [lessonId]);
 
   const handleChangeExercice = (e) => {
@@ -136,8 +136,10 @@ export default function ProfLeconEditeur() {
     });
   };
 
-  const [error, setError] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const saving = action.pending;
+  // Id de la leçon déjà créée lors d'une tentative précédente : évite un doublon si
+  // l'enregistrement de l'exercice échoue puis que l'utilisateur clique sur « Réessayer ».
+  const leconCreeeRef = useRef(null);
 
   const handleChange = (e) => {
     setForm({
@@ -146,38 +148,25 @@ export default function ProfLeconEditeur() {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setError(null);
-    setSaving(true);
 
-    try {
+    return action.run("Enregistrement de la leçon", async () => {
       const data = {
         ...form,
       };
 
-      // console.log("data : ", data);
-      // return;
-
       // enregistrement de la lesson
       let lessonResponse;
-      if (lessonId) {
-        lessonResponse = await updateLesson(lessonId, data);
+      const leconExistanteId = lessonId || leconCreeeRef.current;
+      if (leconExistanteId) {
+        lessonResponse = await updateLesson(leconExistanteId, data);
       } else {
         lessonResponse = await storeLesson(courId, data);
       }
 
-      const finalLessonId = lessonResponse.data.lesson.id;
-
-      // 2. Enregistrer l'exercice avec ce même id_lecon, seulement si le
-      //    professeur a renseigné au moins un titre (l'exercice est facultatif).
-      // if (finalLessonId && exerciceForm.titre.trim() !== "") {
-      //   if (existingExerciceId) {
-      //     await updateExercice(existingExerciceId, exerciceForm);
-      //   } else {
-      //     await storeExercice(finalLessonId, exerciceForm);
-      //   }
-      // }
+      const finalLessonId = lessonResponse.data.lesson?.id ?? leconExistanteId;
+      leconCreeeRef.current = finalLessonId;
 
       console.log("exerciceForm : " , exerciceForm);
       // enregistrement de l'exercice
@@ -199,45 +188,20 @@ export default function ProfLeconEditeur() {
           },
         },
       );
-
-      // if (finalLessonId) {
-      //   navigate(
-      //     `/professeur/cours/${courId}/lecons/${finalLessonId}/details`,
-      //     {
-      //       state: {
-      //         success: lessonId
-      //           ? "La leçon a été modifiée avec succès !"
-      //           : "La leçon (et son exercice) a été créée avec succès !",
-      //       },
-      //     },
-      //   );
-      // } else {
-      //   // Repli si l'id de la nouvelle leçon n'est pas disponible dans la réponse.
-      //   navigate(`/professeur/cours/${courId}/details`, {
-      //     state: {
-      //       success: lessonId
-      //         ? "La leçon a été modifiée avec succès !"
-      //         : "La leçon a été ajoutée avec succès !",
-      //     },
-      //   });
-      // }
-
-    } catch (err) {
-      console.error("Erreur lors de l'opération", err.response?.data);
-      setError(t("Une erreur est survenue lors de l'enregistrement de la leçon."));
-    } finally {
-      setSaving(false);
-    }
+    }, { errorMessage: t("Une erreur est survenue lors de l'enregistrement de la leçon.") });
   };
 
+  if (load.pending || load.error) {
+    return <ActionFeedback action={load} variant="fetch" />;
+  }
+
   if (lessonId && lessonDetail == null) {
-    return (
-      <p className="font-body text-sm text-ink-soft">{t("Chargement de la leçon…")}</p>
-    );
+    return <LoadingScreen label="Chargement de la leçon" />;
   }
 
   return (
     <div className="w-full space-y-6">
+      <ActionFeedback action={action} />
       <button
         onClick={() => navigate(`/professeur/cours/${courId}/details`)}
         className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
@@ -294,7 +258,6 @@ export default function ProfLeconEditeur() {
           <p className="font-body text-xs text-ink-soft">{t("Une fois la leçon enregistrée, tu pourras y ajouter ses ressources (vidéo, audio, PDF) depuis sa page de détail.")}</p>
         )}
 
-        {error && <p className="font-body text-sm text-brick">{error}</p>}
       </AnimatedSection>
 
       {/* Formulaire 2 : l'exercice rattaché à cette leçon.

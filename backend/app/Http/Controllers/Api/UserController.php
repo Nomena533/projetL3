@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Inscription;
 use App\Models\User;
+use App\Services\EligibiliteExamenService;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -52,16 +53,13 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-    public function userListInscription(Request $request, $userId)
+    public function userListInscription(EligibiliteExamenService $eligibiliteService, $userId)
     {
-        // // Récupère l'id de l'user connecté
-        // $userId = $request->user()->id;
-        // dd($userId);
+        $inscriptions = Inscription::where('user_id', $userId)->with(['level', 'instruments', 'paiements'])->get();
+        $inscriptions->each(function($inscription) use($eligibiliteService) {
+            $inscription->setAttribute('eligibilite', $eligibiliteService->calculer($inscription));
+        });
 
-        $inscription = Inscription::where('user_id', $userId)->with('level')->with('instruments')->get();
-        // $inscription_instrument = Inscription::with("instruments")->get();
-        // return response()->json([$inscription, $inscription_instrument]);
-
-        return response()->json($inscription);
+        return response()->json($inscriptions);
     }
 }

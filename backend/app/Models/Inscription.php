@@ -34,8 +34,13 @@ class Inscription extends Model
         return $this->belongsTo(Level::class, "niveau_id");
     }
 
-    public function paiement()
+    public function paiements()
     {
-        return $this->hasMany(Paiement::class);
+        return $this->hasMany(Paiement::class, "inscription_id");
+    }
+
+    public function examen()
+    {
+        return $this->hasMany(Examen::class, "inscription_id");
     }
 }

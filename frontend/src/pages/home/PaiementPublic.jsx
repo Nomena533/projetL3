@@ -17,12 +17,14 @@ import { useLevel } from "../../app/hooks/useLevel";
 import { formatAriary } from "../../lib/mockStudentData";
 import { storePaiement } from "../../app/api/paiementApi";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, DataGate } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
 // Cette page n'est accessible qu'après une inscription : elle attend `niveau`
 // (obligatoire) et éventuellement `instruments` dans l'URL, transmis par
 // home/Inscription.jsx juste après la validation du formulaire d'inscription
 // (ex. redirection vers /paiement?niveau=avance&instruments=valiha,kabosy).
-export default function PaiementPublic() {
+function PaiementPublicContent() {
   const { t } = useLang();
   const [searchParams] = useSearchParams();
   const niveauName = searchParams.get("niveau");
@@ -34,7 +36,9 @@ export default function PaiementPublic() {
 
   const [nombreMois, setNombreMois] = useState(1);
   const [modePaiement, setModePaiement] = useState(null);
-  const [enCours, setEnCours] = useState(false);
+  // Envoi du paiement (spinner plein écran + erreur avec « Réessayer »)
+  const action = useAsyncAction();
+  const enCours = action.pending;
   const [termine, setTermine] = useState(false);
   const [erreur, setErreur] = useState("");
   const [numeroCarte, setNumeroCarte] = useState("");
@@ -110,9 +114,10 @@ export default function PaiementPublic() {
     }
 
     setErreur("");
-    setEnCours(true);
 
-    try {
+    // « Terminé » n'est affiché que si l'API a bien répondu : en cas d'échec,
+    // un bandeau d'erreur avec « Réessayer » apparaît.
+    return action.run("Envoi du paiement", async () => {
       const data = {
         nombre_mois: nombreMois,
         montant: total,
@@ -125,18 +130,10 @@ export default function PaiementPublic() {
         }),
       };
 
-      // console.log("Données de paiement envoyées : ", data);
-      // return;
-
       const response = await storePaiement(inscriptionId, data);
       console.log("Paiement effectué avec succès : ", response.data);
-    } catch (err) {
-      console.error("Erreur lors du paiement", err.response?.data);
-      setErreur(t("Une erreur est survenue lors du paiement"));
-    } finally {
-      setEnCours(false);
       setTermine(true);
-    }
+    }, { errorMessage: t("Une erreur est survenue lors du paiement") });
   };
 
   // Garde-fou : pas de niveau valide/ouvert dans l'URL → pas de paiement possible.
@@ -176,6 +173,7 @@ export default function PaiementPublic() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 px-4 py-12 sm:px-6">
+      <ActionFeedback action={action} />
       <input
         type="hidden"
         name="description"
@@ -424,5 +422,24 @@ export default function PaiementPublic() {
         </AnimatedSection>
       </div>
     </div>
+  );
+}
+
+export default function PaiementPublic() {
+  const niveaux = useLevel();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des niveaux",
+          loading: niveaux.loading,
+          error: niveaux.error,
+          retry: niveaux.fecthLevels,
+        },
+      ]}
+    >
+      <PaiementPublicContent />
+    </DataGate>
   );
 }

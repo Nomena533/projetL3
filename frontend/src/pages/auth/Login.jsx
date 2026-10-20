@@ -29,6 +29,8 @@ import { useUser } from "../../app/hooks/useUser";
 import { LogoBlanc, LogoVert } from "../../components/Logo";
 import useTheme from "../../app/hooks/useTheme";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
 export default function Login() {
   const { t } = useLang();
@@ -40,6 +42,8 @@ export default function Login() {
   console.log("Location : ", location);
 
   const { fetchUserListInscription } = useUser();
+  // Suivi de la connexion (spinner plein écran + erreur avec « Réessayer »)
+  const action = useAsyncAction();
 
   const [form, setForm] = useState({
     email: "",
@@ -58,10 +62,15 @@ export default function Login() {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    action.run("Connexion en cours", submitLogin, {
+      errorMessage: t("Connexion impossible. Vérifiez vos identifiants."),
+    });
+  };
 
-    try {
+  const submitLogin = async () => {
+    {
       const response = await login(form);
 
       console.log("Réponse.data : ", response.data);
@@ -134,8 +143,6 @@ export default function Login() {
       } else {
         navigate("/administrateur", { replace: true });
       }
-    } catch (error) {
-      console.error("Erreur lors de la connexion : ", error.response?.data);
     }
   };
 
@@ -240,6 +247,7 @@ export default function Login() {
             key={"login"}
             className="animate-fade-in items-center"
           >
+            <ActionFeedback action={action} />
             <FormField
               label={t("Adresse e-mail")}
               type="email"

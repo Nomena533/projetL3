@@ -8,8 +8,9 @@ import { UTILISATEURS } from "../../lib/mockAdminData";
 import { useUser } from "../../app/hooks/useUser";
 import { capitalize } from "../../lib/formatFunction";
 import { useLang } from "../../app/hooks/useLang";
+import { DataGate } from "../../components/AsyncState";
 
-export default function AdminUtilisateurs() {
+function AdminUtilisateursContent() {
   const { t } = useLang();
   // const [users, setUsers] = useState(UTILISATEURS);
   const [q, setQ] = useState("");
@@ -24,12 +25,6 @@ export default function AdminUtilisateurs() {
   // function toggleStatut(id) {
   //   setUsers(users.map((u) => (u.id === id ? { ...u, statut: u.statut === "Actif" ? "Suspendu" : "Actif" } : u)));
   // }
-
-  if (userList.length === 0) {
-    return (
-      <p className="font-body text-sm text-ink-soft">{t("Chargement …")}</p>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -111,5 +106,24 @@ export default function AdminUtilisateurs() {
         </div>
       </Modal>
     </div>
+  );
+}
+
+export default function AdminUtilisateurs() {
+  const users = useUser();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des utilisateurs",
+          loading: users.loading,
+          error: users.error,
+          retry: users.fetchUserList,
+        },
+      ]}
+    >
+      <AdminUtilisateursContent />
+    </DataGate>
   );
 }

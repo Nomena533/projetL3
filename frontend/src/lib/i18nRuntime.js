@@ -2,8 +2,9 @@
 // utilitaires, constantes de modules, formatage de dates…).
 // La langue courante est synchronisée par <LangProvider> à chaque rendu.
 import mg from "../locales/mg.json";
+import en from "../locales/en.json";
 
-export const DICTIONARIES = { mg };
+export const DICTIONARIES = { mg, en };
 let currentLang = "fr";
 
 export function setRuntimeLang(lang) {

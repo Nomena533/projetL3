@@ -19,6 +19,8 @@ import {
 } from "../../app/api/ressourceApi";
 import { BASE_URL } from "../../app/api/api";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, LoadingScreen } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
 const RESSOURCES = [
   { value: "video", label: "Vidéo", accept: "video/*" },
@@ -147,49 +149,39 @@ export default function ProfRessourceEditeur() {
   const [editForm, setEditForm] = useState({ titre: "", type: "video" }); // Contient les informations textuelles de la ressource
   const [editFile, setEditFile] = useState(null); // Contient un nouveau fichier si le professeur veut remplacer le fichier actuel.
   const [currentFichier, setCurrentFichier] = useState(null); // Contient le nom ou chemin du fichier déjà enregistré.
-  const [loadingRessource, setLoadingRessource] = useState(isEditMode); // permet d'afficher le message de chargement
+  // Chargement de la ressource (plein écran + « Réessayer ») et enregistrement (spinner + erreur « Réessayer »)
+  const load = useAsyncAction({ initialPending: isEditMode, initialLabel: "Chargement de la ressource" });
+  const action = useAsyncAction();
 
   // Récupération des détails de la ressource
+  const chargerRessource = () =>
+    load.run("Chargement de la ressource", async () => {
+      const response = await getRessourceById(resourceId);
+      const r = response.data;
+
+      // Affichage des données textuels
+      setEditForm({
+        titre: r.titre,
+        type: r.type,
+      });
+
+      // Affichage du fichier
+      setCurrentFichier(r.fichier || null);
+    });
+
   useEffect(() => {
     // Vérifie si on n'est en mode modification, sioui, on continue, sinon, la fonction s'arrête
     if (!isEditMode) return;
-
-    let active = true;
-    getRessourceById(resourceId)
-      .then((response) => {
-        if (!active) return;
-        const r = response.data;
-
-        // Affichage des données textuels
-        setEditForm({
-          titre: r.titre,
-          type: r.type,
-        });
-
-        // Affichage du fichier
-        setCurrentFichier(r.fichier || null);
-      })
-      .catch((err) => {
-        console.error(
-          t("Erreur lors de la récupération de la ressource"),
-          err.response?.data,
-        );
-      })
-      .finally(() => {
-        if (active) setLoadingRessource(false);
-      });
-    return () => {
-      active = false;
-    };
+    chargerRessource();
   }, [isEditMode, resourceId]);
 
   console.log("EditForm : " ,editForm)
 
-  const [submitting, setSubmitting] = useState(false);
+  const submitting = action.pending;
   const [error, setError] = useState(null);
 
   // envoie les données
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError(null);
 
@@ -200,19 +192,12 @@ export default function ProfRessourceEditeur() {
       formData.append("type", editForm.type);
       if (editFile) formData.append("fichier", editFile);
 
-      setSubmitting(true);
-      try {
+      return action.run("Modification de la ressource", async () => {
         await updateRessource(resourceId, formData);
         navigate(`/professeur/cours/${coursId}/lecons/${lessonId}/details`, {
           state: { success: t("La ressource a été modifiée avec succès !") },
         });
-      } catch (err) {
-        console.error("Erreur lors de la modification", err.response?.data);
-        setError(t("Une erreur est survenue lors de l'enregistrement."));
-      } finally {
-        setSubmitting(false);
-      }
-      return;
+      }, { errorMessage: t("Une erreur est survenue lors de l'enregistrement.") });
     }
 
     if (staged.length === 0) {
@@ -227,34 +212,30 @@ export default function ProfRessourceEditeur() {
       formData.append(`ressources[${i}][titre]`, s.titre);
     });
 
-
-    setSubmitting(true);
-    try {
-      await storeRessource(lessonId, formData);
-      navigate(`/professeur/cours/${coursId}/lecons/${lessonId}/details`, {
-        state: {
-          success:
-            staged.length > 1
-              ? t("Les ressources ont été ajoutées avec succès !")
-              : t("La ressource a été ajoutée avec succès !"),
-        },
-      });
-    } catch (err) {
-      console.error("Erreur lors de l'ajout", err.response?.data);
-      setError(t("Une erreur est survenue lors de l'enregistrement."));
-    } finally {
-      setSubmitting(false);
-    }
+    return action.run(
+      staged.length > 1 ? "Envoi des ressources" : "Envoi de la ressource",
+      async () => {
+        await storeRessource(lessonId, formData);
+        navigate(`/professeur/cours/${coursId}/lecons/${lessonId}/details`, {
+          state: {
+            success:
+              staged.length > 1
+                ? t("Les ressources ont été ajoutées avec succès !")
+                : t("La ressource a été ajoutée avec succès !"),
+          },
+        });
+      },
+      { errorMessage: t("Une erreur est survenue lors de l'enregistrement.") },
+    );
   };
 
-  if (isEditMode && loadingRessource) {
-    return (
-      <p className="font-body text-sm text-ink-soft">{t("Chargement de la ressource…")}</p>
-    );
+  if (load.pending || load.error) {
+    return <ActionFeedback action={load} variant="fetch" />;
   }
 
   return (
     <div className="w-full space-y-6">
+      <ActionFeedback action={action} />
       <button
         onClick={() =>
           navigate(`/professeur/cours/${coursId}/lecons/${lessonId}/details`)

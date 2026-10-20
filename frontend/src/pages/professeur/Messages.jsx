@@ -5,12 +5,16 @@ import { useMessage } from "../../app/hooks/useMessage";
 import { useUser } from "../../app/hooks/useUser";
 import { markConversationAsRead, storeMessage } from "../../app/api/messageApi";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, DataGate } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
-export default function ProfMessages() {
+function ProfMessagesContent() {
   const { t } = useLang();
   // const [active, setActive] = useState(INSCRIPTIONS[0]);
   const [draft, setDraft] = useState("");
   const { conversations, fetchMessages, loading } = useMessage();
+  // Envoi d'un message (spinner plein écran + erreur avec « Réessayer »)
+  const action = useAsyncAction();
   console.log("conversations : ", conversations);
   const [activeConversation, setActiveConversation] = useState(null);
   const { userList } = useUser();
@@ -46,23 +50,19 @@ export default function ProfMessages() {
       await fetchMessages();
     };
 
-    markAsRead();
+    markAsRead().catch(() => {});
   }, [activeConversation, fetchMessages]);
 
-  const handleSend = async () => {
+  const handleSend = () => {
     const content = draft.trim();
     if (!content || !activeConversation) return;
 
-    try {
+    return action.run("Envoi du message", async () => {
       await storeMessage({ receiver_id: activeConversation.otherUserId, content });
       setDraft("");
-      await fetchMessages();
-    } catch (error) {
-      console.error(
-        t("Erreur lors de l'envoi du message :"),
-        error.response?.data || error.message,
-      );
-    }
+      // Un échec du rafraîchissement ne doit pas relancer l'envoi (« Réessayer »).
+      await Promise.resolve(fetchMessages()).catch(() => {});
+    });
   };
 
   const handleConversationSelect = (conversation) => {
@@ -71,6 +71,7 @@ export default function ProfMessages() {
 
   return (
     <div className="space-y-6">
+      <ActionFeedback action={action} />
       <AnimatedSection>
         <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Espace professeur")}</span>
         <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Messages")}</h2>
@@ -205,5 +206,31 @@ export default function ProfMessages() {
         </div>
       </AnimatedSection>
     </div>
+  );
+}
+
+export default function ProfMessages() {
+  const messages = useMessage();
+  const users = useUser();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des messages",
+          loading: messages.loading,
+          error: messages.error,
+          retry: messages.fetchMessages,
+        },
+        {
+          label: "Chargement des contacts",
+          loading: users.loading,
+          error: users.error,
+          retry: users.fetchUserList,
+        },
+      ]}
+    >
+      <ProfMessagesContent />
+    </DataGate>
   );
 }

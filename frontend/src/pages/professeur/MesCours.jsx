@@ -22,6 +22,8 @@ import { deleteCour } from "../../app/api/courApi";
 import { capitalize } from "../../lib/formatFunction";
 import Alert from "../../components/Alert";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, DataGate } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
 // Bandeau d'alerte succès/erreur affiché après une action (ex. création d'un
 // cours). Se ferme automatiquement après quelques secondes, ou manuellement.
@@ -52,12 +54,14 @@ import { useLang } from "../../app/hooks/useLang";
 //   );
 // }
 
-export default function ProfMesCours() {
+function ProfMesCoursContent() {
   const { t } = useLang();
   const location = useLocation();
   const navigate = useNavigate();
 
   const [toDelete, setToDelete] = useState(null);
+  // Suppression d'un cours (spinner plein écran + erreur avec « Réessayer »)
+  const action = useAsyncAction();
 
   const { courByProf, setCours, fetchCours } = useGetCour();
   console.log("courByProf : ", courByProf);
@@ -92,15 +96,15 @@ export default function ProfMesCours() {
   const hasActiveFilters =
     search !== "" || statutFilter !== "" || instrumentFilter !== "";
 
-  const handleDelete = async (id) => {
-    try {
+  const handleDelete = (id) => {
+    // On ferme la fenêtre de confirmation : l'erreur éventuelle s'affiche sur la page.
+    setToDelete(null);
+
+    return action.run("Suppression du cours", async () => {
       const response = await deleteCour(id);
 
-      // Met à jour immédiatement la liste React
-      await fetchCours();
-
-      // Ferme le modal après la suppression réussie
-      setToDelete(null);
+      // Met à jour la liste React (un échec du rechargement ne doit pas relancer la suppression)
+      await Promise.resolve(fetchCours()).catch(() => {});
 
       // Affiche directement l'alerte
       setAlert({
@@ -109,17 +113,7 @@ export default function ProfMesCours() {
       });
 
       console.log(response.data);
-    } catch (error) {
-      console.error(
-        t("Erreur lors de la suppression du cours"),
-        error.response?.data,
-      );
-
-      setAlert({
-        type: "error",
-        message: t("Une erreur est survenue lors de la suppression du cours."),
-      });
-    }
+    }, { errorMessage: t("Une erreur est survenue lors de la suppression du cours.") });
   };
 
   const [alert, setAlert] = useState(
@@ -148,6 +142,7 @@ export default function ProfMesCours() {
 
   return (
     <div className="space-y-6">
+      <ActionFeedback action={action} />
       <AnimatedSection className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Espace professeur")}</span>
@@ -318,5 +313,24 @@ export default function ProfMesCours() {
         </div>
       </Modal>
     </div>
+  );
+}
+
+export default function ProfMesCours() {
+  const cours = useGetCour();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement de vos cours",
+          loading: cours.loading,
+          error: cours.error,
+          retry: cours.fetchCours,
+        },
+      ]}
+    >
+      <ProfMesCoursContent />
+    </DataGate>
   );
 }

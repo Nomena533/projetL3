@@ -23,8 +23,8 @@ class Lesson extends Model
         return $this->hasMany(Resource::class);
     }
 
-    public function exrecice()
+    public function exercice()
     {
-        return $this->belongsTo(Lesson::class);
+        return $this->belongsTo(Exercice::class, "lesson_id");
     }
 }

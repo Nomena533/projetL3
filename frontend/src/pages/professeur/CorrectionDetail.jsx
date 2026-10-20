@@ -25,6 +25,8 @@ import { useSoumission } from "../../app/hooks/useSoumission";
 import { formatDate } from "../../lib/formatFunction";
 import { updateNoteSoumission } from "../../app/api/soumissionApi";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, DataGate } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
 // Même logique d'icônes/libellés que dans eleve/LessonPlayer.jsx, adaptée au
 // type de contenu qu'un élève peut soumettre (video / audio / document).
@@ -40,7 +42,7 @@ const CONTENT_LABEL = {
   document: "Document",
 };
 
-export default function CorrectionDetail() {
+function CorrectionDetailContent() {
   const { t } = useLang();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -64,38 +66,33 @@ export default function CorrectionDetail() {
   });
   const [commentaire, setCommentaire] = useState(soumissionDetail?.commentaire ?? "");
   const [note, setNote] = useState(soumissionDetail?.note ?? "");
-  const [saving, setSaving] = useState(false);
+  // Enregistrement de la correction (spinner plein écran + erreur avec « Réessayer »)
+  const action = useAsyncAction();
+  const saving = action.pending;
 
-  const handleValider = async (e) => {
+  const handleValider = (e) => {
     e.preventDefault();
     if (!note) return;
-    setSaving(true);
 
-    try {
+    return action.run("Enregistrement de la correction", async () => {
       const data = {
         commentaire : commentaire,
         note : note,
         statut : "corriger"
       };
 
-
       const response = await updateNoteSoumission(soumissionDetail?.id, data);
       console.log("Soumission corrigé avec succès", response.data);
-      
-      await fetchSoumission();
+
+      // Un échec du rechargement ne doit pas relancer l'enregistrement (« Réessayer »)
+      await Promise.resolve(fetchSoumission()).catch(() => {});
 
       navigate("/professeur/corrections", {
         state: {
           success: t("Soumission corrigée avec succès !")
         },
       });
-    } catch (error) {
-      console.error("Erreur lors de la correction du soumission", error.response.data);
-    } finally {
-      setSaving(false);
-    }
-
-    // setItems([...items])
+    }, { errorMessage: t("La correction n'a pas pu être enregistrée.") });
   };
 
   const niveauNom = soumissionDetail?.exercice?.lesson?.cour?.level?.name;
@@ -121,6 +118,7 @@ export default function CorrectionDetail() {
 
   return (
     <div className="space-y-6">
+      <ActionFeedback action={action} />
       <Link
         to="/professeur/corrections"
         className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
@@ -351,5 +349,24 @@ export default function CorrectionDetail() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CorrectionDetail() {
+  const soumissions = useSoumission();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement de la soumission",
+          loading: soumissions.loading,
+          error: soumissions.error,
+          retry: soumissions.fetchSoumission,
+        },
+      ]}
+    >
+      <CorrectionDetailContent />
+    </DataGate>
   );
 }

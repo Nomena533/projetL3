@@ -5,10 +5,11 @@ import AnimatedSection from "../../components/AnimatedSection";
 import { teachers, instruments } from "../../lib/mockHomeData";
 import { useUser } from "../../app/hooks/useUser";
 import { useLang } from "../../app/hooks/useLang";
+import { DataGate } from "../../components/AsyncState";
 
 const AVATAR_BG = { coral: "bg-coral", amber: "bg-amber", brick: "bg-brick" };
 
-export default function Instructors() {
+function InstructorsContent() {
   const { t: tl } = useLang();
   const {userList} = useUser();
   const prof = userList.filter((u) => u.role_id === 3);
@@ -60,5 +61,24 @@ export default function Instructors() {
         </AnimatedSection>
       </div>
     </section>
+  );
+}
+
+export default function Instructors() {
+  const users = useUser();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des professeurs",
+          loading: users.loading,
+          error: users.error,
+          retry: users.fetchUserList,
+        },
+      ]}
+    >
+      <InstructorsContent />
+    </DataGate>
   );
 }

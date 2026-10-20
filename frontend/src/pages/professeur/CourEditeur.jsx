@@ -17,6 +17,8 @@ import { BASE_URL } from "../../app/api/api";
 import { getLevel } from "../../app/api/levelApi";
 import { capitalize } from "../../lib/formatFunction";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, LoadingScreen } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
 // Champ select stylé
 function SelectField({ label, name, value, onChange, options }) {
@@ -143,8 +145,15 @@ export default function ProfCourEditeur() {
   const { cour, fetchCours, fetchCourDetail } = useGetCour();
   const [courDetail, setCourDetail] = useState(null)
 
+  // Chargements (plein écran + « Réessayer ») et enregistrement (spinner + erreur « Réessayer »)
+  const loadCour = useAsyncAction({ initialPending: Boolean(id), initialLabel: "Chargement du cours" });
+  const loadRefs = useAsyncAction({ initialPending: true, initialLabel: "Chargement des instruments et des niveaux" });
+  const action = useAsyncAction();
+
+  // L'id n'existe qu'en modification : en création, il n'y a rien à charger.
   useEffect(() => {
-    fetchCourDetail(id);
+    if (!id) return;
+    loadCour.run("Chargement du cours", () => fetchCourDetail(id));
   }, [id]);
 
   useEffect(() => {
@@ -194,35 +203,16 @@ export default function ProfCourEditeur() {
   }, [courDetail]);
 
   // Récupération des instruments
+  const chargerReferentiels = () =>
+    loadRefs.run("Chargement des instruments et des niveaux", async () => {
+      const [instruments, niveaux] = await Promise.all([getInstrument(), getLevel()]);
+      setInstrumentList(instruments.data);
+      setLevelList(niveaux.data);
+    });
+
+  // Récupération des instruments et des niveaux
   useEffect(() => {
-    const fetchInstruments = async () => {
-      try {
-        const response = await getInstrument();
-
-        setInstrumentList(response.data);
-        console.log(instrumentList);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des instruments", error);
-      }
-    };
-
-    fetchInstruments();
-  }, []);
-  
-  // Récupération des niveaux
-  useEffect(() => {
-    const fetchNiveaux = async () => {
-      try {
-        const response = await getLevel();
-
-        setLevelList(response.data);
-        console.log("level : ",levelList);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des Niveaux", error.response?.data);
-      }
-    };
-
-    fetchNiveaux();
+    chargerReferentiels();
   }, []);
 
   // Modification des champs texte/select
@@ -250,7 +240,7 @@ export default function ProfCourEditeur() {
   };
 
   // handleSubmit : gère à la fois la modification et la création du cour
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const formData = new FormData();
@@ -268,7 +258,10 @@ export default function ProfCourEditeur() {
 
     console.log("form : ", form);
 
-    try {
+    // On ferme la fenêtre de confirmation : l'erreur éventuelle s'affiche sur la page.
+    setConfirmOpen(false);
+
+    return action.run(id ? "Modification du cours" : "Création du cours", async () => {
       let response;
 
       if (id) {
@@ -276,11 +269,7 @@ export default function ProfCourEditeur() {
 
         // convertit un method post en put
         // nécessaire pour l'envoi de fichier avec multipart/formdata
-        formData.append("_method", "PUT"); // n'est pas nécessaire si il n'y a pas d'envoi de fichier car dans courApi.js c'est déjà put, on ne convertit donc pas un post en put
-
-        for (const [key, value] of formData.entries()) {
-          console.log(key, value);
-        }
+        formData.set("_method", "PUT"); // n'est pas nécessaire si il n'y a pas d'envoi de fichier car dans courApi.js c'est déjà put, on ne convertit donc pas un post en put
 
         response = await updateCour(id, formData);
       } else {
@@ -288,7 +277,8 @@ export default function ProfCourEditeur() {
         response = await storeCour(formData);
       }
 
-      await fetchCours();
+      // Un échec du rechargement ne doit pas relancer l'enregistrement (« Réessayer »)
+      await Promise.resolve(fetchCours()).catch(() => {});
       console.log("Opération réussie", response.data);
 
       // Après la création du cours, retour vers la liste des cours
@@ -299,9 +289,7 @@ export default function ProfCourEditeur() {
             : t("Le cour a été crée avec succès !"),
         },
       });
-    } catch (error) {
-      console.error("Erreur lors de l'opération", error.response?.data);
-    }
+    });
   };
 
   const selectedInstrument = instrumentList.find(
@@ -312,14 +300,21 @@ export default function ProfCourEditeur() {
     (n) => String(n.id) === String(form.niveau_id),
   );
 
+  if (loadCour.pending || loadCour.error) {
+    return <ActionFeedback action={loadCour} variant="fetch" />;
+  }
+
+  if (loadRefs.pending || loadRefs.error) {
+    return <ActionFeedback action={loadRefs} variant="fetch" />;
+  }
+
   if (id && courDetail == null) {
-    return (
-      <p className="font-body text-sm text-ink-soft">{t("Chargement du cours…")}</p>
-    );
+    return <LoadingScreen label="Chargement du cours" />;
   }
 
   return (
     <div className="w-full space-y-6">
+      <ActionFeedback action={action} />
       {/* Retour vers la liste des cours */}
       <button
         onClick={() => navigate("/professeur/mescours")}

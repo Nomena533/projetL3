@@ -22,13 +22,14 @@ import { useAuth } from "../../app/hooks/useAuth";
 import { useSoumission } from "../../app/hooks/useSoumission";
 import { BASE_URL } from "../../app/api/api";
 import { useLang } from "../../app/hooks/useLang";
+import { DataGate } from "../../components/AsyncState";
 
 const STATUT_OPTIONS = [
   { value: "en attente", label: "En attente" },
   { value: "corriger", label: "Corrigé" },
 ];
 
-export default function ProfCorrections() {
+function ProfCorrectionsContent() {
   const { t } = useLang();
   const location = useLocation();
   const navigate = useNavigate();
@@ -224,5 +225,31 @@ export default function ProfCorrections() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ProfCorrections() {
+  const soumissions = useSoumission();
+  const niveaux = useLevel();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des soumissions",
+          loading: soumissions.loading,
+          error: soumissions.error,
+          retry: soumissions.fetchSoumission,
+        },
+        {
+          label: "Chargement des niveaux",
+          loading: niveaux.loading,
+          error: niveaux.error,
+          retry: niveaux.fecthLevels,
+        },
+      ]}
+    >
+      <ProfCorrectionsContent />
+    </DataGate>
   );
 }

@@ -11,12 +11,16 @@ import useGetCour from "../../app/hooks/useGetCour";
 import { updateStatutCour } from "../../app/api/courApi";
 import { useLang } from "../../app/hooks/useLang";
 import { dateLocale } from "../../lib/i18nRuntime";
+import { ActionFeedback, DataGate } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
-export default function AdminValidation() {
+function AdminValidationContent() {
   const { t } = useLang();
   const [items, setItems] = useState(COURS_A_VALIDER);
   const { courBrouillon, setCourBrouillon} = useGetCour();
   const [alert, setAlert] = useState(location.state?.success || null);
+  // Suivi de l'envoi (spinner plein écran + erreur avec « Réessayer »)
+  const action = useAsyncAction();
 
   console.log("courBrouillon : ", courBrouillon);
 
@@ -29,28 +33,26 @@ export default function AdminValidation() {
     return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   }
 
-  const handleSubmit = async (id, data) => {
-    // event.preventDefault();
-    // console.log(data.statut);
-    // return;
-    try {
+  const handleSubmit = (id, data) => {
+    const libelle =
+      data.statut === "publié"
+        ? "Validation du cours"
+        : "Refus du cours";
+
+    return action.run(libelle, async () => {
       const response = await updateStatutCour(id, data);
       console.log("Statut modifié avec succès", response.data);
 
       // setCours(cours.filter((x) => x.id !== id));
-      setCourBrouillon(courBrouillon.filter((x) => x.id !== id));
+      setCourBrouillon((courants) => courants.filter((x) => x.id !== id));
 
       setAlert(t("Statut modifié avec succès !"));
-    } catch (error) {
-      console.error(
-        t("Erreur lors de la modification du statut"),
-        error.response?.data,
-      );
-    }
+    });
   };
 
   return (
     <div className="space-y-6">
+      <ActionFeedback action={action} />
       <AnimatedSection>
         <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Administration")}</span>
         <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Validation des cours")}</h2>
@@ -129,5 +131,24 @@ export default function AdminValidation() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AdminValidation() {
+  const cours = useGetCour();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des cours à valider",
+          loading: cours.loading,
+          error: cours.error,
+          retry: cours.fetchCours,
+        },
+      ]}
+    >
+      <AdminValidationContent />
+    </DataGate>
   );
 }

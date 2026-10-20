@@ -9,6 +9,7 @@ import { useLang } from "../app/hooks/useLang";
 const LANGUAGES = [
   { code: "fr", label: "Français" },
   { code: "mg", label: "Malagasy" },
+  { code: "en", label: "English" },
 ];
 
 /**

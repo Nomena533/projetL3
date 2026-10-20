@@ -23,6 +23,8 @@ import {
 } from "../../app/api/ressourceApi";
 import { BASE_URL } from "../../app/api/api";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, LoadingScreen } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
 const RESOURCE_ICON = {
   video: HiOutlineVideoCamera,
@@ -63,8 +65,14 @@ export default function ProfLeconDetail() {
   const [resource, setResource] = useState([]);
   const [lesson, setLesson] = useState(null);
 
+  // Chargement de la leçon (plein écran + « Réessayer ») et suppression d'une ressource
+  const load = useAsyncAction({ initialPending: true, initialLabel: "Chargement de la leçon" });
+  const action = useAsyncAction();
+
+  const charger = () => load.run("Chargement de la leçon", () => fetchLessonDetail(lessonId));
+
   useEffect(() => {
-    fetchLessonDetail(lessonId);
+    charger();
   }, [lessonId]);
 
   useEffect(() => {
@@ -96,9 +104,11 @@ export default function ProfLeconDetail() {
     return () => clearTimeout(timer);
   }, [alert]);
 
-  const handleDeleteRessource = async (ressourceId) => {
-    try {
+  const handleDeleteRessource = (ressourceId) => {
+    // On ferme la fenêtre de confirmation : l'erreur éventuelle s'affiche sur la page.
+    setToDelete(null);
 
+    return action.run("Suppression de la ressource", async () => {
       await deleteRessource(ressourceId);
 
       setResource((previousResource) => {
@@ -108,14 +118,7 @@ export default function ProfLeconDetail() {
       // setResource(resource.filter((r) => r.id !== ressourceId));
 
       setAlert(t("La ressource a été supprimée avec succès !"));
-    } catch (err) {
-      console.error(
-        t("Erreur lors de la suppression de la ressource"),
-        err.response?.data,
-      );
-    } finally {
-      setToDelete(null);
-    }
+    }, { errorMessage: t("Une erreur est survenue lors de la suppression de la ressource.") });
   };
 
   const filteredRessources = useMemo(() => {
@@ -130,14 +133,17 @@ export default function ProfLeconDetail() {
 
   const hasActiveFilters = search !== "" || typeFilter !== "";
 
+  if (load.pending || load.error) {
+    return <ActionFeedback action={load} variant="fetch" />;
+  }
+
   if ( lesson === null || resource === null ) {
-    return (
-      <p className="font-body text-sm text-ink-soft">{t("Chargement de la leçon…")}</p>
-    );
+    return <LoadingScreen label="Chargement de la leçon" />;
   }
 
   return (
     <div className="w-full space-y-6">
+      <ActionFeedback action={action} />
       <button
         onClick={() => navigate(`/professeur/cours/${coursId}/details`)}
         className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"

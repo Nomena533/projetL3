@@ -24,6 +24,8 @@ import { useLevel } from "../../app/hooks/useLevel";
 import { useMessage } from "../../app/hooks/useMessage";
 import usePaiement from "../../app/hooks/usePaiement";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, DataGate } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 import { dateLocale, getRuntimeLang, tr } from "../../lib/i18nRuntime";
 
 /* ------------------------------------------------------------------ */
@@ -104,7 +106,7 @@ const QUICK_LINKS = [
 /* Page                                                                */
 /* ------------------------------------------------------------------ */
 
-export default function Dashboard() {
+function DashboardContent() {
   const { t } = useLang();
   const { user } = useAuth();
   const { userListInscription, fetchUserListInscription, userList } = useUser();
@@ -112,8 +114,16 @@ export default function Dashboard() {
   const { levels } = useLevel();
   const { conversations } = useMessage();
 
+  // Chargement des inscriptions de l'élève (plein écran + erreur « Réessayer »)
+  const load = useAsyncAction({ initialPending: !!user?.id, initialLabel: "Chargement de votre tableau de bord" });
+
+  const charger = () => {
+    if (!user?.id) return;
+    return load.run("Chargement de votre tableau de bord", () => fetchUserListInscription(user.id));
+  };
+
   useEffect(() => {
-    if (user?.id) fetchUserListInscription(user.id);
+    charger();
   }, [user]);
 
   // ---------- Parcours : un objet par niveau (même logique que Formation.jsx) ----------
@@ -196,6 +206,21 @@ export default function Dashboard() {
     });
   }
 
+  const fonction = (min, max) => {
+    const aleatoire = Math.floor(Math.random() * (max - min + 1)) + min;
+    const randomSimple = Math.random() * (max - min + 1) + min;
+    const maximum = Math.max(min,max);
+    const minimum = Math.min(min,max);
+    return {
+      aleatoire : aleatoire,
+      randomSimple : randomSimple,
+      maximum : maximum,
+      minimum : minimum
+    }
+  }
+
+  console.log("fonction(5,15) : ", fonction(5,15));
+
   // ---------- Hero ----------
   const prenom = (user?.firstname || user?.name || "").trim();
   let heroTitre;
@@ -218,6 +243,10 @@ export default function Dashboard() {
   }
 
   const moisPayesTotal = niveauEnCours ? `${niveauEnCours.moisPayes} / ${niveauEnCours.duree}` : "—";
+
+  if (load.pending || load.error) {
+    return <ActionFeedback action={load} variant="fetch" />;
+  }
 
   return (
     <div className="space-y-10">
@@ -534,5 +563,45 @@ export default function Dashboard() {
         ))}
       </section>
     </div>
+  );
+}
+
+export default function Dashboard() {
+  const users = useUser();
+  const paiements = usePaiement();
+  const niveaux = useLevel();
+  const messages = useMessage();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des niveaux",
+          loading: niveaux.loading,
+          error: niveaux.error,
+          retry: niveaux.fecthLevels,
+        },
+        {
+          label: "Chargement des paiements",
+          loading: paiements.loading,
+          error: paiements.error,
+          retry: paiements.fetchPaiement,
+        },
+        {
+          label: "Chargement des professeurs",
+          loading: users.loading,
+          error: users.error,
+          retry: users.fetchUserList,
+        },
+        {
+          label: "Chargement des messages",
+          loading: messages.loading,
+          error: messages.error,
+          retry: messages.fetchMessages,
+        },
+      ]}
+    >
+      <DashboardContent />
+    </DataGate>
   );
 }

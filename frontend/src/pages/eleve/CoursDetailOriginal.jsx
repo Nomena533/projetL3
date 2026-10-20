@@ -10,6 +10,10 @@ import {
   HiOutlineDocumentText,
   HiOutlineSpeakerWave,
   HiOutlineAcademicCap,
+  HiOutlinePhoto,
+  HiOutlineUser,
+  HiOutlineClock,
+  HiOutlineBookOpen,
 } from "react-icons/hi2";
 import AnimatedSection from "../../components/AnimatedSection";
 import Modal from "../../components/Modal";
@@ -18,12 +22,12 @@ import {
   LECONS,
   AVIS_COURS,
   TONE_BG,
-  NIVEAU_BADGE,
   formatAriary,
 } from "../../lib/mockStudentData";
 import useGetCour from "../../app/hooks/useGetCour";
 import { BASE_URL } from "../../app/api/api";
 import { capitalize } from "../../lib/formatFunction";
+import { useLang } from "../../app/hooks/useLang";
 
 const INCLUS = [
   { icon: HiOutlineVideoCamera, label: "Leçons vidéo téléchargeables" },
@@ -32,7 +36,15 @@ const INCLUS = [
   { icon: HiOutlineAcademicCap, label: "Certificat à la fin du parcours" },
 ];
 
+const NIVEAU_BADGE = {
+  initiation: "bg-amber/20 text-brick",
+  debutant: "bg-coral/10 text-coral-dark",
+  intermediaire: "bg-amber/20 text-brick",
+  avance: "bg-brick/10 text-brick",
+};
+
 export default function CourseDetail() {
+  const { t } = useLang();
   const { id } = useParams();
   const c = COURSES.find((x) => String(x.id) === id) || COURSES[0];
   const [fav, setFav] = useState(false);
@@ -50,27 +62,16 @@ export default function CourseDetail() {
       setCourDetail(cour.cour);
     }
   }, [cour]);
-  
+
   useEffect(() => {
     if (cour !== null) {
       setLesson(cour.lesson);
     }
   }, [cour]);
 
-  const NIVEAU_BADGE = {
-    initiation: "bg-amber/20 text-brick",
-    debutant: "bg-coral/10 text-coral-dark",
-    intermediaire: "bg-amber/20 text-brick",
-    avance: "bg-brick/10 text-brick",
-  };
-
-  console.log("courDetail : ", courDetail);
-  console.log("cour : ", cour);
-  console.log("lesson : ", lesson);
-
   if (!courDetail || !lesson) {
     return (
-      <p className="font-body text-sm text-ink-soft">Chargement du cours…</p>
+      <p className="font-body text-sm text-ink-soft">{t("Chargement du cours…")}</p>
     );
   }
 
@@ -80,15 +81,13 @@ export default function CourseDetail() {
         to="/eleve/formation"
         className="inline-flex w-fit items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"
       >
-        <HiOutlineChevronLeft size={13} /> Retour au formation
-      </Link>
+        <HiOutlineChevronLeft size={13} />{" "}{t("Retour au formation")}</Link>
 
       <div className="grid gap-8 lg:grid-cols-3">
-        <div className="space-y-8 lg:col-span-2">
-          <AnimatedSection>
-            <div
-              className={`flex h-56 items-center justify-center rounded-2xl overflow-hidden`}
-            >
+        <div className="space-y-6 lg:col-span-2">
+          {/* Bloc 1 — Visuel + identité du cours */}
+          <AnimatedSection className="overflow-hidden rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10">
+            <div className="flex h-56 items-center justify-center overflow-hidden">
               {courDetail.image ? (
                 <img
                   src={`${BASE_URL}/storage/${courDetail.image}`}
@@ -99,31 +98,48 @@ export default function CourseDetail() {
                 <HiOutlinePhoto size={28} className="text-ink-soft" />
               )}
             </div>
+
+            <div className="p-6">
+              <span
+                className={`inline-block rounded-full px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide ${NIVEAU_BADGE[courDetail.level.name]}`}
+              >
+                {capitalize(courDetail.level.name)}
+              </span>
+              <h2 className="mt-3 font-display text-2xl font-semibold text-ink sm:text-3xl">
+                {capitalize(courDetail.titre)}
+              </h2>
+
+              {/* Infos clés regroupées et distinguées par icône */}
+              <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-ivory-dark pt-4 font-body text-xs text-ink-soft">
+                <span className="flex items-center gap-1.5">
+                  <HiOutlineUser size={14} className="text-coral-dark" />
+                  {courDetail.prof.name} {courDetail.prof.firstname}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <HiOutlineClock size={14} className="text-coral-dark" />
+                  {courDetail.duree}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <HiOutlineBookOpen size={14} className="text-coral-dark" />{t("{{length}} leçons", { length: lesson.length })}</span>
+              </div>
+            </div>
           </AnimatedSection>
 
-          <AnimatedSection delay={60}>
-            <span
-              className={`inline-block rounded-full px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide ${NIVEAU_BADGE[courDetail.level.name]}`}
-            >
-              {capitalize(courDetail.level.name)}
-            </span>
-            <h2 className="mt-3 font-display text-2xl font-semibold text-ink sm:text-3xl">
-              {capitalize(courDetail.titre)}
-            </h2>
-            <p className="mt-1.5 font-body text-sm text-ink-soft">
-              Par {courDetail.prof.name} {courDetail.prof.firstname} · {courDetail.duree} de contenu ·{" "}
-              {lesson.length} leçons
-            </p>
-            <p className="mt-5 max-w-2xl font-body text-sm leading-relaxed text-ink-soft">
+          {/* Bloc 2 — Description */}
+          <AnimatedSection
+            delay={60}
+            className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-6"
+          >
+            <h3 className="mb-3 font-display text-lg font-semibold text-ink">{t("À propos de ce cours")}</h3>
+            <p className="max-w-2xl font-body text-sm leading-relaxed text-ink-soft">
               {capitalize(courDetail.description)}
             </p>
           </AnimatedSection>
 
+          {/* Bloc 3 — Contenu / leçons */}
           <AnimatedSection delay={120}>
-            <h3 className="mb-3 font-display text-lg font-semibold text-ink">
-              Contenu du cours
-            </h3>
-            <div className="divide-y divide-ivory-dark overflow-hidden rounded-2xl border border-ivory-dark bg-white/60">
+            <h3 className="mb-3 font-display text-lg font-semibold text-ink">{t("Contenu du cours")}</h3>
+            <div className="divide-y divide-ivory-dark overflow-hidden rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10">
               {lesson.map((l) => (
                 <Link
                   key={l.id}
@@ -152,15 +168,14 @@ export default function CourseDetail() {
             </div>
           </AnimatedSection>
 
+          {/* Bloc 4 — Avis */}
           <AnimatedSection delay={160}>
-            <h3 className="mb-3 font-display text-lg font-semibold text-ink">
-              Avis des élèves
-            </h3>
+            <h3 className="mb-3 font-display text-lg font-semibold text-ink">{t("Avis des élèves")}</h3>
             <div className="space-y-4">
               {AVIS_COURS.map((a) => (
                 <div
                   key={a.id}
-                  className="rounded-2xl border border-ivory-dark bg-white/60 p-5"
+                  className="rounded-2xl border border-ivory-dark bg-white/60 dark:bg-white/10 p-5"
                 >
                   <div className="flex items-center gap-2">
                     <div className="flex gap-0.5 text-amber">
@@ -177,7 +192,7 @@ export default function CourseDetail() {
                     </span>
                   </div>
                   <p className="mt-2 font-body text-sm leading-relaxed text-ink-soft">
-                    {a.texte}
+                    {t(a.texte)}
                   </p>
                 </div>
               ))}
@@ -185,52 +200,37 @@ export default function CourseDetail() {
           </AnimatedSection>
         </div>
 
+        {/* Colonne latérale — actions + ce qui est inclus, séparés du contenu principal */}
         <AnimatedSection
           delay={100}
           as="aside"
-          className="h-fit rounded-2xl border border-ivory-dark bg-white/70 p-6 lg:sticky lg:top-6"
+          className="h-fit rounded-2xl border border-ivory-dark bg-white/70 dark:bg-white/10 p-6 lg:sticky lg:top-6"
         >
-          {/* <p className="font-mono text-3xl font-semibold text-ink">{formatAriary(courDetail.prix)}</p> */}
-
-          {/* {purchased ? (
-            <p className="mt-4 flex items-center gap-2 rounded-xl bg-coral/10 px-4 py-3 font-body text-sm font-semibold text-coral-dark">
-              <HiOutlineCheckCircle size={17} /> Cours ajouté à ton parcours
-            </p>
-          ) : (
-            <button
-              onClick={() => setConfirmOpen(true)}
-              className="mt-4 w-full rounded-full bg-coral py-3 font-body text-sm font-semibold text-ivory shadow-lg shadow-coral/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-coral-dark"
-            >
-              Acheter ce cours
-            </button>
-          )} */}
-
           <button
             onClick={() => setFav(!fav)}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-ivory-dark py-3 font-body text-sm font-semibold text-ink transition-all duration-300 hover:border-coral/40"
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-ivory-dark py-3 font-body text-sm font-semibold text-ink transition-all duration-300 hover:border-coral/40"
           >
             <HiOutlineHeart
               size={16}
               className={fav ? "fill-coral text-coral" : "text-ink-soft"}
             />
-            {fav ? "Dans mes favoris" : "Ajouter aux favoris"}
+            {fav ? t("Dans mes favoris") : t("Ajouter aux favoris")}
           </button>
 
           <div className="mt-6 space-y-2.5 border-t border-ivory-dark pt-5">
+            <p className="mb-1 font-mono text-[11px] uppercase tracking-wide text-ink-soft">{t("Ce cours inclut")}</p>
             {INCLUS.map((it) => (
               <p
                 key={it.label}
                 className="flex items-center gap-2.5 font-body text-xs text-ink-soft"
               >
                 <it.icon size={14} className="shrink-0 text-coral-dark" />{" "}
-                {it.label}
+                {t(it.label)}
               </p>
             ))}
           </div>
         </AnimatedSection>
       </div>
-
-      
     </div>
   );
 }

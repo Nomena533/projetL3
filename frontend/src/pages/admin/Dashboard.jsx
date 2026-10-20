@@ -18,6 +18,7 @@ import { useUser } from "../../app/hooks/useUser";
 import useGetCour from "../../app/hooks/useGetCour";
 import usePaiement from "../../app/hooks/usePaiement";
 import { useLang } from "../../app/hooks/useLang";
+import { DataGate } from "../../components/AsyncState";
 import { dateLocale } from "../../lib/i18nRuntime";
 
 const QUICK_LINKS = [
@@ -83,7 +84,7 @@ function convertirDate(date) {
   return Number.isNaN(resultat.getTime()) ? null : resultat;
 }
 
-export default function AdminDashboard() {
+function AdminDashboardContent() {
   const { t } = useLang();
   const { inscriptions } = useInscription();
   const { userList } = useUser();
@@ -275,5 +276,45 @@ export default function AdminDashboard() {
         ))}
       </section>
     </div>
+  );
+}
+
+export default function AdminDashboard() {
+  const inscriptions = useInscription();
+  const users = useUser();
+  const cours = useGetCour();
+  const paiements = usePaiement();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des inscriptions",
+          loading: inscriptions.loading,
+          error: inscriptions.error,
+          retry: inscriptions.fetchInscriptions,
+        },
+        {
+          label: "Chargement des utilisateurs",
+          loading: users.loading,
+          error: users.error,
+          retry: users.fetchUserList,
+        },
+        {
+          label: "Chargement des cours",
+          loading: cours.loading,
+          error: cours.error,
+          retry: cours.fetchCours,
+        },
+        {
+          label: "Chargement des paiements",
+          loading: paiements.loading,
+          error: paiements.error,
+          retry: paiements.fetchPaiement,
+        },
+      ]}
+    >
+      <AdminDashboardContent />
+    </DataGate>
   );
 }

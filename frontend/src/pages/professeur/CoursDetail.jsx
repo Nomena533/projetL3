@@ -23,6 +23,8 @@ import { BASE_URL } from "../../app/api/api";
 import { capitalize } from "../../lib/formatFunction";
 import { getRessourceByLecon } from "../../app/api/ressourceApi";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, DataGate } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
 export default function ProfCoursDetail() {
   const { t } = useLang();
@@ -31,8 +33,10 @@ export default function ProfCoursDetail() {
   const location = useLocation();
 
   const [cours, setCoursDetail] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Chargement du cours (plein écran + « Réessayer »), de ses ressources, et suppression d'une leçon
+  const load = useAsyncAction({ initialPending: true, initialLabel: "Chargement du cours" });
+  const loadRes = useAsyncAction();
+  const action = useAsyncAction();
   const [toDelete, setToDelete] = useState(null);
   const [alert, setAlert] = useState(location.state?.success || null);
 
@@ -40,31 +44,14 @@ export default function ProfCoursDetail() {
 
   const [search, setSearch] = useState("");
 
+  const fetchCourDetail = () =>
+    load.run("Chargement du cours", async () => {
+      const response = await getCourDetail(id);
+      setCoursDetail(response.data);
+      console.log("Détails du cour sélectionnés avec succès");
+    }, { errorMessage: t("Impossible de charger ce cours.") });
+
   useEffect(() => {
-    const fetchCourDetail = async () => {
-      let active = true;
-      setLoading(true);
-      await getCourDetail(id)
-        .then((response) => {
-          if (active) setCoursDetail(response.data);
-          console.log("Détails du cour sélectionnés avec succès");
-        })
-        .catch((error) => {
-          if (active) setError(t("Impossible de charger ce cours."));
-          console.error(
-            t("Erreur lors de la récupération des détails cour :"),
-            error.response?.data,
-          );
-        })
-        .finally(() => {
-          if (active) setLoading(false);
-        });
-
-      return () => {
-        active = false;
-      };
-    };
-
     fetchCourDetail();
   }, [id]);
 
@@ -73,26 +60,27 @@ export default function ProfCoursDetail() {
   useEffect(() => {
     if(!cours) return;
 
-    const fetchResources = async () => {
-      const results = await Promise.all(
-        cours.lesson.map(async (lesson) => {
-          const response = await getRessourceByLecon(lesson.id);
+    const fetchResources = () =>
+      loadRes.run("Chargement des ressources des leçons", async () => {
+        const results = await Promise.all(
+          cours.lesson.map(async (lesson) => {
+            const response = await getRessourceByLecon(lesson.id);
 
-          return {
-            id : lesson.id,
-            count : response.data.length
-          };
-        })
-      );
+            return {
+              id : lesson.id,
+              count : response.data.length
+            };
+          })
+        );
 
-      const counts = {};
+        const counts = {};
 
-      results.forEach((result) => {
-        counts[result.id] = result.count;
+        results.forEach((result) => {
+          counts[result.id] = result.count;
+        });
+
+        setResourceCounts(counts);
       });
-
-      setResourceCounts(counts);
-    };
 
     fetchResources();
   }, [cours]);
@@ -109,10 +97,12 @@ export default function ProfCoursDetail() {
     return () => clearTimeout(timer);
   }, [alert]);
 
-  const handleDeleteLecon = async (leconId) => {
+  const handleDeleteLecon = (leconId) => {
     console.log("leconId", leconId);
-    // return;
-    try {
+    // On ferme la fenêtre de confirmation : l'erreur éventuelle s'affiche sur la page.
+    setToDelete(null);
+
+    return action.run("Suppression de la leçon", async () => {
       await deleteLesson(leconId);
 
       setCoursDetail((c) => ({
@@ -121,14 +111,7 @@ export default function ProfCoursDetail() {
       }));
 
       setAlert(t("La leçon a été supprimé avec succès !"));
-    } catch (err) {
-      console.error(
-        t("Erreur lors de la suppression de la leçon"),
-        err.response?.data,
-      );
-    } finally {
-      setToDelete(null);
-    }
+    }, { errorMessage: t("Une erreur est survenue lors de la suppression de la leçon.") });
   };
 
   // A EXPLIQUER
@@ -140,17 +123,15 @@ export default function ProfCoursDetail() {
     );
   }, [cours, search]);
 
-  if (loading) {
-    return (
-      <p className="font-body text-sm text-ink-soft">{t("Chargement du cours…")}</p>
-    );
+  if (load.pending || load.error) {
+    return <ActionFeedback action={load} variant="fetch" />;
   }
 
-  if (error || !cours) {
+  if (!cours) {
     return (
       <div className="space-y-4">
         <p className="font-body text-sm text-brick">
-          {error || t("Cours introuvable.")}
+          {t("Cours introuvable.")}
         </p>
         <Link
           to="/professeur/mescours"
@@ -162,6 +143,8 @@ export default function ProfCoursDetail() {
 
   return (
     <div className="w-full space-y-6">
+      <ActionFeedback action={action} />
+      <ActionFeedback action={loadRes} />
       <button
         onClick={() => navigate("/professeur/mescours")}
         className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-ink-soft transition-colors hover:text-coral-dark"

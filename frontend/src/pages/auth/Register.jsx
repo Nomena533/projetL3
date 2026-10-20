@@ -20,6 +20,9 @@ import { getRoles } from "../../app/api/roleApi";
 import { LogoBlanc, LogoVert } from "../../components/Logo";
 import useTheme from "../../app/hooks/useTheme";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
+import { ErrorRetry } from "../../components/AsyncState";
 
 const ROLES_ICONS = {
   professeur: HiOutlineMusicalNote,
@@ -36,6 +39,9 @@ export default function Register() {
   const [role, setRole] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  // Chargement des rôles (plein écran) et envoi du formulaire (spinner + erreur « Réessayer »)
+  const load = useAsyncAction({ initialPending: true, initialLabel: "Chargement des rôles" });
+  const action = useAsyncAction();
 
   // Permet de rediriger l'utilisateur après une inscription réussi
   const navigate = useNavigate();
@@ -50,9 +56,9 @@ export default function Register() {
   });
 
   // Récupération des roles
-  useEffect(() => {
-    const fetchRoles = async () => {
-      try {
+  const fetchRoles = () =>
+    load.run("Chargement des rôles", async () => {
+      {
         // Appel l'api http:://localhost:8000/api/getRoles
         const response = await getRoles();
 
@@ -67,11 +73,10 @@ export default function Register() {
         }));
 
         setRoles(formattedRoles);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des rôles", error);
       }
-    };
+    });
 
+  useEffect(() => {
     fetchRoles();
   }, []);
 
@@ -87,7 +92,7 @@ export default function Register() {
   const [errorMessage, setErrorMessage] = useState(null);
 
   // Envoie du formulaire
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError(null);
     setErrorMessage(null);
@@ -96,7 +101,22 @@ export default function Register() {
       alert(t("Veuillez sélectionner un rôle."));
       return;
     }
-    try {
+    action.run("Création du compte", submitRegister, {
+      // Erreurs de validation (422) : affichées sous les champs, pas de bandeau.
+      onError: (err) => {
+        const message = err.response?.data?.errors;
+        if (err.response?.status === 422 && message) {
+          setErrorMessage({ email: message.email, password: message.password });
+          setError(t("Une erreur est survenue lors de l'inscription."));
+          return true;
+        }
+        return false;
+      },
+    });
+  };
+
+  const submitRegister = async () => {
+    {
       const data = {
         ...Form,
         role_id: role,
@@ -108,16 +128,22 @@ export default function Register() {
 
       // redirection après inscription
       navigate("/connexionCompte");
-    } catch (error) {
-      const message = error.response?.data.errors;
-      setErrorMessage({
-        email: message.email,
-        password: message.password,
-      });
-      setError(t("Une erreur est survenue lors de l'inscription."));
-      console.error("Erreur inscription : ", error.response?.data);
     }
   };
+
+  // Les rôles sont indispensables au formulaire : écran de chargement / erreur.
+  if (load.pending) return <ActionFeedback action={load} variant="fetch" />;
+  if (load.error) {
+    return (
+      <div className="min-h-screen bg-ivory px-5 py-10">
+        <ErrorRetry
+          title={t("Chargement des rôles : échec")}
+          message={load.error}
+          onRetry={load.retry}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-ivory px-5 py-10 font-body sm:px-8">
@@ -207,6 +233,7 @@ export default function Register() {
             key={"register"}
             className="animate-fade-in"
           >
+            <ActionFeedback action={action} />
             <div className="mb-4 grid grid-cols-2 gap-3">
               <FormField
                 label={t("Nom")}

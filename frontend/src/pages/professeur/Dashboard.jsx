@@ -23,6 +23,7 @@ import { useAuth } from "../../app/hooks/useAuth";
 import { useUser } from "../../app/hooks/useUser";
 import { useMessage } from "../../app/hooks/useMessage";
 import { useLang } from "../../app/hooks/useLang";
+import { DataGate } from "../../components/AsyncState";
 
 // const EN_ATTENTE = SOUMISSIONS.filter((s) => s.statut === "En attente");
 
@@ -36,7 +37,7 @@ const QUICK_LINKS = [
   },
 ];
 
-export default function ProfDashboard() {
+function ProfDashboardContent() {
   const { t } = useLang();
   const { courByProf, cours } = useGetCour();
   const { soumission } = useSoumission();
@@ -306,5 +307,45 @@ export default function ProfDashboard() {
         ))}
       </section>
     </div>
+  );
+}
+
+export default function ProfDashboard() {
+  const cours = useGetCour();
+  const soumissions = useSoumission();
+  const messages = useMessage();
+  const users = useUser();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement de vos cours",
+          loading: cours.loading,
+          error: cours.error,
+          retry: cours.fetchCours,
+        },
+        {
+          label: "Chargement des soumissions",
+          loading: soumissions.loading,
+          error: soumissions.error,
+          retry: soumissions.fetchSoumission,
+        },
+        {
+          label: "Chargement des messages",
+          loading: messages.loading,
+          error: messages.error,
+          retry: messages.fetchMessages,
+        },
+        {
+          label: "Chargement des élèves",
+          loading: users.loading,
+          error: users.error,
+          retry: users.fetchUserList,
+        },
+      ]}
+    >
+      <ProfDashboardContent />
+    </DataGate>
   );
 }

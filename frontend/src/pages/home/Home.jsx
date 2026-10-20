@@ -16,6 +16,7 @@ import {
 import { useUser } from "../../app/hooks/useUser";
 import { useInstrument } from "../../app/hooks/useInstrument";
 import { useLang } from "../../app/hooks/useLang";
+import { DataGate } from "../../components/AsyncState";
 
 const STEPS = [
   {
@@ -51,7 +52,7 @@ function formatAriary(n) {
   return new Intl.NumberFormat("fr-MG").format(n) + " Ar";
 }
 
-export default function Home() {
+function HomeContent() {
   const { t: tl } = useLang();
   const {instruments} = useInstrument();
   const {userList} = useUser();
@@ -292,5 +293,31 @@ export default function Home() {
         </AnimatedSection>
       </section>
     </>
+  );
+}
+
+export default function Home() {
+  const instruments = useInstrument();
+  const users = useUser();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des instruments",
+          loading: instruments.loading,
+          error: instruments.error,
+          retry: instruments.fecthInstruments,
+        },
+        {
+          label: "Chargement des professeurs",
+          loading: users.loading,
+          error: users.error,
+          retry: users.fetchUserList,
+        },
+      ]}
+    >
+      <HomeContent />
+    </DataGate>
   );
 }

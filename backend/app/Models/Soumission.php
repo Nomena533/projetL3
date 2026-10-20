@@ -13,7 +13,8 @@ class Soumission extends Model
         "type",
         "description",
         "note",
-        "commentaire"
+        "commentaire",
+        "statut"
     ];
 
     public function exercice()

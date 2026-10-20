@@ -14,12 +14,14 @@ import { getUserListInscription } from "../../app/api/userApi";
 import { useUser } from "../../app/hooks/useUser";
 import { FaMoneyBill, FaMoneyBillAlt, FaMoneyBillWave, FaMoneyCheck } from "react-icons/fa";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, DataGate } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
 function formatAriary(n) {
   return new Intl.NumberFormat("fr-MG").format(n) + " Ar";
 }
 
-export default function Inscription() {
+function InscriptionContent() {
   const { t } = useLang();
   const [params] = useSearchParams();
   const niveauName = params.get("niveau") || "initiation";
@@ -39,8 +41,15 @@ export default function Inscription() {
   const { userListInscription, fetchUserListInscription } =
     useUser();
 
+  // Chargement des inscriptions (plein écran + erreur « Réessayer ») et envoi du formulaire
+  const load = useAsyncAction({ initialPending: true, initialLabel: "Chargement de vos inscriptions" });
+  const action = useAsyncAction();
+
+  const charger = () =>
+    load.run("Chargement de vos inscriptions", () => fetchUserListInscription(user.id));
+
   useEffect(() => {
-    fetchUserListInscription(user.id);
+    charger();
   }, [user]);
 
   console.log("userListInscription : ", userListInscription);
@@ -125,35 +134,35 @@ export default function Inscription() {
     [nombreInstruments, niveau],
   );
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (nombreInstruments === 0) return;
 
-    try {
+    return action.run("Envoi de l'inscription", async () => {
       const data = {
         telephone: form.telephone,
         montant: montantTotal,
         instruments: selectedInstruments.map((instrument) => instrument.id),
       };
 
-
       const response = await storeInscription(niveau.id, data);
-      
+
       console.log("Inscription réussie", response.data);
 
       setInscriptionId(response.data.inscription.id);
 
       // (nom, prenom, email, telephone, niveau: niveau.id, instruments: selectedInstruments)
       setSent(true);
-    } catch (err) {
-      console.error("Erreur lors de l'inscription", err.response?.data);
-      setError(t("Une erreur est survenue lors de l'inscription."));
-    }
+    }, { errorMessage: t("Une erreur est survenue lors de l'inscription.") });
   };
 
   const instrumentsParam = selectedInstruments
     .map((instrument) => instrument.name.toLowerCase())
     .join(",");
+
+  if (load.pending || load.error) {
+    return <ActionFeedback action={load} variant="fetch" />;
+  }
 
   if (!niveau) {
     return (
@@ -232,6 +241,7 @@ export default function Inscription() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
+              <ActionFeedback action={action} />
               {/* Informations élève */}
               <div>
                 <h2 className="font-display text-lg font-semibold text-ink">{t("Tes informations")}</h2>
@@ -330,7 +340,6 @@ export default function Inscription() {
                 </div>
               </div>
 
-              {error && <p className="font-body text-sm text-brick">{error}</p>}
               {/* Récapitulatif automatique */}
               <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-linear-to-br from-brick via-coral-dark to-coral p-5 text-ivory">
                 <div>
@@ -361,5 +370,31 @@ export default function Inscription() {
         </AnimatedSection>
       </div>
     </section>
+  );
+}
+
+export default function Inscription() {
+  const niveaux = useLevel();
+  const instruments = useInstrument();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des niveaux",
+          loading: niveaux.loading,
+          error: niveaux.error,
+          retry: niveaux.fecthLevels,
+        },
+        {
+          label: "Chargement des instruments",
+          loading: instruments.loading,
+          error: instruments.error,
+          retry: instruments.fecthInstruments,
+        },
+      ]}
+    >
+      <InscriptionContent />
+    </DataGate>
   );
 }

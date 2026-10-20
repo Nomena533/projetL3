@@ -12,8 +12,10 @@ import { useUser } from "../../app/hooks/useUser";
 import { useEffect } from "react";
 import { useAuth } from "../../app/hooks/useAuth";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, DataGate } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
-export default function FormationPublique() {
+function FormationPubliqueContent() {
   const { t } = useLang();
   const { levels } = useLevel();
   const { user } = useAuth();
@@ -21,10 +23,16 @@ export default function FormationPublique() {
   const { userListInscription, fetchUserListInscription } =
     useUser();
 
+  // Inscriptions de l'élève connecté (visiteur : rien à charger)
+  const load = useAsyncAction({ initialPending: !!user, initialLabel: "Chargement de vos inscriptions" });
+
+  const charger = () => {
+    if (!user) return;
+    return load.run("Chargement de vos inscriptions", () => fetchUserListInscription(user.id));
+  };
+
   useEffect(() => {
-    if (user) {
-      fetchUserListInscription(user.id);
-    }
+    charger();
   }, [user]);
 
   const location = useLocation();
@@ -33,6 +41,10 @@ export default function FormationPublique() {
   console.log("userListInscription : ", userListInscription);
 
   const inscritQuelquePart = userListInscription.length > 0;
+
+  if (load.pending || load.error) {
+    return <ActionFeedback action={load} variant="fetch" />;
+  }
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 px-4 py-12 sm:px-6">
@@ -147,5 +159,24 @@ export default function FormationPublique() {
         })}
       </div>
     </div>
+  );
+}
+
+export default function FormationPublique() {
+  const niveaux = useLevel();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des niveaux",
+          loading: niveaux.loading,
+          error: niveaux.error,
+          retry: niveaux.fecthLevels,
+        },
+      ]}
+    >
+      <FormationPubliqueContent />
+    </DataGate>
   );
 }

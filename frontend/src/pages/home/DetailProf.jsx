@@ -11,6 +11,7 @@ import { useUser } from "../../app/hooks/useUser";
 import { BASE_URL } from "../../app/api/api";
 import { parseList, parseSpecialites } from "../../lib/profPortfolio";
 import { useLang } from "../../app/hooks/useLang";
+import { DataGate } from "../../components/AsyncState";
 
 function Timeline({ items, renderItem, empty }) {
   if (items.length === 0) {
@@ -28,7 +29,7 @@ function Timeline({ items, renderItem, empty }) {
   );
 }
 
-export default function DetailProf() {
+function DetailProfContent() {
   const { t } = useLang();
   const { id } = useParams();
   const { userList } = useUser();
@@ -184,5 +185,24 @@ export default function DetailProf() {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function DetailProf() {
+  const users = useUser();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des professeurs",
+          loading: users.loading,
+          error: users.error,
+          retry: users.fetchUserList,
+        },
+      ]}
+    >
+      <DetailProfContent />
+    </DataGate>
   );
 }

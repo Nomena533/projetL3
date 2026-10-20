@@ -27,6 +27,8 @@ import {
 import { useInstrument } from "../../app/hooks/useInstrument";
 import Select from "react-select";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, DataGate } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
 const INPUT_CLS =
   "w-full rounded-xl border border-ivory-dark bg-white/70 dark:bg-white/15 px-4 py-3 font-body text-sm text-ink outline-none transition-colors duration-300 focus:border-coral";
@@ -63,7 +65,7 @@ const SELECT_CLASSNAMES = {
   noOptionsMessage: () => "px-3 py-2 font-body text-sm text-ink-soft",
 };
 
-export default function ProfProfil() {
+function ProfProfilContent() {
   const { t } = useLang();
   const { instruments } = useInstrument();
   const instrumentOptions = useMemo(
@@ -112,7 +114,9 @@ export default function ProfProfil() {
   const photoInput = useRef(null);
   const [removePhoto, setRemovePhoto] = useState(false);
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
-  const [saving, setSaving] = useState(false);
+  // Enregistrement du profil (spinner plein écran + erreur avec « Réessayer »)
+  const action = useAsyncAction();
+  const saving = action.pending;
   const [errorMessage, setErrorMessage] = useState("");
 
   const initials = user
@@ -165,7 +169,6 @@ export default function ProfProfil() {
     e.preventDefault();
 
     if (saving) return;
-    setSaving(true);
     setSaved(false);
     setErrorMessage("");
 
@@ -203,7 +206,7 @@ export default function ProfProfil() {
       formData.append("password_confirmation", passwordConfirmation);
     }
 
-    try {
+    return action.run("Enregistrement du profil", async () => {
       // Laravel reçoit les uploads multipart en POST et utilise ce champ pour router la requête comme un PUT.
       formData.append("_method", "PUT");
       const response = await updateProfile(formData);
@@ -216,26 +219,29 @@ export default function ProfProfil() {
       photoObjectUrl.current = null;
       setForm((current) => ({ ...current, password: "", photo: null }));
       if (photoInput.current) photoInput.current.value = "";
-      await fetchUserList();
+      // Un échec du rechargement de la liste ne doit pas renvoyer le profil (« Réessayer »)
+      await Promise.resolve(fetchUserList()).catch(() => {});
       setPasswordConfirmation("");
       setRemovePhoto(false);
       setSaved(true);
-    } catch (requestError) {
-      const validationMessages = requestError.response?.data?.errors;
-      setErrorMessage(
-        validationMessages
-          ? Object.values(validationMessages).flat().join(" ")
-          : requestError.response?.data?.message ||
-              t("La modification du profil a échoué. Réessaie."),
-      );
-    } finally {
-      setSaving(false);
       window.setTimeout(() => setSaved(false), 2500);
-    }
+    }, {
+      errorMessage: t("La modification du profil a échoué. Réessaie."),
+      // Erreurs de validation (422) : affichées dans le formulaire, comme avant.
+      onError: (requestError) => {
+        const validationMessages = requestError.response?.data?.errors;
+        if (validationMessages) {
+          setErrorMessage(Object.values(validationMessages).flat().join(" "));
+          return true;
+        }
+        return false;
+      },
+    });
   };
 
   return (
     <div className="space-y-8">
+      <ActionFeedback action={action} />
       <AnimatedSection>
         <span className="font-mono text-xs uppercase tracking-widest text-coral-dark">{t("Mon compte")}</span>
         <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Mon profil")}</h2>
@@ -609,5 +615,24 @@ export default function ProfProfil() {
         </button>
       </AnimatedSection>
     </div>
+  );
+}
+
+export default function ProfProfil() {
+  const instruments = useInstrument();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des instruments",
+          loading: instruments.loading,
+          error: instruments.error,
+          retry: instruments.fecthInstruments,
+        },
+      ]}
+    >
+      <ProfProfilContent />
+    </DataGate>
   );
 }

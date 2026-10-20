@@ -9,6 +9,8 @@ import { useLevel } from "../../app/hooks/useLevel";
 import { capitalize } from "../../lib/formatFunction";
 import { ChevronDown } from "../../lib/icons";
 import { useLang } from "../../app/hooks/useLang";
+import { ActionFeedback, DataGate } from "../../components/AsyncState";
+import useAsyncAction from "../../app/hooks/useAsyncAction";
 
 const STATUTS_PAIEMENT = ["validé", "En attente", "Échoué"];
 
@@ -22,7 +24,7 @@ function styleStatut(statut) {
   return STATUT_STYLES[statut] || "border-ivory-dark bg-white text-ink-soft";
 }
 
-export default function AdminPaiements() {
+function AdminPaiementsContent() {
   const { t } = useLang();
   const { paiementList } = usePaiement();
   const { userList } = useUser();
@@ -35,45 +37,41 @@ export default function AdminPaiements() {
   const [statutsLocaux, setStatutsLocaux] = useState({});
 
   console.log("statutsLocaux initial : ", statutsLocaux);
-  // Contient l'ID du paiement en cour de modification
-  const [updatingId, setUpdatingId] = useState(null);
-  console.log("updatingId : ", updatingId);
-  const [error, setError] = useState(null);
+  // Suivi de la modification de statut (spinner plein écran + erreur avec « Réessayer »)
+  const action = useAsyncAction();
 
   // Pour ce paiement, utilise d'abord le statut local. S'il n'existe pas, utilise le statut provenant de l'API
   const statutDe = (p) => statutsLocaux[p.id] ?? p.statut;
 
-  const handleStatutChange = async (paiement, data) => {
+  const handleStatutChange = (paiement, data) => {
     console.log("statut : ", data.statut);
 
     const ancienStatut = statutDe(paiement);
-    setError(null);
-    setStatutsLocaux((prev) => ({
-      ...prev,
-      [paiement.id]: data.statut,
-    }));
 
-    console.log("statutsLocaux après séléction : ", statutsLocaux);
-    // return;
+    return action.run(
+      "Modification du statut du paiement",
+      async () => {
+        // Affichage optimiste (réappliqué si l'utilisateur clique sur « Réessayer »)
+        setStatutsLocaux((prev) => ({
+          ...prev,
+          [paiement.id]: data.statut,
+        }));
 
-    setUpdatingId(paiement.id);
-
-    try {
-      const response = await updateStatutPaiement(paiement.id, data);
-      console.log("MAJ statut paiement effectué", response.data);
-    } catch (requestError) {
-      setStatutsLocaux((prev) => ({
-        ...prev,
-        [paiement.id]: ancienStatut,
-      }));
-      setError(t("Le statut du paiement n'a pas pu être modifié."));
-      console.error(
-        t("Erreur lors de la modification du statut du paiement"),
-        requestError.response?.data,
-      );
-    } finally {
-      setUpdatingId(null);
-    }
+        const response = await updateStatutPaiement(paiement.id, data);
+        console.log("MAJ statut paiement effectué", response.data);
+      },
+      {
+        errorMessage: t("Le statut du paiement n'a pas pu être modifié."),
+        // En cas d'échec : on revient visuellement à l'ancien statut.
+        onError: () => {
+          setStatutsLocaux((prev) => ({
+            ...prev,
+            [paiement.id]: ancienStatut,
+          }));
+          return false;
+        },
+      },
+    );
   };
 
   // Un paiement est-il en attente de validation ? (comparaison insensible à la casse)
@@ -128,11 +126,7 @@ export default function AdminPaiements() {
         <h2 className="mt-2 font-display text-2xl font-semibold text-ink sm:text-3xl">{t("Paiements")}</h2>
       </AnimatedSection>
 
-      {error && (
-        <p role="alert" className="font-body text-sm text-brick">
-          {error}
-        </p>
-      )}
+      <ActionFeedback action={action} />
 
       <div className="space-y-5">
         {groupesParEleve.map(({ eleve, paiements }, index) => {
@@ -286,5 +280,38 @@ export default function AdminPaiements() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AdminPaiements() {
+  const paiements = usePaiement();
+  const users = useUser();
+  const niveaux = useLevel();
+
+  return (
+    <DataGate
+      sources={[
+        {
+          label: "Chargement des paiements",
+          loading: paiements.loading,
+          error: paiements.error,
+          retry: paiements.fetchPaiement,
+        },
+        {
+          label: "Chargement des élèves",
+          loading: users.loading,
+          error: users.error,
+          retry: users.fetchUserList,
+        },
+        {
+          label: "Chargement des niveaux",
+          loading: niveaux.loading,
+          error: niveaux.error,
+          retry: niveaux.fecthLevels,
+        },
+      ]}
+    >
+      <AdminPaiementsContent />
+    </DataGate>
   );
 }

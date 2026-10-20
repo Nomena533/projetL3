@@ -4,7 +4,7 @@ import { setRuntimeLang, translate } from "../../lib/i18nRuntime";
 
 const STORAGE_KEY = "kalonny-lang";
 const DEFAULT_LANG = "fr";
-const SUPPORTED_LANGS = ["fr", "mg"];
+const SUPPORTED_LANGS = ["fr", "mg", "en"];
 
 /**
  * Système de traduction :
